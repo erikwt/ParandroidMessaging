@@ -18,7 +18,7 @@
  */
 -->
 
-<com.android.mms.ui.DeliveryReportListItem xmlns:android="http://schemas.android.com/apk/res/android"
+<org.parandroid.sms.ui.DeliveryReportListItem xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:background="#ffffffff"
@@ -68,4 +68,4 @@
         </LinearLayout>
     </LinearLayout>
 
-</com.android.mms.ui.DeliveryReportListItem>
+</org.parandroid.sms.ui.DeliveryReportListItem>

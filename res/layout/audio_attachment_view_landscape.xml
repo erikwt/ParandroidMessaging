@@ -18,7 +18,7 @@
  */
 -->
 
-<com.android.mms.ui.AudioAttachmentView xmlns:android="http://schemas.android.com/apk/res/android"
+<org.parandroid.sms.ui.AudioAttachmentView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/audio_attachment_view_landscape"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -91,4 +91,4 @@
             android:text="@string/remove" />
 
     </LinearLayout>
-</com.android.mms.ui.AudioAttachmentView>
+</org.parandroid.sms.ui.AudioAttachmentView>

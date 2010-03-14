@@ -18,7 +18,7 @@
  */
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.android.mms">
+        package="org.parandroid.sms">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
@@ -199,7 +199,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.android.mms.transaction.MESSAGE_SENT" />
+                <action android:name="org.parandroid.sms.transaction.MESSAGE_SENT" />
                 <!-- TODO Do a better data match here. -->
                 <data android:scheme="content" />
             </intent-filter>
@@ -207,7 +207,7 @@
 
         <receiver android:name=".transaction.MessageStatusReceiver">
             <intent-filter>
-                <action android:name="com.android.mms.transaction.MessageStatusReceiver.MESSAGE_STATUS_RECEIVED" />
+                <action android:name="org.parandroid.sms.transaction.MessageStatusReceiver.MESSAGE_STATUS_RECEIVED" />
             </intent-filter>
         </receiver>
 
@@ -226,7 +226,7 @@
         <activity android:name=".ui.ConfirmRateLimitActivity"
                   android:theme="@android:style/Theme.Dialog">
             <intent-filter>
-                <action android:name="com.android.mms.RATE_LIMIT_SURPASSED" />
+                <action android:name="org.parandroid.sms.RATE_LIMIT_SURPASSED" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

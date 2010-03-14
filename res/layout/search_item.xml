@@ -55,7 +55,7 @@
     </LinearLayout>
 
     <view
-        class="com.android.mms.ui.SearchActivity$TextViewSnippet"
+        class="org.parandroid.sms.ui.SearchActivity$TextViewSnippet"
         android:id="@+id/subtitle"
         android:textAppearance="@style/TextAppearance.SearchResult.Subtitle"
         android:layout_width="fill_parent"

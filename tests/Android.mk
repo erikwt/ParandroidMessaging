@@ -27,9 +27,9 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src)
 # running the tests using an instrumentation targeting Eamil, we
 # automatically get all of its classes loaded into our environment.
 
-LOCAL_PACKAGE_NAME := MmsTests
+LOCAL_PACKAGE_NAME := ParandroidSmsTests
 
-LOCAL_INSTRUMENTATION_FOR := Mms
+LOCAL_INSTRUMENTATION_FOR := ParandroidSms
 
 include $(BUILD_PACKAGE)
 

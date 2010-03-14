@@ -16,7 +16,7 @@
 
 <!-- package name must be unique so suffix with "tests" so package loader doesn't ignore us -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.android.mms.tests">
+    package="org.parandroid.sms.tests">
 
     <!-- We add an application tag here just so that we can indicate that
          this package needs to link against the android.test library,
@@ -27,11 +27,11 @@
 
     <!--
     This declares that this app uses the instrumentation test runner targeting
-    the package of com.android.mms.  To run the tests use the command:
-    "adb shell am instrument -w com.android.mms.tests/android.test.InstrumentationTestRunner"
+    the package of org.parandroid.sms.  To run the tests use the command:
+    "adb shell am instrument -w org.parandroid.sms.tests/android.test.InstrumentationTestRunner"
     -->
     <instrumentation android:name="android.test.InstrumentationTestRunner"
-                     android:targetPackage="com.android.mms"
+                     android:targetPackage="org.parandroid.sms"
                      android:label="Tests for Mms."/>
 
 </manifest>
