@@ -30,6 +30,7 @@ import javax.crypto.interfaces.DHPublicKey;
 import javax.crypto.spec.DHParameterSpec;
 
 import org.parandroid.encoding.Base64Coder;
+import org.parandroid.sms.ui.ConversationList;
 //import org.parandroid.mms.ui.SendPublicKeyActivity;
 
 import android.content.Context;
@@ -120,6 +121,10 @@ public abstract class DHAESKeyFactory {
         SecretKey secretKey = ka.generateSecret(SECRET_KEY_ALGORITHM);
         
         return secretKey;
+    }
+    
+    public static boolean isPublicKey(String message){
+    	return message.startsWith(SHARE_PUBLIC_KEY_HEADER);
     }
     
     /**
