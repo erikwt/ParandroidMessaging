@@ -100,8 +100,7 @@ public class ConversationList extends ListActivity
     private SharedPreferences mPrefs;
     private Handler mHandler;
     
-    private Toast successToast, errorToast;
-    private ProgressDialog dialog;
+    private AlertDialog generateKeypairSuccessDialog;
 
     static private final String CHECKED_MESSAGE_LIMITS = "checked_message_limits";
     
@@ -247,6 +246,43 @@ public class ConversationList extends ListActivity
         if (!Conversation.loadingThreads()) {
             Contact.invalidateCache();
         }
+        
+        AlertDialog.Builder generateKeypairSuccessDialogBuilder = new AlertDialog.Builder(this);
+    	generateKeypairSuccessDialogBuilder.setMessage(getText(R.string.generated_keypair_success))
+    			.setTitle(getText(R.string.generate_keypair_title))
+    			.setCancelable(false)
+    	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	                sendPublicKey();
+    	           }
+    	       })
+    	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	                dialog.cancel();
+    	           }
+    	       });
+    	
+        generateKeypairSuccessDialog = generateKeypairSuccessDialogBuilder.create();
+        
+        if(!DHAESKeyFactory.hasKeypair(this)){
+        	AlertDialog.Builder generateKeypairDialogBuilder = new AlertDialog.Builder(this);
+        	generateKeypairDialogBuilder.setMessage(getText(R.string.no_keypair_dialog))
+        		   .setTitle(getText(R.string.generate_keypair_title))
+        		   .setCancelable(false)
+        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	                generateKeypair();
+        	           }
+        	       })
+        	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	                dialog.cancel();
+        	           }
+        	       });
+        	
+        	AlertDialog alert = generateKeypairDialogBuilder.create();
+        	alert.show();
+        }
     }
 
     protected void privateOnStart() {
@@ -329,7 +365,23 @@ public class ConversationList extends ListActivity
 	            createNewMessage();
 	            break;
 	        case MENU_GENERATE_KEYPAIR:
-	        	generateKeypair();
+	        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	        	builder.setMessage(getText(R.string.generate_keypair_dialog))
+	        			.setTitle(getText(R.string.generate_keypair_title))
+        		   	 	.setCancelable(false)
+	        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+	        	           public void onClick(DialogInterface dialog, int id) {
+	        	                generateKeypair();
+	        	           }
+	        	       })
+	        	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+	        	           public void onClick(DialogInterface dialog, int id) {
+	        	                dialog.cancel();
+	        	           }
+	        	       });
+	        	
+	        	AlertDialog alert = builder.create();
+	        	alert.show();
 	            break;
 	        case MENU_SEND_PUBLIC_KEY:
 	        	sendPublicKey();
@@ -358,24 +410,18 @@ public class ConversationList extends ListActivity
     }
 
 	private void generateKeypair() {
-		dialog = ProgressDialog.show(ConversationList.this, "", getString(R.string.generating_keypair), true);
+		ProgressDialog generateKeypairProgressDialog = ProgressDialog.show(ConversationList.this, "", getString(R.string.generating_keypair), true);
+		Toast generateKeypairErrorToast = Toast.makeText(ConversationList.this, R.string.generated_keypair_failure, Toast.LENGTH_SHORT);
 		
-		successToast = Toast.makeText(ConversationList.this, R.string.generated_keypair_success, Toast.LENGTH_SHORT);
-		errorToast = Toast.makeText(ConversationList.this, R.string.generated_keypair_failure, Toast.LENGTH_SHORT);
-		
-		new Thread() {
-		    public void run() {
-				try{
-					DHAESKeyFactory.generateKeyPair(ConversationList.this);
-					dialog.dismiss();
-					successToast.show();
-				} catch (Exception e) {  
-					Log.e("BLA", e.getMessage());
-					dialog.dismiss();
-					errorToast.show();             	 
-				}
-		    }
-		}.start();
+		try{
+			DHAESKeyFactory.generateKeyPair(ConversationList.this);
+			generateKeypairProgressDialog.dismiss();
+			generateKeypairSuccessDialog.show();
+		} catch (Exception e) {  
+			Log.e(TAG, e.getMessage());
+			generateKeypairProgressDialog.dismiss();
+			generateKeypairErrorToast.show();             	 
+		}
 	}
 
     @Override
