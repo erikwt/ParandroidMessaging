@@ -1,6 +1,5 @@
 package org.parandroid.sms.ui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -81,7 +80,7 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
 					String publicKey = DHAESKeyFactory.getPublicKeyToSend(SendPublicKeyActivity.this);
 					sm.sendTextMessage(num, null, publicKey , null, null);
 					Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  num, Toast.LENGTH_SHORT).show();
-				} catch (IOException e) {
+				} catch (Exception e) {
 					Log.e(TAG, e.getMessage());
 					Toast.makeText(this, getText(R.string.send_public_key_failure) + " " +  num, Toast.LENGTH_SHORT).show();
 				}
@@ -99,6 +98,7 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
      */
     public static String filterPhoneNumber(String phoneNumber) {
         if (phoneNumber == null) {
+        	Log.e(TAG, "Phonenumber is null!");
             return null;
         }
 
