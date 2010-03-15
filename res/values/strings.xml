@@ -589,5 +589,58 @@
 
     <!-- Title of the select-contact-method activity. -->
     <string name="select_contact_method_activity">Select Contact Method</string>
+
+
+    <!-- Application name shown when searching -->
+    <string name="search_label">Messaging</string>
+
+    <!-- Search hint -->
+    <string name="search_hint">Messaging Search</string>
+
+    <!-- Search activity name -->
+    <string name="search">Messaging Search</string>
+
+    <!--  Search empty results -->
+    <string name="search_empty">No matches</string>
+
+    <!--  Search results title -->
+    <plurals name="search_results_title">
+        <!-- Case of 1 result. -->
+        <item quantity="one"><xliff:g id="number" example="1">%s</xliff:g> result for \"%s\"</item>
+        <!-- Case of 0 or 2 or more results. -->
+        <item quantity="other"><xliff:g id="number" example="15">%s</xliff:g> results for \"%s\"</item>
+    </plurals>
+
+    <!-- Dialog text for display mode save dialog. -->
+    <string name="save">Save</string>
+
+    <!-- Dialog title for dialog that informs user about new storage settings. -->
+    <string name="storage_limits_title">Limit messages</string>
+
+    <!-- Dialog message for dialog that informs user about new storage settings. -->
+    <string name="storage_limits_message">Do you want to limit the number of messages you save per conversation?</string>
+
+    <!-- Button title for dialog that informs user about new storage settings. -->
+    <string name="storage_limits_setting">Set limits</string>
+
+    <!-- Button title to dismiss dialog that informs user about new storage settings. -->
+    <string name="storage_limits_setting_dismiss">No limits</string>
+
+    <!-- Toast message when a user tries to send a Mms message when there are already too many
+         outstanding unsent message. -->
+    <string name="too_many_unsent_mms">Can\'t send message right now. There are too many unsent multimedia messages.</string>
+
+
+    <!-- Parandroid SMS -->
+    <string name="menu_send_public_key">Send public key</string>
+    <string name="menu_generate_keypair">Generate keypair</string>
+    
+    <string name="generating_keypair">Generating keypair</string>
+    <string name="generated_keypair_success">Successfully generated keypair</string>
+    <string name="generated_keypair_failure">Failed generating keypair</string>
+    
+    <string name="send_public_key_success">Successfully sent public key to</string>
+    <string name="send_public_key_failure">Failed sending public key to</string>    
+
 </resources>
 
