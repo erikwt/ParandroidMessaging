@@ -590,5 +590,18 @@
     
     <!-- Title for the option from MMS to send an IM -->
     <string name="menu_send_im">Send IM</string>
+
+
+    <!-- Parandroid SMS -->
+    <string name="menu_send_public_key">Send public key</string>
+    <string name="menu_generate_keypair">Generate keypair</string>
+    
+    <string name="generating_keypair">Generating keypair</string>
+    <string name="generated_keypair_success">Successfully generated keypair</string>
+    <string name="generated_keypair_failure">Failed generating keypair</string>
+    
+    <string name="send_public_key_success">Successfully sent public key to</string>
+    <string name="send_public_key_failure">Failed sending public key to</string>    
+
 </resources>
 
