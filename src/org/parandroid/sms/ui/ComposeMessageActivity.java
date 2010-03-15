@@ -26,7 +26,14 @@ import static org.parandroid.sms.ui.MessageListAdapter.COLUMN_ID;
 import static org.parandroid.sms.ui.MessageListAdapter.COLUMN_MSG_TYPE;
 import static org.parandroid.sms.ui.MessageListAdapter.PROJECTION;
 
+
+
+
+import com.android.internal.telephony.TelephonyIntents;
+import com.android.internal.telephony.TelephonyProperties;
+
 import org.parandroid.sms.ExceedMessageSizeException;
+import org.parandroid.encryption.DHAESKeyFactory;
 import org.parandroid.sms.MmsConfig;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ResolutionException;
@@ -87,8 +94,11 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.provider.Telephony.Mms;
 import android.provider.Telephony.Sms;
+
 import android.provider.Telephony.Threads;
+import android.telephony.gsm.SmsManager;
 import android.telephony.gsm.SmsMessage;
+
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -194,6 +204,10 @@ public class ComposeMessageActivity extends Activity
     private static final int MENU_COPY_TO_SDCARD        = 25;
     private static final int MENU_INSERT_SMILEY         = 26;
     private static final int MENU_ADD_ADDRESS_TO_CONTACTS = 27;
+    private static final int MENU_LOCK_MESSAGE          = 28;
+    private static final int MENU_UNLOCK_MESSAGE        = 29;
+    private static final int MENU_COPY_TO_DRM_PROVIDER  = 30;
+    private static final int MENU_SEND_PUBLIC_KEY  = 31;
 
     private static final int SUBJECT_MAX_LENGTH    =  40;
     private static final int RECIPIENTS_MAX_LENGTH = 312;
@@ -1974,6 +1988,8 @@ public class ComposeMessageActivity extends Activity
         if (isPreparedForSending()) {
             menu.add(0, MENU_SEND, 0, R.string.send).setIcon(android.R.drawable.ic_menu_send);
         }
+        
+        menu.add(0, MENU_SEND_PUBLIC_KEY, 0, R.string.menu_send_public_key).setIcon(android.R.drawable.ic_menu_send);
 
         menu.add(0, MENU_INSERT_SMILEY, 0, R.string.menu_insert_smiley).setIcon(
                 com.android.internal.R.drawable.ic_menu_emoticons);
@@ -2093,6 +2109,44 @@ public class ComposeMessageActivity extends Activity
                     viewContact(personId);
                 }
                 break;
+            case MENU_SEND_PUBLIC_KEY:
+            	final String[] numbers = mRecipientList.getNumbers();
+            	String numberlist = " ";
+            	for(int i = 0; i < numbers.length; i++){
+            		if(i != 0) numberlist += ", ";
+            		numberlist += numbers[i];
+            	}
+            	
+            	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	        	builder.setMessage(getText(R.string.send_public_key_dialog) + numberlist)
+	        			.setTitle(getText(R.string.menu_send_public_key))
+        		   	 	.setCancelable(false)
+	        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+	        	           public void onClick(DialogInterface dialog, int id) {
+	        	        	   SmsManager sm = SmsManager.getDefault();
+	        					
+	        					for(String num : numbers){
+		        					Log.i(TAG,"Sending public key to " + num);
+		        					try { 
+		        						String publicKey = DHAESKeyFactory.getPublicKeyToSend(ComposeMessageActivity.this);
+		        						sm.sendTextMessage(num, null, publicKey , null, null);
+		        						Toast.makeText(ComposeMessageActivity.this, getText(R.string.send_public_key_success) + " " +  num, Toast.LENGTH_SHORT).show();
+		        					} catch (Exception e) {
+		        						Log.e(TAG, e.getMessage());
+		        						Toast.makeText(ComposeMessageActivity.this, getText(R.string.send_public_key_failure) + " " +  num, Toast.LENGTH_SHORT).show();
+		        					}
+	        					}
+	        	           }
+	        	       })
+	        	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+	        	           public void onClick(DialogInterface dialog, int id) {
+	        	                dialog.cancel();
+	        	           }
+	        	       });
+	        	
+	        	AlertDialog alert = builder.create();
+	        	alert.show();
+            	break;
             case MENU_ADD_ADDRESS_TO_CONTACTS:
                 return false;   // so the intent attached to the menu item will get launched.
         }
