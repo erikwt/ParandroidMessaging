@@ -19,8 +19,8 @@ package org.parandroid.sms.dom.smil;
 
 import java.util.ArrayList;
 
-import org.w3c.dom.smil.Time;
-import org.w3c.dom.smil.TimeList;
+import org.parandroid.external.w3c.dom.smil.Time;
+import org.parandroid.external.w3c.dom.smil.TimeList;
 
 public class TimeListImpl implements TimeList {
     private final ArrayList<Time> mTimes;

@@ -20,9 +20,9 @@ package org.parandroid.sms.model;
 import org.parandroid.sms.ContentRestrictionException;
 import org.parandroid.sms.dom.smil.SmilParElementImpl;
 
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventListener;
-import org.w3c.dom.smil.ElementTime;
+import org.parandroid.external.w3c.dom.events.Event;
+import org.parandroid.external.w3c.dom.events.EventListener;
+import org.parandroid.external.w3c.dom.smil.ElementTime;
 
 import android.util.Config;
 import android.util.Log;

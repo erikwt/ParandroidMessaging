@@ -242,6 +242,9 @@
                 android:resource="@xml/searchable" />
         </activity>
 
+        <activity android:name=".ui.SendPublicKeyActivity">
+        </activity>
+
         <meta-data android:name="android.app.default_searchable"
             android:value=".ui.SearchActivity" />
 

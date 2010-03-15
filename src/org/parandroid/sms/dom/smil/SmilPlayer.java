@@ -18,14 +18,14 @@
 package org.parandroid.sms.dom.smil;
 
 import org.w3c.dom.NodeList;
-import org.w3c.dom.events.DocumentEvent;
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventTarget;
-import org.w3c.dom.smil.ElementParallelTimeContainer;
-import org.w3c.dom.smil.ElementSequentialTimeContainer;
-import org.w3c.dom.smil.ElementTime;
-import org.w3c.dom.smil.Time;
-import org.w3c.dom.smil.TimeList;
+import org.parandroid.external.w3c.dom.events.DocumentEvent;
+import org.parandroid.external.w3c.dom.events.Event;
+import org.parandroid.external.w3c.dom.events.EventTarget;
+import org.parandroid.external.w3c.dom.smil.ElementParallelTimeContainer;
+import org.parandroid.external.w3c.dom.smil.ElementSequentialTimeContainer;
+import org.parandroid.external.w3c.dom.smil.ElementTime;
+import org.parandroid.external.w3c.dom.smil.Time;
+import org.parandroid.external.w3c.dom.smil.TimeList;
 
 import android.util.Config;
 import android.util.Log;

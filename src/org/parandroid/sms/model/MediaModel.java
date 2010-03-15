@@ -23,7 +23,7 @@ import org.parandroid.sms.drm.DrmUtils;
 import org.parandroid.sms.drm.DrmWrapper;
 import com.google.android.mms.MmsException;
 
-import org.w3c.dom.events.EventListener;
+import org.parandroid.external.w3c.dom.events.EventListener;
 
 import android.content.ContentResolver;
 import android.content.Context;

@@ -25,10 +25,10 @@ import org.parandroid.sms.model.SlideshowModel;
 import org.parandroid.sms.model.SmilHelper;
 import com.google.android.mms.MmsException;
 
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventListener;
-import org.w3c.dom.events.EventTarget;
-import org.w3c.dom.smil.SMILDocument;
+import org.parandroid.external.w3c.dom.events.Event;
+import org.parandroid.external.w3c.dom.events.EventListener;
+import org.parandroid.external.w3c.dom.events.EventTarget;
+import org.parandroid.external.w3c.dom.smil.SMILDocument;
 
 import android.app.Activity;
 import android.content.Intent;

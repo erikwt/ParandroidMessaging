@@ -31,6 +31,7 @@ import com.google.android.mms.util.SqliteWrapper;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -62,6 +63,9 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.parandroid.encryption.DHAESKeyFactory;
 
 /**
  * This activity provides a list view of existing conversations.
@@ -81,6 +85,8 @@ public class ConversationList extends ListActivity
     public static final int MENU_SEARCH               = 1;
     public static final int MENU_DELETE_ALL           = 3;
     public static final int MENU_PREFERENCES          = 4;
+    public static final int MENU_GENERATE_KEYPAIR     = 5;
+    public static final int MENU_SEND_PUBLIC_KEY	  = 6;
 
     // IDs of the context menu items for the list of conversations.
     public static final int MENU_DELETE               = 0;
@@ -93,9 +99,12 @@ public class ConversationList extends ListActivity
     private CharSequence mTitle;
     private SharedPreferences mPrefs;
     private Handler mHandler;
+    
+    private Toast successToast, errorToast;
+    private ProgressDialog dialog;
 
     static private final String CHECKED_MESSAGE_LIMITS = "checked_message_limits";
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -276,11 +285,20 @@ public class ConversationList extends ListActivity
         }
     }
 
+    /**
+     * TODO: Icons
+     */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
 
         menu.add(0, MENU_COMPOSE_NEW, 0, R.string.menu_compose_new).setIcon(
+                com.android.internal.R.drawable.ic_menu_compose);
+        
+        menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_keypair).setIcon(
+                com.android.internal.R.drawable.ic_menu_compose);
+
+        menu.add(0, MENU_SEND_PUBLIC_KEY, 0, R.string.menu_send_public_key).setIcon(
                 com.android.internal.R.drawable.ic_menu_compose);
 
         if (mListAdapter.getCount() > 0) {
@@ -307,9 +325,15 @@ public class ConversationList extends ListActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
-            case MENU_COMPOSE_NEW:
-                createNewMessage();
-                break;
+	        case MENU_COMPOSE_NEW:
+	            createNewMessage();
+	            break;
+	        case MENU_GENERATE_KEYPAIR:
+	        	generateKeypair();
+	            break;
+	        case MENU_SEND_PUBLIC_KEY:
+	        	sendPublicKey();
+	            break;
             case MENU_SEARCH:
                 onSearchRequested();
                 break;
@@ -327,6 +351,32 @@ public class ConversationList extends ListActivity
         }
         return false;
     }
+    
+    private void sendPublicKey(){
+    	Intent intent = new Intent(this, SendPublicKeyActivity.class);
+        startActivity(intent);
+    }
+
+	private void generateKeypair() {
+		dialog = ProgressDialog.show(ConversationList.this, "", getString(R.string.generating_keypair), true);
+		
+		successToast = Toast.makeText(ConversationList.this, R.string.generated_keypair_success, Toast.LENGTH_SHORT);
+		errorToast = Toast.makeText(ConversationList.this, R.string.generated_keypair_failure, Toast.LENGTH_SHORT);
+		
+		new Thread() {
+		    public void run() {
+				try{
+					DHAESKeyFactory.generateKeyPair(ConversationList.this);
+					dialog.dismiss();
+					successToast.show();
+				} catch (Exception e) {  
+					Log.e("BLA", e.getMessage());
+					dialog.dismiss();
+					errorToast.show();             	 
+				}
+		    }
+		}.start();
+	}
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {

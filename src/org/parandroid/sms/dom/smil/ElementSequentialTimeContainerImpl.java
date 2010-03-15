@@ -21,9 +21,9 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.smil.ElementSequentialTimeContainer;
-import org.w3c.dom.smil.ElementTime;
-import org.w3c.dom.smil.SMILElement;
+import org.parandroid.external.w3c.dom.smil.ElementSequentialTimeContainer;
+import org.parandroid.external.w3c.dom.smil.ElementTime;
+import org.parandroid.external.w3c.dom.smil.SMILElement;
 
 import org.parandroid.sms.dom.NodeListImpl;
 
