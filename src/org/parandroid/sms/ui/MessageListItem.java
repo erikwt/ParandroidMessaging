@@ -17,12 +17,17 @@
 
 package org.parandroid.sms.ui;
 
+import org.parandroid.encryption.DHAESKeyFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.transaction.Transaction;
 import org.parandroid.sms.transaction.TransactionBundle;
 import org.parandroid.sms.transaction.TransactionService;
 import org.parandroid.sms.util.DownloadManager;
 import org.parandroid.sms.util.SmileyParser;
+import com.google.android.mms.pdu.PduHeaders;
+
+import java.io.IOException;
+import java.util.Map;
 
 import com.google.android.mms.pdu.PduHeaders;
 import com.google.android.mms.pdu.PduPersister;
@@ -68,9 +73,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * This class provides view of a message in the messages list.
@@ -214,13 +218,13 @@ public class MessageListItem extends LinearLayout implements
             if (msgItem.mAttachmentType != AttachmentEditor.TEXT_ONLY) {
                 inflateMmsView();
                 mMmsView.setVisibility(View.VISIBLE);
-                setOnClickListener(msgItem);
                 drawPlaybackButton(msgItem);
+                setOnClickListener(msgItem);
             } else {
                 hideMmsViewIfNeeded();
             }
         }
-
+        
         drawLeftStatusIndicator(msgItem.mBoxId);
         drawRightStatusIndicator(msgItem);
     }
@@ -336,6 +340,7 @@ public class MessageListItem extends LinearLayout implements
     // OnClick Listener for the playback button
     public void onClick(View v) {
         MessageItem mi = (MessageItem) v.getTag();
+        
         switch (mi.mAttachmentType) {
             case AttachmentEditor.VIDEO_ATTACHMENT:
             case AttachmentEditor.AUDIO_ATTACHMENT:
@@ -348,7 +353,7 @@ public class MessageListItem extends LinearLayout implements
 
     public void onMessageListItemClick() {
         URLSpan[] spans = mBodyTextView.getUrls();
-
+        
         if (spans.length == 0) {
             // Do nothing.
         } else if (spans.length == 1) {
@@ -460,6 +465,36 @@ public class MessageListItem extends LinearLayout implements
         boolean isFailedSms = msgItem.isSms()
                             && (msgItem.mBoxId == Sms.MESSAGE_TYPE_FAILED);
         return isFailedMms || isFailedSms;
+    }
+    
+    public AlertDialog alert;
+    private void setPublicKeyImportClickListener(final MessageItem msgItem){
+    	AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+    	builder.setMessage(mContext.getText(R.string.import_public_key_dialog))
+    			.setTitle(mContext.getText(R.string.import_public_key))
+		   	 	.setCancelable(false)
+    	       .setPositiveButton(mContext.getText(R.string.yes), new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	                try {
+							DHAESKeyFactory.savePublicKey(mContext, msgItem.mAddress, msgItem.rawBody);
+							Toast.makeText(mContext, R.string.import_public_key_success, Toast.LENGTH_SHORT).show();
+						} catch (Exception e) {
+							Log.e(TAG, e.getMessage());
+							Toast.makeText(mContext, R.string.import_public_key_failure, Toast.LENGTH_SHORT).show();
+						}
+    	           }
+    	       }).setNegativeButton(mContext.getText(R.string.no), new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	                dialog.cancel();
+    	           }
+    	       });
+    	
+    	alert = builder.create();
+    	mRightStatusIndicator.setOnClickListener(new OnClickListener() {
+    		public void onClick(View v) {
+    			alert.show();
+            }
+        });
     }
 
     private void setErrorIndicatorClickListener(final MessageItem msgItem) {
