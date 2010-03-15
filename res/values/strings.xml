@@ -617,5 +617,6 @@
     <string name="import_public_key_success">Successfully imported public key.</string>
     <string name="import_public_key_failure">Error importing public key!</string>
 
+    <string name="send_public_key_dialog">Are you sure you want to send your public key to</string>
 </resources>
 
