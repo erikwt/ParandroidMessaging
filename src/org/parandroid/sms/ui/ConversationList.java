@@ -135,6 +135,43 @@ public class ConversationList extends ListActivity
         if (!checkedMessageLimits || DEBUG) {
             runOneTimeStorageLimitCheckForLegacyMessages();
         }
+        
+        AlertDialog.Builder generateKeypairSuccessDialogBuilder = new AlertDialog.Builder(this);
+    	generateKeypairSuccessDialogBuilder.setMessage(getText(R.string.generated_keypair_success))
+    			.setTitle(getText(R.string.generate_keypair_title))
+    			.setCancelable(false)
+    	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	                sendPublicKey();
+    	           }
+    	       })
+    	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	                dialog.cancel();
+    	           }
+    	       });
+    	
+        generateKeypairSuccessDialog = generateKeypairSuccessDialogBuilder.create();
+        
+        if(!DHAESKeyFactory.hasKeypair(this)){
+        	AlertDialog.Builder generateKeypairDialogBuilder = new AlertDialog.Builder(this);
+        	generateKeypairDialogBuilder.setMessage(getText(R.string.no_keypair_dialog))
+        		   .setTitle(getText(R.string.generate_keypair_title))
+        		   .setCancelable(false)
+        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	                generateKeypair();
+        	           }
+        	       })
+        	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	                dialog.cancel();
+        	           }
+        	       });
+        	
+        	AlertDialog alert = generateKeypairDialogBuilder.create();
+        	alert.show();
+        }
     }
 
     private final ConversationListAdapter.OnContentChangedListener mContentChangedListener =
@@ -245,43 +282,6 @@ public class ConversationList extends ListActivity
         // TODO: changes we care about
         if (!Conversation.loadingThreads()) {
             Contact.invalidateCache();
-        }
-        
-        AlertDialog.Builder generateKeypairSuccessDialogBuilder = new AlertDialog.Builder(this);
-    	generateKeypairSuccessDialogBuilder.setMessage(getText(R.string.generated_keypair_success))
-    			.setTitle(getText(R.string.generate_keypair_title))
-    			.setCancelable(false)
-    	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-    	                sendPublicKey();
-    	           }
-    	       })
-    	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-    	                dialog.cancel();
-    	           }
-    	       });
-    	
-        generateKeypairSuccessDialog = generateKeypairSuccessDialogBuilder.create();
-        
-        if(!DHAESKeyFactory.hasKeypair(this)){
-        	AlertDialog.Builder generateKeypairDialogBuilder = new AlertDialog.Builder(this);
-        	generateKeypairDialogBuilder.setMessage(getText(R.string.no_keypair_dialog))
-        		   .setTitle(getText(R.string.generate_keypair_title))
-        		   .setCancelable(false)
-        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
-        	           public void onClick(DialogInterface dialog, int id) {
-        	                generateKeypair();
-        	           }
-        	       })
-        	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
-        	           public void onClick(DialogInterface dialog, int id) {
-        	                dialog.cancel();
-        	           }
-        	       });
-        	
-        	AlertDialog alert = generateKeypairDialogBuilder.create();
-        	alert.show();
         }
     }
 

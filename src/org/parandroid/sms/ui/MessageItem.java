@@ -17,6 +17,7 @@
 
 package org.parandroid.sms.ui;
 
+import org.parandroid.encryption.DHAESKeyFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.data.Contact;
 import org.parandroid.sms.model.SlideModel;
@@ -61,6 +62,8 @@ public class MessageItem {
     DeliveryStatus mDeliveryStatus;
     boolean mReadReport;
     boolean mLocked;            // locked to prevent auto-deletion
+    boolean publicKey = false;
+    String rawBody;
 
     String mTimestamp;
     String mAddress;
@@ -122,7 +125,7 @@ public class MessageItem {
                 mContact = Contact.get(mAddress, false).getName();
             }
             mBody = cursor.getString(columnsMap.mColumnSmsBody);
-
+            
             if (!isOutgoingMessage()) {
                 // Set "sent" time stamp
                 long date = cursor.getLong(columnsMap.mColumnSmsDate);
@@ -224,6 +227,12 @@ public class MessageItem {
             }
         } else {
             throw new MmsException("Unknown type of the message: " + type);
+        }
+        
+        if(DHAESKeyFactory.isPublicKey(mBody)){
+        	rawBody = mBody;
+        	mBody = "[" + context.getText(R.string.public_key) + "] " + context.getText(R.string.tap_to_accept);
+        	publicKey = true;
         }
     }
 

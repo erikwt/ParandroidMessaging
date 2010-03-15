@@ -19,6 +19,7 @@ package org.parandroid.sms.ui;
 
 import android.content.Context;
 
+import org.parandroid.encryption.DHAESKeyFactory;
 import org.parandroid.sms.data.ContactList;
 import org.parandroid.sms.data.Conversation;
 
@@ -54,6 +55,14 @@ public class ConversationHeader {
         mHasDraft = conv.hasDraft();
         mMessageCount = conv.getMessageCount();
         mHasAttachment = conv.hasAttachment();
+        
+        // TODO: Localize
+        if(DHAESKeyFactory.isPublicKey(mSubject)){
+        	mSubject = "[Parandroid public key]";
+        }else if(DHAESKeyFactory.isEncrypted(mSubject)){
+        	mSubject = "[Encrypted]";
+        }
+        
         updateRecipients();
     }
 

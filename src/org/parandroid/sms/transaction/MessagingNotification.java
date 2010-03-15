@@ -20,6 +20,7 @@ package org.parandroid.sms.transaction;
 import static com.google.android.mms.pdu.PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND;
 import static com.google.android.mms.pdu.PduHeaders.MESSAGE_TYPE_RETRIEVE_CONF;
 
+import org.parandroid.encryption.DHAESKeyFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.LogTag;
 import org.parandroid.sms.data.Contact;
@@ -352,6 +353,13 @@ public class MessagingNotification {
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP
                 | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
+        if(DHAESKeyFactory.isPublicKey(body)){
+        	// TODO: Localize
+        	body = "[Parandroid public key]";
+        }else if(DHAESKeyFactory.isEncrypted(body)){
+        	body = "[Encrypted]";
+        }
+        
         String senderInfo = buildTickerMessage(
                 context, address, null, null).toString();
         String senderInfoName = senderInfo.substring(
