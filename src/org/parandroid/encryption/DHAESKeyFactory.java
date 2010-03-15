@@ -127,6 +127,10 @@ public abstract class DHAESKeyFactory {
     	return message.startsWith(SHARE_PUBLIC_KEY_HEADER);
     }
     
+    public static boolean isEncrypted(String message){
+    	return message.startsWith(ENCRYPTED_MSG_HEADER);
+    }
+    
     /**
      * Generate random values used to generate private and public keys 
      * 
@@ -205,7 +209,7 @@ public abstract class DHAESKeyFactory {
     	return publicKey;
     }
     
-    public static void savePublicKey(Context context, String sender, String msg) throws IOException{
+    public static void savePublicKey(Context context, String sender, String msg) throws Exception{
     	String publicKeyFilename = getPublicKeyFilename(sender);
     	
         // save the key in the file system

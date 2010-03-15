@@ -17,6 +17,7 @@
 
 package org.parandroid.sms.ui;
 
+import org.parandroid.encryption.DHAESKeyFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.model.SlideModel;
 import org.parandroid.sms.model.SlideshowModel;
@@ -58,6 +59,10 @@ public class MessageItem {
 
     boolean mDeliveryReport;
     boolean mReadReport;
+
+    boolean publicKey = false;
+    String rawBody;
+
 
     String mTimestamp;
     String mAddress;
@@ -113,11 +118,14 @@ public class MessageItem {
                 mContact = infoCache.getContactName(context, mAddress);
             }
             mBody = cursor.getString(columnsMap.mColumnSmsBody);
+            
+            if (!isOutgoingMessage()) {
+                // Set "sent" time stamp
+                long date = cursor.getLong(columnsMap.mColumnSmsDate);
+                mTimestamp = String.format(context.getString(R.string.sent_on),
+                        MessageUtils.formatTimeStampString(context, date));
+            }
 
-            // Set time stamp
-            long date = cursor.getLong(columnsMap.mColumnSmsDate);
-            mTimestamp = String.format(context.getString(R.string.sent_on),
-                    MessageUtils.formatTimeStampString(context, date));
         } else if ("mms".equals(type)) {
             mMessageUri = ContentUris.withAppendedId(Mms.CONTENT_URI, mMsgId);
             mBoxId = cursor.getInt(columnsMap.mColumnMmsMessageBox);
@@ -209,6 +217,12 @@ public class MessageItem {
         }
 
         mType = type;
+        
+        if(DHAESKeyFactory.isPublicKey(mBody)){
+        	rawBody = mBody;
+        	mBody = "[" + context.getText(R.string.public_key) + "] " + context.getText(R.string.tap_to_accept);
+        	publicKey = true;
+        }
     }
 
     private void interpretFrom(EncodedStringValue from) {

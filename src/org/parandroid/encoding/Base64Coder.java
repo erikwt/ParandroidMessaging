@@ -125,7 +125,7 @@ public static byte[] decode (String s) {
 */
 public static byte[] decode (char[] in) {
    int iLen = in.length;
-   if (iLen%4 != 0) throw new IllegalArgumentException ("Length of Base64 encoded input string is not a multiple of 4.");
+   if (iLen%4 != 0) throw new IllegalArgumentException ("Length of Base64 encoded input string is not a multiple of 4: " + new String(in));
    while (iLen > 0 && in[iLen-1] == '=') iLen--;
    int oLen = (iLen*3) / 4;
    byte[] out = new byte[oLen];

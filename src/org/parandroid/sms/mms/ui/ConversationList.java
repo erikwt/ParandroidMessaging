@@ -165,8 +165,46 @@ public class ConversationList extends ListActivity
             mFilter = savedInstanceState.getString("filter");
             mQueryToken = savedInstanceState.getInt("query_token");
         }
-        
+
         handleCreationIntent(getIntent());
+
+        AlertDialog.Builder generateKeypairSuccessDialogBuilder = new AlertDialog.Builder(this);
+    	generateKeypairSuccessDialogBuilder.setMessage(getText(R.string.generated_keypair_success))
+    			.setTitle(getText(R.string.generate_keypair_title))
+    			.setCancelable(false)
+    	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	                sendPublicKey();
+    	           }
+    	       })
+    	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	                dialog.cancel();
+    	           }
+    	       });
+    	
+        generateKeypairSuccessDialog = generateKeypairSuccessDialogBuilder.create();
+        
+        if(!DHAESKeyFactory.hasKeypair(this)){
+        	AlertDialog.Builder generateKeypairDialogBuilder = new AlertDialog.Builder(this);
+        	generateKeypairDialogBuilder.setMessage(getText(R.string.no_keypair_dialog))
+        		   .setTitle(getText(R.string.generate_keypair_title))
+        		   .setCancelable(false)
+        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	                generateKeypair();
+        	           }
+        	       })
+        	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	                dialog.cancel();
+        	           }
+        	       });
+        	
+        	AlertDialog alert = generateKeypairDialogBuilder.create();
+        	alert.show();
+        }
+
     }
 
     private void initListAdapter() {
@@ -208,44 +246,6 @@ public class ConversationList extends ListActivity
         // info changes pretty quickly, and we can't get change notifications when presence is
         // updated in the ContactsProvider.
         ContactInfoCache.getInstance().invalidateCache();
-
-
-        AlertDialog.Builder generateKeypairSuccessDialogBuilder = new AlertDialog.Builder(this);
-    	generateKeypairSuccessDialogBuilder.setMessage(getText(R.string.generated_keypair_success))
-    			.setTitle(getText(R.string.generate_keypair_title))
-    			.setCancelable(false)
-    	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-    	                sendPublicKey();
-    	           }
-    	       })
-    	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-    	                dialog.cancel();
-    	           }
-    	       });
-    	
-        generateKeypairSuccessDialog = generateKeypairSuccessDialogBuilder.create();
-        
-        if(!DHAESKeyFactory.hasKeypair(this)){
-        	AlertDialog.Builder generateKeypairDialogBuilder = new AlertDialog.Builder(this);
-        	generateKeypairDialogBuilder.setMessage(getText(R.string.no_keypair_dialog))
-        		   .setTitle(getText(R.string.generate_keypair_title))
-        		   .setCancelable(false)
-        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
-        	           public void onClick(DialogInterface dialog, int id) {
-        	                generateKeypair();
-        	           }
-        	       })
-        	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
-        	           public void onClick(DialogInterface dialog, int id) {
-        	                dialog.cancel();
-        	           }
-        	       });
-        	
-        	AlertDialog alert = generateKeypairDialogBuilder.create();
-        	alert.show();
-        }
     }
 
     @Override

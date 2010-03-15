@@ -17,6 +17,12 @@
 
 package org.parandroid.sms.ui;
 
+
+import android.content.Context;
+
+import org.parandroid.encryption.DHAESKeyFactory;
+
+
 /**
  * A holder class for a conversation header.
  */
@@ -47,7 +53,14 @@ public class ConversationHeader {
 
     // Needed because it's Parcelable
     public ConversationHeader() {
+    	// TODO: Localize
+        if(DHAESKeyFactory.isPublicKey(mSubject)){
+        	mSubject = "[Parandroid public key]";
+        }else if(DHAESKeyFactory.isEncrypted(mSubject)){
+        	mSubject = "[Encrypted]";
+        }
     }
+
 
     public ConversationHeader(
             long threadId,
