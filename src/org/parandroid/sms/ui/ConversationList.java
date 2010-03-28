@@ -97,6 +97,7 @@ public class ConversationList extends ListActivity
     public static final int MENU_PREFERENCES          = 4;
     public static final int MENU_GENERATE_KEYPAIR     = 5;
     public static final int MENU_SEND_PUBLIC_KEY	  = 6;
+    public static final int MENU_MANAGE_PUBLIC_KEYS	  = 7;
 
     // IDs of the context menu items for the list of conversations.
     public static final int MENU_DELETE                = 0;
@@ -317,11 +318,14 @@ public class ConversationList extends ListActivity
                 com.android.internal.R.drawable.ic_menu_compose);
         
         menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_keypair).setIcon(
-                com.android.internal.R.drawable.ic_menu_compose);
+                R.drawable.ic_generate_keypair);
 
         menu.add(0, MENU_SEND_PUBLIC_KEY, 0, R.string.menu_send_public_key).setIcon(
-                com.android.internal.R.drawable.ic_menu_compose);
+        		R.drawable.ic_send_public_key);
         
+        menu.add(0, MENU_MANAGE_PUBLIC_KEYS, 0, R.string.menu_manage_public_keys).setIcon(
+        		R.drawable.ic_manage_public_keys);
+                
         // Removed search as part of b/1205708
         //menu.add(0, MENU_SEARCH, 0, R.string.menu_search).setIcon(
         //        R.drawable.ic_menu_search).setAlphabeticShortcut(SearchManager.MENU_KEY);
@@ -364,6 +368,9 @@ public class ConversationList extends ListActivity
 	        case MENU_SEND_PUBLIC_KEY:
 	        	sendPublicKey();
 	            break;
+	        case MENU_MANAGE_PUBLIC_KEYS:
+	        	managePublicKeys();
+	            break;
             case MENU_SEARCH:
                 onSearchRequested();
                 break;
@@ -383,6 +390,11 @@ public class ConversationList extends ListActivity
     
     private void sendPublicKey(){
     	Intent intent = new Intent(this, SendPublicKeyActivity.class);
+        startActivity(intent);
+    }
+    
+    private void managePublicKeys(){
+    	Intent intent = new Intent(this, PublicKeyManagerActivity.class);
         startActivity(intent);
     }
 

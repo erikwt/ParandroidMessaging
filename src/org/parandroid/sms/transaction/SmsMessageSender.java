@@ -17,6 +17,9 @@
 
 package org.parandroid.sms.transaction;
 
+
+import org.parandroid.sms.MmsConfig;
+import org.parandroid.sms.ParandroidSmsApp;
 import org.parandroid.sms.ui.MessagingPreferenceActivity;
 import com.google.android.mms.MmsException;
 import com.google.android.mms.util.SqliteWrapper;

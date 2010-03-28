@@ -20,6 +20,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="org.parandroid.sms">
 
+    <uses-sdk android:minSdkVersion="4" />
+
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -37,18 +39,17 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <application android:name="MmsApp"
+    <application android:name="ParandroidSmsApp"
             android:label="@string/app_label"
             android:icon="@drawable/ic_launcher_smsmms"
-            android:taskAffinity="android.task.mms"
             android:allowTaskReparenting="true">
 
         <service android:name=".transaction.TransactionService"
                  android:exported="true" />
 
-        <service android:name=".transaction.SmsReceiverService" 
+        <service android:name=".transaction.SmsReceiverService"
                  android:exported="true" />
-
+        
         <activity android:name=".ui.ConversationList"
                   android:label="@string/app_label"
                   android:configChanges="orientation|keyboardHidden"
@@ -210,6 +211,15 @@
             </intent-filter>
         </receiver>
         
+
+        <!-- Require sender permissions to prevent SMS spoofing -->
+        <receiver android:name=".transaction.PrivilegedSmsReceiver"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
         <!-- Catch-all receiver for broadcasts that don't have associated security -->
         <receiver android:name=".transaction.SmsReceiver">
             <intent-filter>
@@ -259,6 +269,24 @@
 
         <activity android:name=".ui.SendPublicKeyActivity">
         </activity>
+        
+        <activity android:name=".ui.PublicKeyManagerActivity">
+        </activity>
+        
+        <activity android:name=".ui.PublicKeyReceived"
+            android:theme="@android:style/Theme.Dialog">
+        </activity>
+        
+        <receiver android:name=".transaction.PublicKeyReceiver"
+            android:permission="android.permission.BROADCAST_SMS">
+            
+            <intent-filter>
+                <action android:name="android.intent.action.DATA_SMS_RECEIVED" />
+                <data android:scheme="sms" />
+                <data android:host="localhost" />
+                <data android:port="31337" />
+            </intent-filter>
+        </receiver>
 
         <meta-data android:name="android.app.default_searchable"
             android:value=".ui.SearchActivity" />
