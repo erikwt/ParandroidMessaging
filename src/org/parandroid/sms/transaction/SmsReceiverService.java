@@ -291,8 +291,10 @@ public class SmsReceiverService extends Service {
             displayClassZeroMessage(context, sms);
             return null;
         } else if (sms.isReplace()) {
+        	Log.i(TAG, "ParandroidSMS: Replacing message(s)");
             return replaceMessage(context, msgs);
         } else {
+        	Log.i(TAG, "ParandroidSMS: Storing message(s)");
             return storeMessage(context, msgs);
         }
     }
