@@ -32,7 +32,7 @@ import android.app.Application;
 import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 
-public class MmsApp extends Application {
+public class ParandroidSmsApp extends Application {
     public static final String LOG_TAG = "Mms";
 
     @Override

@@ -49,7 +49,7 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
         receipients = (MultiAutoCompleteTextView) findViewById(R.id.receipients);  
         receipients.setHint("Contact name"); // TODO: Localize
         receipients.setAdapter(contactadapter);  
-        receipients.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());  
+        receipients.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
     }
 
 	public void onClick(View v) {		
@@ -59,15 +59,20 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
 			for(String s : selection.split(", ")){
 				// TODO: Safe query
 				Cursor contactCursor = getContentResolver().query(Contacts.People.CONTENT_URI, PEOPLE_PROJECTION, "NAME LIKE '" + s + "'", null, Contacts.People.DEFAULT_SORT_ORDER);
-				if(contactCursor.getCount() != 1 || !contactCursor.moveToFirst()){
-					// TODO: Good errormessage
-					Toast.makeText(this, "Error for contact " + s + ", found " + new Integer(contactCursor.getCount()).toString() + " records.", Toast.LENGTH_SHORT).show();
-					Log.e(TAG,"Multiple results for contact " + s);
-					return;
-				}
 				
-				int columnIndex = contactCursor.getColumnIndex(Contacts.People.NUMBER);
-				String number = contactCursor.getString(columnIndex);
+				String number = filterPhoneNumber(s);
+				if(number == null || !isNumeric(number)){
+					if(contactCursor.getCount() != 1 || !contactCursor.moveToFirst()){
+						// TODO: Good errormessage
+						Toast.makeText(this, "Error for contact " + s + ", found " + new Integer(contactCursor.getCount()).toString() + " records.", Toast.LENGTH_SHORT).show();
+						Log.e(TAG,"Multiple results for contact " + s);
+						continue;
+					}
+					
+					int columnIndex = contactCursor.getColumnIndex(Contacts.People.NUMBER);
+					number = contactCursor.getString(columnIndex);
+				}
+
 				receipientNumbers.add(number);
 			}
 			
@@ -77,8 +82,9 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
 				Log.i(TAG,"Sending public key to " + num);
 				
 				try { 
-					String publicKey = DHAESKeyFactory.getPublicKeyToSend(SendPublicKeyActivity.this);
-					sm.sendTextMessage(num, null, publicKey , null, null);
+					byte[] publicKey = DHAESKeyFactory.getPublicKeyRaw(SendPublicKeyActivity.this);
+					//sm.sendTextMessage(num, null, publicKey , null, null);
+					sm.sendDataMessage(num, null, DHAESKeyFactory.PUBLIC_KEY_PORT, publicKey, null, null);
 					Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  num, Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {
 					Log.e(TAG, e.getMessage());
@@ -172,5 +178,18 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
         Contacts.People.LABEL,  
         Contacts.People.NAME,  
     };
+    
+    public boolean isNumeric(String input)
+    {
+       try
+       {
+          Integer.parseInt( input );
+          return true;
+       }
+       catch( Exception e)
+       {
+          return false;
+       }
+    }
 }
 

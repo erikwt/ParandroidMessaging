@@ -19,9 +19,6 @@
 -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- The name of the SMS/MMS app as it appears to the user in the Home screen, task switcher, etc. -->
-    <string name="app_label">Messaging</string>
-
     <!-- Command name to open a Compose screen; displays in conversation list -->
     <string name="new_message">New message</string>
     <!-- Summary text under "New Message" command; displays in conversation list -->
@@ -697,8 +694,11 @@
 
 
     <!-- Parandroid SMS -->
+    <string name="app_label">Parandroid SMS</string>
+    
     <string name="menu_send_public_key">Send public key</string>
     <string name="menu_generate_keypair">Generate new keypair</string>
+    <string name="menu_manage_public_keys">Manage public keys</string>
     
     <string name="generate_keypair_dialog">Are you sure you want to generate a new keypair? You\'ll have to resend
     	your public key to the contacts you want to securely communicate with.</string>
@@ -720,5 +720,8 @@
     <string name="import_public_key_success">Successfully imported public key.</string>
     <string name="import_public_key_failure">Error importing public key!</string>
     <string name="send_public_key_dialog">Are you sure you want to send your public key to</string>
+    <string name="received_public_key">Received parandroid public key</string>
+    <string name="public_keys_saved">Public keys</string>
+    <string name="public_keys_pending">Pending</string>
 </resources>
 

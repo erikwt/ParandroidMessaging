@@ -19,7 +19,7 @@ package org.parandroid.sms.transaction;
 
 import org.parandroid.sms.MmsConfig;
 import org.parandroid.sms.LogTag;
-import org.parandroid.sms.MmsApp;
+import org.parandroid.sms.ParandroidSmsApp;
 import org.parandroid.sms.ui.MessagingPreferenceActivity;
 import org.parandroid.sms.ui.MessageUtils;
 import com.google.android.mms.MmsException;

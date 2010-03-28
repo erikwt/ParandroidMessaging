@@ -49,6 +49,9 @@ public abstract class DHAESKeyFactory {
 	
 	public static final String SHARE_PUBLIC_KEY_HEADER = "%pdpub%";
 	public static final String ENCRYPTED_MSG_HEADER = "%pdmsg%";
+
+	public static final short PUBLIC_KEY_PORT = 31337;
+	public static final short ENCRYPTED_MESSAGE_PORT = 31338;
 	
 	public static final int KEY_SIZE = 256;
 	
@@ -223,6 +226,10 @@ public abstract class DHAESKeyFactory {
     	byte[] keyBytes = getKeyFileBytes(context, PUBLIC_KEY_FILENAME);
     	
     	return SHARE_PUBLIC_KEY_HEADER.concat(new String(Base64Coder.encode(keyBytes)));
+    }
+    
+    public static byte[] getPublicKeyRaw(Context context) throws IOException{
+    	return getKeyFileBytes(context, PUBLIC_KEY_FILENAME);
     }
     
     public static SecretKey getSecretKey(Context context, String number) throws GeneralSecurityException, IOException{
