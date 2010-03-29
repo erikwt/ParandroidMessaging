@@ -277,19 +277,18 @@ public class SmsReceiverService extends Service {
 
     private void handleSmsReceived(Intent intent) {
         SmsMessage[] msgs = Intents.getMessagesFromIntent(intent);
-        Uri messageUri = insertMessage(this, msgs);
+        //Uri messageUri = insertMessage(this, msgs);
 
         if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
             SmsMessage sms = msgs[0];
             Log.v(TAG, "handleSmsReceived" + (sms.isReplace() ? "(replace)" : "") +
-                    " messageUri: " + messageUri +
                     ", address: " + sms.getOriginatingAddress() +
                     ", body: " + sms.getMessageBody());
         }
 
-        if (messageUri != null) {
+        //if (messageUri != null) {
             MessagingNotification.updateNewMessageIndicator(this, true);
-        }
+        //}
     }
 
     private void handleBootCompleted() {
