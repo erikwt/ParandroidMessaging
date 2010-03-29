@@ -18,8 +18,9 @@
 package org.parandroid.sms.transaction;
 
 import com.android.internal.telephony.Phone;
+
+import org.parandroid.sms.ParandroidSmsApp;
 import org.parandroid.sms.R;
-import org.parandroid.sms.MmsApp;
 import org.parandroid.sms.util.RateController;
 import com.google.android.mms.pdu.GenericPdu;
 import com.google.android.mms.pdu.NotificationInd;
@@ -167,7 +168,7 @@ public class TransactionService extends Service implements Observer {
 
     @Override
     public void onCreate() {
-        if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
             Log.v(TAG, "Creating TransactionService");
         }
 
@@ -187,7 +188,7 @@ public class TransactionService extends Service implements Observer {
 
     @Override
     public void onStart(Intent intent, int startId) {
-        if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
             Log.v(TAG, "onStart: #" + startId + ": " + intent.getExtras());
         }
 
@@ -201,7 +202,7 @@ public class TransactionService extends Service implements Observer {
             if (cursor != null) {
                 try {
                     if (cursor.getCount() == 0) {
-                        if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                             Log.v(TAG, "onStart: " +
                                     "No pending messages. Stopping service.");
                         }
@@ -251,7 +252,7 @@ public class TransactionService extends Service implements Observer {
                     cursor.close();
                 }
             } else {
-                if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                     Log.v(TAG, "onStart: " +
                             "No pending messages. Stopping service.");
                 }
@@ -259,7 +260,7 @@ public class TransactionService extends Service implements Observer {
                 stopSelfIfIdle(startId);
             }
         } else {
-            if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+            if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                 Log.v(TAG, "onStart: launch transaction...");
             }
             // For launching NotificationTransaction and test purpose.
@@ -271,7 +272,7 @@ public class TransactionService extends Service implements Observer {
     private void stopSelfIfIdle(int startId) {
         synchronized (mProcessing) {
             if (mProcessing.isEmpty() && mPending.isEmpty()) {
-                if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                     Log.v(TAG, "stopSelfIfIdle: STOP!");
                 }
                 stopSelf(startId);
@@ -312,7 +313,7 @@ public class TransactionService extends Service implements Observer {
         msg.arg1 = serviceId;
         msg.obj = txnBundle;
 
-        if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
             Log.v(TAG, "Sending: " + msg);
         }
         mServiceHandler.sendMessage(msg);
@@ -333,7 +334,7 @@ public class TransactionService extends Service implements Observer {
 
     @Override
     public void onDestroy() {
-        if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
             Log.v(TAG, "Destroying TransactionService");
         }
         if (!mPending.isEmpty()) {
@@ -381,7 +382,7 @@ public class TransactionService extends Service implements Observer {
 
             switch (result) {
                 case TransactionState.SUCCESS:
-                    if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                    if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                         Log.v(TAG, "Transaction complete: " + serviceId);
                     }
 
@@ -400,12 +401,12 @@ public class TransactionService extends Service implements Observer {
                     }
                     break;
                 case TransactionState.FAILED:
-                    if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                    if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                         Log.v(TAG, "Transaction failed: " + serviceId);
                     }
                     break;
                 default:
-                    if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                    if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                         Log.v(TAG, "Transaction state unknown: " +
                                 serviceId + " " + result);
                     }
@@ -485,7 +486,7 @@ public class TransactionService extends Service implements Observer {
          */
         @Override
         public void handleMessage(Message msg) {
-            if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+            if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                 Log.v(TAG, "Handling incoming message: " + msg);
             }
 
@@ -502,7 +503,7 @@ public class TransactionService extends Service implements Observer {
                         }
                     }
 
-                    if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                    if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                         Log.v(TAG, "Extending MMS connectivity - still processing txn");
                     }
 
@@ -536,7 +537,7 @@ public class TransactionService extends Service implements Observer {
                     }
 
                     NetworkInfo info = mConnectivityListener.getNetworkInfo();
-                    if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                    if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                         Log.v(TAG, "Got DATA_STATE_CHANGED event: " + info);
                     }
 
@@ -633,7 +634,7 @@ public class TransactionService extends Service implements Observer {
                             return;
                         }
 
-                        if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                             Log.v(TAG, "Started processing of incoming message: " + msg);
                         }
                     } catch (Exception ex) {
@@ -657,7 +658,7 @@ public class TransactionService extends Service implements Observer {
                         }
                     } finally {
                         if (transaction == null) {
-                            if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                            if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                                 Log.v(TAG, "Transaction was null. Stopping self: " + serviceId);
                             }
                             endMmsConnectivity();
@@ -694,7 +695,7 @@ public class TransactionService extends Service implements Observer {
                 try {
                     int serviceId = transaction.getServiceId();
                     if (processTransaction(transaction)) {
-                        if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                             Log.v(TAG, "Started deferred processing of transaction: "
                                     + transaction);
                         }
@@ -726,7 +727,7 @@ public class TransactionService extends Service implements Observer {
             synchronized (mProcessing) {
                 for (Transaction t : mPending) {
                     if (t.isEquivalent(transaction)) {
-                        if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                             Log.v(TAG, "Transaction already pending: " +
                                     transaction.getServiceId());
                         }
@@ -735,7 +736,7 @@ public class TransactionService extends Service implements Observer {
                 }
                 for (Transaction t : mProcessing) {
                     if (t.isEquivalent(transaction)) {
-                        if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                             Log.v(TAG, "Duplicated transaction: " + transaction.getServiceId());
                         }
                         return true;
@@ -751,19 +752,19 @@ public class TransactionService extends Service implements Observer {
                 int connectivityResult = beginMmsConnectivity();
                 if (connectivityResult == Phone.APN_REQUEST_STARTED) {
                     mPending.add(transaction);
-                    if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                    if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                         Log.v(TAG, "Defer txn processing pending MMS connectivity");
                     }
                     return true;
                 }
 
-                if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+                if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                     Log.v(TAG, "Adding transaction to list: " + transaction);
                 }
                 mProcessing.add(transaction);
             }
 
-            if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+            if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                 Log.v(TAG, "Starting transaction: " + transaction);
             }
 

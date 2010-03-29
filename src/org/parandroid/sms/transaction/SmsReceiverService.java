@@ -20,9 +20,10 @@ package org.parandroid.sms.transaction;
 import static android.content.Intent.ACTION_BOOT_COMPLETED;
 import static android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION;
 
-
-
-import org.parandroid.sms.MmsApp;
+import org.parandroid.sms.ParandroidSmsApp;
+import com.android.internal.telephony.TelephonyIntents;
+import org.parandroid.sms.R;
+import org.parandroid.sms.ParandroidSmsApp;
 import org.parandroid.sms.ui.ClassZeroActivity;
 import org.parandroid.sms.util.SendingProgressTokenManager;
 import com.google.android.mms.MmsException;
@@ -101,7 +102,7 @@ public class SmsReceiverService extends Service {
 
     @Override
     public void onCreate() {
-        if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
             Log.v(TAG, "onCreate");
         }
 
@@ -117,7 +118,7 @@ public class SmsReceiverService extends Service {
 
     @Override
     public void onStart(Intent intent, int startId) {
-        if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
             Log.v(TAG, "onStart: #" + startId + ": " + intent.getExtras());
         }
 
@@ -131,7 +132,7 @@ public class SmsReceiverService extends Service {
 
     @Override
     public void onDestroy() {
-        if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
             Log.v(TAG, "onDestroy");
         }
         mServiceLooper.quit();
@@ -154,7 +155,7 @@ public class SmsReceiverService extends Service {
          */
         @Override
         public void handleMessage(Message msg) {
-            if (Log.isLoggable(MmsApp.LOG_TAG, Log.VERBOSE)) {
+            if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
                 Log.v(TAG, "Handling incoming message: " + msg);
             }
             int serviceId = msg.arg1;
@@ -245,11 +246,19 @@ public class SmsReceiverService extends Service {
 
     private void handleSmsReceived(Intent intent) {
         SmsMessage[] msgs = Intents.getMessagesFromIntent(intent);
-        Uri messageUri = insertMessage(this, msgs);
+        //Uri messageUri = insertMessage(this, msgs);
 
-        if (messageUri != null) {
-            MessagingNotification.updateNewMessageIndicator(this, true);
+
+        if (Log.isLoggable(TAG, Log.VERBOSE)) {
+            SmsMessage sms = msgs[0];
+            Log.v(TAG, "handleSmsReceived" + (sms.isReplace() ? "(replace)" : "") +
+                    ", address: " + sms.getOriginatingAddress() +
+                    ", body: " + sms.getMessageBody());
         }
+
+        //if (messageUri != null) {
+            MessagingNotification.updateNewMessageIndicator(this, true);
+        //}
     }
 
     private void handleBootCompleted() {

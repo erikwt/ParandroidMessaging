@@ -31,7 +31,7 @@ import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 
 public class ParandroidSmsApp extends Application {
-    public static final String LOG_TAG = "Mms";
+    public static final String LOG_TAG = "ParandroidSms";
 
     @Override
     public void onCreate() {
