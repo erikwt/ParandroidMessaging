@@ -694,7 +694,7 @@
 
 
     <!-- Parandroid SMS -->
-    <string name="app_label">Parandroid SMS</string>
+    <string name="app_label">Parandroid Messaging</string>
     
     <string name="menu_send_public_key">Send public key</string>
     <string name="menu_generate_keypair">Generate new keypair</string>
@@ -707,7 +707,7 @@
     <string name="generate_keypair_title">Generate keypair</string>
     <string name="generating_keypair">Generating keypair</string>
     <string name="generated_keypair_success">Successfully generated keypair. You have to send your public key
-    	to the contacts that are also using Parandroid SMS. Do you want to send your public key now? You can always
+    	to the contacts that are also using Parandroid Messaging. Do you want to send your public key now? You can always
     	send it later manually.</string>
     <string name="generated_keypair_failure">Failed generating keypair</string>
     
