@@ -55,14 +55,7 @@ public class ConversationHeader {
         mHasDraft = conv.hasDraft();
         mMessageCount = conv.getMessageCount();
         mHasAttachment = conv.hasAttachment();
-        
-        // TODO: Localize
-        if(DHAESKeyFactory.isPublicKey(mSubject)){
-        	mSubject = "[Parandroid public key]";
-        }else if(DHAESKeyFactory.isEncrypted(mSubject)){
-        	mSubject = "[Encrypted]";
-        }
-        
+                
         updateRecipients();
     }
 
