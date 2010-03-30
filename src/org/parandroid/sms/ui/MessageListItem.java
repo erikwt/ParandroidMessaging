@@ -469,32 +469,32 @@ public class MessageListItem extends LinearLayout implements
     
     public AlertDialog alert;
     private void setPublicKeyImportClickListener(final MessageItem msgItem){
-    	AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-    	builder.setMessage(mContext.getText(R.string.import_public_key_dialog))
-    			.setTitle(mContext.getText(R.string.import_public_key))
-		   	 	.setCancelable(false)
-    	       .setPositiveButton(mContext.getText(R.string.yes), new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-    	                try {
-							DHAESKeyFactory.savePublicKey(mContext, msgItem.mAddress, msgItem.rawBody);
-							Toast.makeText(mContext, R.string.import_public_key_success, Toast.LENGTH_SHORT).show();
-						} catch (Exception e) {
-							Log.e(TAG, e.getMessage());
-							Toast.makeText(mContext, R.string.import_public_key_failure, Toast.LENGTH_SHORT).show();
-						}
-    	           }
-    	       }).setNegativeButton(mContext.getText(R.string.no), new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-    	                dialog.cancel();
-    	           }
-    	       });
-    	
-    	alert = builder.create();
-    	mRightStatusIndicator.setOnClickListener(new OnClickListener() {
-    		public void onClick(View v) {
-    			alert.show();
-            }
-        });
+//    	AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//    	builder.setMessage(mContext.getText(R.string.import_public_key_dialog))
+//    			.setTitle(mContext.getText(R.string.import_public_key))
+//		   	 	.setCancelable(false)
+//    	       .setPositiveButton(mContext.getText(R.string.yes), new DialogInterface.OnClickListener() {
+//    	           public void onClick(DialogInterface dialog, int id) {
+//    	                try {
+//							DHAESKeyFactory.savePublicKey(mContext, msgItem.mAddress, msgItem.rawBody);
+//							Toast.makeText(mContext, R.string.import_public_key_success, Toast.LENGTH_SHORT).show();
+//						} catch (Exception e) {
+//							Log.e(TAG, e.getMessage());
+//							Toast.makeText(mContext, R.string.import_public_key_failure, Toast.LENGTH_SHORT).show();
+//						}
+//    	           }
+//    	       }).setNegativeButton(mContext.getText(R.string.no), new DialogInterface.OnClickListener() {
+//    	           public void onClick(DialogInterface dialog, int id) {
+//    	                dialog.cancel();
+//    	           }
+//    	       });
+//    	
+//    	alert = builder.create();
+//    	mRightStatusIndicator.setOnClickListener(new OnClickListener() {
+//    		public void onClick(View v) {
+//    			alert.show();
+//            }
+//        });
     }
 
     private void setErrorIndicatorClickListener(final MessageItem msgItem) {

@@ -1,9 +1,6 @@
 package org.parandroid.encryption;
 
 import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,18 +17,15 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
-import javax.crypto.interfaces.DHPublicKey;
 import javax.crypto.spec.DHParameterSpec;
 
 import org.parandroid.encoding.Base64Coder;
-import org.parandroid.sms.ui.ConversationList;
-//import org.parandroid.mms.ui.SendPublicKeyActivity;
 
 import android.content.Context;
 import android.util.Log;
@@ -126,12 +120,15 @@ public abstract class DHAESKeyFactory {
         return secretKey;
     }
     
-    public static boolean isPublicKey(String message){
-    	return message.startsWith(SHARE_PUBLIC_KEY_HEADER);
-    }
-    
-    public static boolean isEncrypted(String message){
-    	return message.startsWith(ENCRYPTED_MSG_HEADER);
+    public static ArrayList<String> getPublicKeys(Context context){
+    	ArrayList<String> publicKeys = new ArrayList<String>();
+    	
+    	for(String f : context.getFilesDir().list()){
+    		if(f.endsWith(PUBLIC_KEY_SUFFIX) && !PUBLIC_KEY_FILENAME.equals(f))
+    			publicKeys.add(f);
+    	}
+    	
+    	return publicKeys;
     }
     
     /**
@@ -212,12 +209,12 @@ public abstract class DHAESKeyFactory {
     	return publicKey;
     }
     
-    public static void savePublicKey(Context context, String sender, String msg) throws Exception{
+    public static void savePublicKey(Context context, String sender, byte[] key) throws Exception{
     	String publicKeyFilename = getPublicKeyFilename(sender);
     	
         // save the key in the file system
 		FileOutputStream out = context.openFileOutput(publicKeyFilename, Context.MODE_PRIVATE);
-		out.write(Base64Coder.decode(msg.substring(SHARE_PUBLIC_KEY_HEADER.length())));
+		out.write(key);
 		out.flush();
 		out.close();
     }

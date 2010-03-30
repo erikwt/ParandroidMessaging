@@ -2,34 +2,37 @@ package org.parandroid.sms.ui;
 
 import java.util.ArrayList;
 
+import org.parandroid.encryption.DHAESKeyFactory;
 import org.parandroid.sms.R;
 
-import android.app.TabActivity;
+import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TabHost;
+import android.widget.AdapterView.OnItemClickListener;
 
-public class PublicKeyManagerActivity extends TabActivity {
+public class PublicKeyManagerActivity extends Activity {
 
-	private TabHost mTabHost;
-	
-	public void onCreate(Bundle savedInstanceState) {
+	public static final String TAG = "PublicKeyManagerActivity";
+
+    public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.public_key_manager);
-
-	    mTabHost = getTabHost();
-	    
-	    mTabHost.addTab(mTabHost.newTabSpec("pk_tab_1").setIndicator(getString(R.string.public_keys_saved)).setContent(R.id.public_keys_saved));
-	    mTabHost.addTab(mTabHost.newTabSpec("pk_tab_2").setIndicator(getString(R.string.public_keys_pending)).setContent(R.id.public_keys_pending));
-	    
-	    ListView publicKeysSaved = (ListView) findViewById(R.id.public_keys_saved);
-	    
-	    ArrayList<String> items = new ArrayList<String>();
-	    items.add("erik");
-	    
-	    publicKeysSaved.setAdapter(new ArrayAdapter<String>(this, R.id.public_key_listitem, items));
-	    
-	    mTabHost.setCurrentTab(0);
+	    init();
 	}
+    
+    private void init(){
+        final ArrayList<String> items = DHAESKeyFactory.getPublicKeys(this);
+	    ListView publicKeysList = (ListView) findViewById(R.id.public_keys);
+	    final ArrayAdapter<String> publicKeys = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+	    
+	    publicKeysList.setAdapter(publicKeys);
+	    publicKeysList.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				// TODO
+			}
+	    });
+    }
 }

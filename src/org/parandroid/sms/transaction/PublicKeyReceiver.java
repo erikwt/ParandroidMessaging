@@ -19,12 +19,13 @@ public class PublicKeyReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		Intent targetIntent = new Intent(context, PublicKeyReceived.class);
-		
 		String message = context.getString(R.string.received_public_key);
 		
 		SmsMessage[] messages = Intents.getMessagesFromIntent(intent);
 		for(SmsMessage pk : messages){
+			Intent targetIntent = new Intent(context, PublicKeyReceived.class);
+			targetIntent.putExtra("sender", pk.getDisplayOriginatingAddress());
+			targetIntent.putExtra("publickey", pk.getUserData());
 			Notification n = new Notification(context, R.drawable.stat_notify_public_key_recieved, message, System.currentTimeMillis(), message, message, targetIntent);
 			mNotificationManager.notify(NOTIFICATIONID, n);
 		}
