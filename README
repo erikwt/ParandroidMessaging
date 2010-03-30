@@ -1,0 +1,22 @@
+Parandroid Messaging
+
+Homepage: http://wiki.github.com/erikwt/ParandroidMessaging
+Latest source: http://github.com/erikwt/ParandroidMessaging
+Bugtracker: http://github.com/erikwt/ParandroidMessaging/issues
+
+Please report bugs in the bugtracker or send an email to one of the authors.
+Help, ideas and discussion is greatly appreciated.
+
+
+===[ AUTHORS ]===
+
+- Erik Wallentinsen    mail at erikw dot eu
+- Jeffrey Klardie      mail at jeffreyklardie dot nl
+
+
+===[ BUILDING ]===
+
+At the moment, you can only build this project in the sourcetree of Android.
+- Set up your own sourcetree, see http://source.android.com/download and follow the instructions.
+- Clone the Parandroid Messaging source in packages/apps/ParandroidMessaging
+- Build your .apk using 'mmm packages/apps/ParandroidMessaging'
