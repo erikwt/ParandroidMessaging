@@ -217,12 +217,6 @@ public class MessageItem {
         }
 
         mType = type;
-        
-        if(DHAESKeyFactory.isPublicKey(mBody)){
-        	rawBody = mBody;
-        	mBody = "[" + context.getText(R.string.public_key) + "] " + context.getText(R.string.tap_to_accept);
-        	publicKey = true;
-        }
     }
 
     private void interpretFrom(EncodedStringValue from) {
