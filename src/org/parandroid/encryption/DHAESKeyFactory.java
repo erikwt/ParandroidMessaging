@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.File;
 import java.math.BigInteger;
 import java.security.AlgorithmParameterGenerator;
 import java.security.AlgorithmParameters;
@@ -31,6 +32,8 @@ import android.content.Context;
 import android.util.Log;
 
 public abstract class DHAESKeyFactory {
+
+    public static final String TAG = "DHAESKeyFactory";
 
 	public static final String PUBLIC_KEY_FILENAME = "self.pub";
 	public static final String PRIVATE_KEY_FILENAME = "self.priv";
@@ -129,6 +132,15 @@ public abstract class DHAESKeyFactory {
     	}
     	
     	return publicKeys;
+    }
+
+    public static boolean deletePublicKey(Context context, String filename){
+        File pk = new File(context.getFilesDir(), filename);
+        if(!pk.exists()){
+            Log.e(TAG, "Delete: File does not exist: " + pk.getAbsoluteFile());
+            return false;
+        }
+        return pk.delete();
     }
     
     /**

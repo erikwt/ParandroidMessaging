@@ -660,5 +660,6 @@
     <string name="received_public_key">Received parandroid public key</string>
     <string name="public_keys_saved">Public keys</string>
     <string name="public_keys_pending">Pending</string>
+    <string name="delete_public_key">Delete public key</string>
 </resources>
 
