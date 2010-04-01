@@ -228,12 +228,6 @@ public class MessageItem {
         } else {
             throw new MmsException("Unknown type of the message: " + type);
         }
-        
-        if(DHAESKeyFactory.isPublicKey(mBody)){
-        	rawBody = mBody;
-        	mBody = "[" + context.getText(R.string.public_key) + "] " + context.getText(R.string.tap_to_accept);
-        	publicKey = true;
-        }
     }
 
     private void interpretFrom(EncodedStringValue from, Uri messageUri) {

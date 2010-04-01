@@ -5,7 +5,7 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
-LOCAL_PACKAGE_NAME := ParandroidSms
+LOCAL_PACKAGE_NAME := ParandroidMessaging
 
 LOCAL_REQUIRED_MODULES := SoundRecorder
 
