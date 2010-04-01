@@ -16,6 +16,8 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.view.MenuItem;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 public class PublicKeyManagerActivity extends Activity {
 
@@ -46,13 +48,29 @@ public class PublicKeyManagerActivity extends Activity {
     }
 
     public boolean onContextItemSelected(MenuItem item){
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         switch(item.getItemId()){
             case CONTEXT_MENU_DELETE:
-                // TODO: Dialog
-                DHAESKeyFactory.deletePublicKey(this, publicKeys.get(info.position));
-                init();
-                return true;
+                AlertDialog.Builder generateKeypairDialogBuilder = new AlertDialog.Builder(this);
+        	    generateKeypairDialogBuilder.setMessage(getText(R.string.delete_public_key_dialog))
+        		   .setTitle(getText(R.string.delete_public_key))
+        		   .setCancelable(false)
+        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+                            DHAESKeyFactory.deletePublicKey(PublicKeyManagerActivity.this, publicKeys.get(info.position));
+                            init();
+        	           }
+        	       })
+        	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+        	           public void onClick(DialogInterface dialog, int id) {
+        	                dialog.cancel();
+        	           }
+        	       });
+        	
+        	AlertDialog alert = generateKeypairDialogBuilder.create();
+        	alert.show();
+
+            return true;
             default:
                 return super.onContextItemSelected(item);
         }
