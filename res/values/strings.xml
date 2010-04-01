@@ -622,5 +622,6 @@
     <string name="public_keys_saved">Public keys</string>
     <string name="public_keys_pending">Pending</string>
     <string name="delete_public_key">Delete public key</string>
+    <string name="delete_public_key_dialog">Are you sure you want to delete this public key? You won\'t be able to have a encrypted conversation with this contact anymore.</string>
 </resources>
 
