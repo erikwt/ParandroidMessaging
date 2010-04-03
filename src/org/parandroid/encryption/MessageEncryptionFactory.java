@@ -26,39 +26,34 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.DHParameterSpec;
 
-import org.parandroid.encoding.Base64Coder;
-
 import android.content.Context;
 import android.util.Log;
 
-public abstract class DHAESKeyFactory {
-
-    public static final String TAG = "DHAESKeyFactory";
-
-	public static final String PUBLIC_KEY_FILENAME = "self.pub";
-	public static final String PRIVATE_KEY_FILENAME = "self.priv";
-	
-	public static final String SECRET_KEY_SUFFIX = ".secret";	// shared secret key name is 0612345678.secret
-	public static final String PUBLIC_KEY_SUFFIX = ".pub";		// public key name is 0612345678.pub
-	
-	public static final String PUBLIC_KEY_ALGORITHM = "DH";		// Important: it's not possible to change the algorithm by only changing this value
-	public static final String SECRET_KEY_ALGORITHM = "AES";
-	
-	public static final String SHARE_PUBLIC_KEY_HEADER = "%pdpub%";
-	public static final String ENCRYPTED_MSG_HEADER = "%pdmsg%";
+public abstract class MessageEncryptionFactory {
 
 	public static final short PUBLIC_KEY_PORT = 31337;
 	public static final short ENCRYPTED_MESSAGE_PORT = 31338;
+
+	private static final String TAG = "DHAESKeyFactory";
+
+	protected static final String PUBLIC_KEY_FILENAME = "self.pub";
+	protected static final String PRIVATE_KEY_FILENAME = "self.priv";
+
+	protected static final String SECRET_KEY_SUFFIX = ".secret";
+	protected static final String PUBLIC_KEY_SUFFIX = ".pub";
 	
-	public static final int KEY_SIZE = 256;
+	protected static final String PUBLIC_KEY_ALGORITHM = "DH";
+	protected static final String SECRET_KEY_ALGORITHM = "AES";
 	
-	public static final BigInteger G_128_BIT = new BigInteger("36633455825311975040466006092289991605");
-	public static final BigInteger P_128_BIT = new BigInteger("26364004858991988642926226571728229659");
-	public static final int L_128_BIT = 0;
 	
-	public static final BigInteger G_256_BIT = new BigInteger("56049311486568487092072397528376649227987297532466944895394922797714993166476");
-	public static final BigInteger P_256_BIT = new BigInteger("23182371893214465678917756685478547584564464564564564561231237867864534675815");
-	public static final int L_256_BIT = 0;
+	// TODO: Refactor, possibly throw out
+	private static final int KEY_SIZE = 256;
+	private static final BigInteger G_128_BIT = new BigInteger("36633455825311975040466006092289991605");
+	private static final BigInteger P_128_BIT = new BigInteger("26364004858991988642926226571728229659");
+	private static final int L_128_BIT = 0;
+	private static final BigInteger G_256_BIT = new BigInteger("56049311486568487092072397528376649227987297532466944895394922797714993166476");
+	private static final BigInteger P_256_BIT = new BigInteger("23182371893214465678917756685478547584564464564564564561231237867864534675815");
+	private static final int L_256_BIT = 0;
 	
 	
 	/**
@@ -94,6 +89,7 @@ public abstract class DHAESKeyFactory {
 	    return keyPair;
 	}
     
+    
     /**
      * Generate an AES shared, secrey key, using the private and public keys given
      * 
@@ -105,13 +101,6 @@ public abstract class DHAESKeyFactory {
      * @throws GeneralSecurityException
      */
     public static SecretKey generateSecretKey(PrivateKey privateKey, PublicKey publicKey) throws NoSuchAlgorithmException, GeneralSecurityException {
-//    	byte[] publicKeyBytes = publicKey.getEncoded();
-//
-//    	// Convert the public key bytes into a PublicKey object
-//        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKeyBytes);
-//        KeyFactory keyFact = KeyFactory.getInstance("DH");
-//        publicKey = keyFact.generatePublic(x509KeySpec);
-    
         // Prepare to generate the secret key with the private key and public key of the other party
         KeyAgreement ka = KeyAgreement.getInstance(PUBLIC_KEY_ALGORITHM);
         ka.init(privateKey);
@@ -119,10 +108,16 @@ public abstract class DHAESKeyFactory {
         
         // Generate the secret key
         SecretKey secretKey = ka.generateSecret(SECRET_KEY_ALGORITHM);
-        
         return secretKey;
     }
     
+    
+    /**
+     * Get a list of the currently stored public keys, excluding your own
+     * 
+     * @param context
+     * @return Public key list
+     */
     public static ArrayList<String> getPublicKeys(Context context){
     	ArrayList<String> publicKeys = new ArrayList<String>();
     	
@@ -133,9 +128,34 @@ public abstract class DHAESKeyFactory {
     	
     	return publicKeys;
     }
+    
 
-    public static boolean deletePublicKey(Context context, String filename){
-        File pk = new File(context.getFilesDir(), filename);
+    /**
+     * Delete a public key
+     * 
+     * @param context
+     * @param number
+     * @return Boolean successful
+     */
+    public static boolean deletePublicKey(Context context, String number){
+        File pk = new File(context.getFilesDir(), MessageEncryptionFactory.getPublicKeyFilename(number));
+        if(!pk.exists()){
+            Log.e(TAG, "Delete: File does not exist: " + pk.getAbsoluteFile());
+            return false;
+        }
+        return pk.delete();
+    }
+
+    
+    /**
+     * Delete a secret key
+     * 
+     * @param context
+     * @param number
+     * @return Boolean successful
+     */
+    public static boolean deleteSecretKey(Context context, String number){
+        File pk = new File(context.getFilesDir(), MessageEncryptionFactory.getSecretKeyFilename(number));
         if(!pk.exists()){
             Log.e(TAG, "Delete: File does not exist: " + pk.getAbsoluteFile());
             return false;
@@ -143,13 +163,189 @@ public abstract class DHAESKeyFactory {
         return pk.delete();
     }
     
+    
     /**
+     * Get the local filename of a stored secret key
+     * 
+     * @param number
+     * @return filename
+     */
+    public static String getSecretKeyFilename(String number){
+    	return number.concat(SECRET_KEY_SUFFIX);
+    }
+    
+    
+    /**
+     * Get the local filename of a stored public key
+     * 
+     * @param number
+     * @return filename
+     */
+    public static String getPublicKeyFilename(String number){
+    	return number.concat(PUBLIC_KEY_SUFFIX);
+    }
+    
+    
+    /**
+     * Get a stored private key
+     * 
+     * @param context
+     * @param keyFilename
+     * @return private key
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
+    public static PrivateKey getPrivateKey(Context context, String keyFilename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{
+    	byte[] keyBytes = getKeyFileBytes(context, keyFilename);
+    	
+    	EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+		KeyFactory kf = KeyFactory.getInstance(PUBLIC_KEY_ALGORITHM);
+		PrivateKey privateKey = kf.generatePrivate(spec);
+    	
+    	return privateKey;
+    }
+    
+    
+    /**
+     * Get a stored public key
+     * 
+     * @param context
+     * @param keyFilename
+     * @return public key
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
+    public static PublicKey getPublicKey(Context context, String keyFilename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{
+    	byte[] keyBytes = getKeyFileBytes(context, keyFilename);
+    	
+    	// Convert the public key bytes into a PublicKey object
+        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
+        KeyFactory keyFact = KeyFactory.getInstance(PUBLIC_KEY_ALGORITHM);
+        PublicKey publicKey = keyFact.generatePublic(x509KeySpec);
+    	
+    	return publicKey;
+    }
+    
+    
+    /**
+     * Save a public key
+     * 
+     * @param context
+     * @param sender
+     * @param key
+     * @throws Exception
+     */
+    public static void savePublicKey(Context context, String sender, byte[] key) throws Exception{
+    	String publicKeyFilename = getPublicKeyFilename(sender);
+    	
+		FileOutputStream out = context.openFileOutput(publicKeyFilename, Context.MODE_PRIVATE);
+		out.write(key);
+		out.flush();
+		out.close();
+    }
+    
+    
+    /**
+     * Get your own public key in bytes
+     * 
+     * @param context
+     * @return your own public key
+     * @throws IOException
+     */
+    public static byte[] getOwnPublicKey(Context context) throws IOException{
+    	return getKeyFileBytes(context, PUBLIC_KEY_FILENAME);
+    }
+    
+    
+    /**
+     * Get a secret key to communicate with a device, specified by a phonenumber
+     * 
+     * @param context
+     * @param number
+     * @return secret key
+     * @throws GeneralSecurityException
+     * @throws IOException
+     */
+    public static SecretKey getSecretKey(Context context, String number) throws GeneralSecurityException, IOException{
+    	PrivateKey privateKey = getPrivateKey(context, PRIVATE_KEY_FILENAME);
+    	PublicKey publicKey = getPublicKey(context, getPublicKeyFilename(number));
+    	
+    	return generateSecretKey(privateKey, publicKey);
+    }
+	
+    
+    /**
+     * Check if the current device has a keypair
+     * 
+     * @param context
+     * @return boolean
+     */
+	public static boolean hasKeypair(Context context){
+		try{
+			context.openFileInput(PUBLIC_KEY_FILENAME);
+			context.openFileInput(PRIVATE_KEY_FILENAME);
+		}catch(Exception e){
+			Log.e("DH AES",e.getMessage());
+			for(int i = 0; i < e.getStackTrace().length; i++)
+				Log.e("DH AES",e.getStackTrace()[i].toString());
+			return false;
+		}
+		return true;
+	}
+	
+	
+	/**
+	 * Check if a number already has a secrey key stored
+	 * 
+	 * @param number
+	 * @param context
+	 * @return boolean
+	 */
+	public static boolean hasSecretKey(String number, Context context){
+		try{
+			context.openFileInput(number.concat(SECRET_KEY_SUFFIX));
+		}catch(Exception e){
+			Log.e("DH AES",e.getMessage());
+			for(int i = 0; i < e.getStackTrace().length; i++)
+				Log.e("DH AES",e.getStackTrace()[i].toString());
+			return false;
+		}
+		return true;
+	}
+    
+	
+	/**
+	 * Get the raw bytes of a file
+	 * 
+	 * @param context
+	 * @param keyFilename
+	 * @return
+	 * @throws IOException
+	 */
+    private static byte[] getKeyFileBytes(Context context, String keyFilename) throws IOException{
+    	InputStream key = context.openFileInput(keyFilename);
+    	
+    	DataInputStream dis = new DataInputStream(key);
+		byte[] keyBytes = new byte[dis.available()];
+		
+		dis.readFully(keyBytes);
+		dis.close();
+		
+		return keyBytes;
+    }
+	
+    
+    /**
+     * TODO: Refactor: Use or throw out
+     * 
      * Generate random values used to generate private and public keys 
      * 
      * @return comma-separated string of 3 values:
-     * The first number is the prime modulus P.
-     * The second number is the base generator G.
-     * The third number is bit size of the random exponent L.
+     * 	The first number is the prime modulus P.
+     * 	The second number is the base generator G.
+     * 	The third number is bit size of the random exponent L.
      */
     private static String genDhParams() {
         try {
@@ -171,108 +367,6 @@ public abstract class DHAESKeyFactory {
         } catch (Exception e) {
         	Log.e("genDH", e.getMessage());
         	return null;
-        } 
-        
+        }
     }
-
-    private static String getSecretKeyFilename(String number){
-    	return number.concat(SECRET_KEY_SUFFIX);
-    }
-    
-    public static String getPublicKeyFilename(String number){
-    	return number.concat(PUBLIC_KEY_SUFFIX);
-    }
-    
-    private static byte[] getKeyFileBytes(Context context, String keyFilename) throws IOException{
-    	InputStream key = context.openFileInput(keyFilename);
-    	
-    	DataInputStream dis = new DataInputStream(key);
-		byte[] keyBytes = new byte[dis.available()];
-		
-		dis.readFully(keyBytes);
-		dis.close();
-		
-		return keyBytes;
-    }
-    
-    public static PrivateKey getPrivateKey(Context context, String keyFilename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{
-    	byte[] keyBytes = getKeyFileBytes(context, keyFilename);
-    	
-    	EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-		KeyFactory kf = KeyFactory.getInstance(PUBLIC_KEY_ALGORITHM);
-		PrivateKey privateKey = kf.generatePrivate(spec);
-		
-//    	// Convert the public key bytes into a PublicKey object
-//        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
-//        KeyFactory keyFact = KeyFactory.getInstance("DH");
-//        PrivateKey privateKey = keyFact.generatePrivate(x509KeySpec);
-    	
-    	return privateKey;
-    }
-    
-    public static PublicKey getPublicKey(Context context, String keyFilename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{
-    	byte[] keyBytes = getKeyFileBytes(context, keyFilename);
-    	
-    	// Convert the public key bytes into a PublicKey object
-        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
-        KeyFactory keyFact = KeyFactory.getInstance(PUBLIC_KEY_ALGORITHM);
-        PublicKey publicKey = keyFact.generatePublic(x509KeySpec);
-    	
-    	return publicKey;
-    }
-    
-    public static void savePublicKey(Context context, String sender, byte[] key) throws Exception{
-    	String publicKeyFilename = getPublicKeyFilename(sender);
-    	
-        // save the key in the file system
-		FileOutputStream out = context.openFileOutput(publicKeyFilename, Context.MODE_PRIVATE);
-		out.write(key);
-		out.flush();
-		out.close();
-    }
-    
-    public static String getPublicKeyToSend(Context context) throws IOException{
-    	byte[] keyBytes = getKeyFileBytes(context, PUBLIC_KEY_FILENAME);
-    	
-    	return SHARE_PUBLIC_KEY_HEADER.concat(new String(Base64Coder.encode(keyBytes)));
-    }
-    
-    public static byte[] getPublicKeyRaw(Context context) throws IOException{
-    	return getKeyFileBytes(context, PUBLIC_KEY_FILENAME);
-    }
-    
-    public static SecretKey getSecretKey(Context context, String number) throws GeneralSecurityException, IOException{
-    	PrivateKey privateKey = getPrivateKey(context, PRIVATE_KEY_FILENAME);
-    	Log.i("PUBLIC KEY NAME", getPublicKeyFilename(number));
-    	PublicKey publicKey = getPublicKey(context, getPublicKeyFilename(number));
-    	
-    	return generateSecretKey(privateKey, publicKey);
-    }
-	
-	// FIXME: This is hacky, nasty and slow
-	public static boolean hasKeypair(Context context){
-		try{
-			context.openFileInput(PUBLIC_KEY_FILENAME);
-			context.openFileInput(PRIVATE_KEY_FILENAME);
-		}catch(Exception e){
-			Log.e("DH AES",e.getMessage());
-			for(int i = 0; i < e.getStackTrace().length; i++)
-				Log.e("DH AES",e.getStackTrace()[i].toString());
-			return false;
-		}
-		return true;
-	}
-	
-	// FIXME: This is hacky, nasty and slow
-	public static boolean hasSecretKey(String number, Context context){
-		try{
-			context.openFileInput(number.concat(SECRET_KEY_SUFFIX));
-		}catch(Exception e){
-			Log.e("DH AES",e.getMessage());
-			for(int i = 0; i < e.getStackTrace().length; i++)
-				Log.e("DH AES",e.getStackTrace()[i].toString());
-			return false;
-		}
-		return true;
-	}
 }

@@ -2,7 +2,7 @@ package org.parandroid.sms.ui;
 
 import java.util.ArrayList;
 
-import org.parandroid.encryption.DHAESKeyFactory;
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 
 import android.app.Activity;
@@ -34,7 +34,7 @@ public class PublicKeyManagerActivity extends Activity {
 	}
     
     private void init(){
-        final ArrayList<String> items = DHAESKeyFactory.getPublicKeys(this);
+        final ArrayList<String> items = MessageEncryptionFactory.getPublicKeys(this);
         publicKeys = items;
 	    ListView publicKeysList = (ListView) findViewById(R.id.public_keys);
         registerForContextMenu(publicKeysList);
@@ -57,7 +57,7 @@ public class PublicKeyManagerActivity extends Activity {
         		   .setCancelable(false)
         	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
         	           public void onClick(DialogInterface dialog, int id) {
-                            DHAESKeyFactory.deletePublicKey(PublicKeyManagerActivity.this, publicKeys.get(info.position));
+                            MessageEncryptionFactory.deletePublicKey(PublicKeyManagerActivity.this, publicKeys.get(info.position));
                             init();
         	           }
         	       })

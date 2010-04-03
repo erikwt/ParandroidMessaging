@@ -20,7 +20,7 @@ package org.parandroid.sms.transaction;
 import static com.google.android.mms.pdu.PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND;
 import static com.google.android.mms.pdu.PduHeaders.MESSAGE_TYPE_RETRIEVE_CONF;
 
-import org.parandroid.encryption.DHAESKeyFactory;
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ui.ComposeMessageActivity;
 import org.parandroid.sms.ui.ConversationList;

@@ -19,9 +19,7 @@ package org.parandroid.sms.ui;
 
 
 import android.content.Context;
-
-import org.parandroid.encryption.DHAESKeyFactory;
-
+import org.parandroid.encryption.MessageEncryptionFactory;
 
 /**
  * A holder class for a conversation header.

@@ -17,15 +17,6 @@
 
 package org.parandroid.sms.ui;
 
-import org.parandroid.encryption.DHAESKeyFactory;
-import org.parandroid.sms.R;
-import org.parandroid.sms.transaction.Transaction;
-import org.parandroid.sms.transaction.TransactionBundle;
-import org.parandroid.sms.transaction.TransactionService;
-import org.parandroid.sms.util.DownloadManager;
-import org.parandroid.sms.util.SmileyParser;
-import com.google.android.mms.pdu.PduHeaders;
-
 import java.io.IOException;
 import java.util.Map;
 
@@ -75,6 +66,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.parandroid.encryption.MessageEncryptionFactory;
+import org.parandroid.sms.R;
+import org.parandroid.sms.transaction.Transaction;
+import org.parandroid.sms.transaction.TransactionBundle;
+import org.parandroid.sms.transaction.TransactionService;
+import org.parandroid.sms.util.DownloadManager;
+import org.parandroid.sms.util.SmileyParser;
+import com.google.android.mms.pdu.PduHeaders;
 
 /**
  * This class provides view of a message in the messages list.

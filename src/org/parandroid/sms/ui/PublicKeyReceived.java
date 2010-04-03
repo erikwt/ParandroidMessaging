@@ -1,6 +1,6 @@
 package org.parandroid.sms.ui;
 
-import org.parandroid.encryption.DHAESKeyFactory;
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.transaction.PublicKeyReceiver;
 
@@ -37,7 +37,7 @@ public class PublicKeyReceived extends Activity {
 		           public void onClick(DialogInterface dialog, int id) {
 		                try {
 		                	// TODO: Get message and save key
-							DHAESKeyFactory.savePublicKey(PublicKeyReceived.this, sender, publicKey);
+							MessageEncryptionFactory.savePublicKey(PublicKeyReceived.this, sender, publicKey);
 							Toast.makeText(PublicKeyReceived.this, R.string.import_public_key_success, Toast.LENGTH_SHORT).show();
 						} catch (Exception e) {
 							Log.e(TAG, e.getMessage());
