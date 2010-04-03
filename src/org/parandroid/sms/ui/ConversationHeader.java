@@ -19,7 +19,7 @@ package org.parandroid.sms.ui;
 
 import android.content.Context;
 
-import org.parandroid.encryption.DHAESKeyFactory;
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.data.ContactList;
 import org.parandroid.sms.data.Conversation;
 
