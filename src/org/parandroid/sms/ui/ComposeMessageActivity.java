@@ -27,13 +27,12 @@ import static org.parandroid.sms.ui.MessageListAdapter.COLUMN_MSG_TYPE;
 import static org.parandroid.sms.ui.MessageListAdapter.PROJECTION;
 
 
-
-
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyProperties;
 
 import org.parandroid.sms.ExceedMessageSizeException;
-import org.parandroid.encryption.DHAESKeyFactory;
+
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.MmsConfig;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ResolutionException;
@@ -2128,8 +2127,8 @@ public class ComposeMessageActivity extends Activity
 	        					for(String num : numbers){
 		        					Log.i(TAG,"Sending public key to " + num);
 		        					try { 
-		        						String publicKey = DHAESKeyFactory.getPublicKeyToSend(ComposeMessageActivity.this);
-		        						sm.sendTextMessage(num, null, publicKey , null, null);
+		        						byte[] publicKey = MessageEncryptionFactory.getOwnPublicKey(ComposeMessageActivity.this);
+		        						sm.sendDataMessage(num, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKey, null, null);
 		        						Toast.makeText(ComposeMessageActivity.this, getText(R.string.send_public_key_success) + " " +  num, Toast.LENGTH_SHORT).show();
 		        					} catch (Exception e) {
 		        						Log.e(TAG, e.getMessage());

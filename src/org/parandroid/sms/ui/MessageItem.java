@@ -17,7 +17,7 @@
 
 package org.parandroid.sms.ui;
 
-import org.parandroid.encryption.DHAESKeyFactory;
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.model.SlideModel;
 import org.parandroid.sms.model.SlideshowModel;

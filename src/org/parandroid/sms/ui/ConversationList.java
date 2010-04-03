@@ -73,7 +73,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.parandroid.encryption.DHAESKeyFactory;
+import org.parandroid.encryption.MessageEncryptionFactory;
 
 /**
  * This activity provides a list view of existing conversations.
@@ -186,7 +186,7 @@ public class ConversationList extends ListActivity
     	
         generateKeypairSuccessDialog = generateKeypairSuccessDialogBuilder.create();
         
-        if(!DHAESKeyFactory.hasKeypair(this)){
+        if(!MessageEncryptionFactory.hasKeypair(this)){
         	AlertDialog.Builder generateKeypairDialogBuilder = new AlertDialog.Builder(this);
         	generateKeypairDialogBuilder.setMessage(getText(R.string.no_keypair_dialog))
         		   .setTitle(getText(R.string.generate_keypair_title))
@@ -403,7 +403,7 @@ public class ConversationList extends ListActivity
 		Toast generateKeypairErrorToast = Toast.makeText(ConversationList.this, R.string.generated_keypair_failure, Toast.LENGTH_SHORT);
 		
 		try{
-			DHAESKeyFactory.generateKeyPair(ConversationList.this);
+			MessageEncryptionFactory.generateKeyPair(ConversationList.this);
 			generateKeypairProgressDialog.dismiss();
 			generateKeypairSuccessDialog.show();
 		} catch (Exception e) {  
