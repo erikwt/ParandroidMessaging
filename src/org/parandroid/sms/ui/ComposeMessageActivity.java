@@ -2235,9 +2235,11 @@ public class ComposeMessageActivity extends Activity
 		        						byte[] publicKey = MessageEncryptionFactory.getOwnPublicKey(ComposeMessageActivity.this);
 		        						sm.sendDataMessage(num, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKey, null, null);
 		        						Toast.makeText(ComposeMessageActivity.this, getText(R.string.send_public_key_success) + " " +  num, Toast.LENGTH_SHORT).show();
-		        					} catch (Exception e) {
+		        					} catch (IOException e) {
 		        						Log.e(TAG, e.getMessage());
 		        						Toast.makeText(ComposeMessageActivity.this, getText(R.string.send_public_key_failure) + " " +  num, Toast.LENGTH_SHORT).show();
+		        					} catch (Exception e) {
+		        						Log.e(TAG, "Unknown exception");
 		        					}
 	        					}
 	        	           }
