@@ -47,7 +47,7 @@ public abstract class MessageEncryptionFactory {
 	 * @see http://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange
 	 */
 	private static final BigInteger G = new BigInteger("2");
-	private static final BigInteger P = new BigInteger("12108688227112739216776380134064766715378818547013724152875007462510649254490453813792027953626520527732659573810814342024931596696524172944913569097781271");
+	private static final BigInteger P = new BigInteger("23182371893214465678917756685478547584564464564564564561231237867864534675815");
 	
 	
 	/**
