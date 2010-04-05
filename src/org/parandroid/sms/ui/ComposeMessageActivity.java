@@ -31,8 +31,8 @@ import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyProperties;
 
 import org.parandroid.sms.ExceedMessageSizeException;
-
 import org.parandroid.encryption.MessageEncryptionFactory;
+
 import org.parandroid.sms.MmsConfig;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ResolutionException;

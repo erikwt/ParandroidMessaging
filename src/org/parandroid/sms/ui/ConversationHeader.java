@@ -17,7 +17,6 @@
 
 package org.parandroid.sms.ui;
 
-
 import android.content.Context;
 import org.parandroid.encryption.MessageEncryptionFactory;
 
