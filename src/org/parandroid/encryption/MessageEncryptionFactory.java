@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.File;
 import java.math.BigInteger;
-import java.security.AlgorithmParameterGenerator;
-import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyFactory;
@@ -16,7 +14,6 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -34,26 +31,23 @@ public abstract class MessageEncryptionFactory {
 	public static final short PUBLIC_KEY_PORT = 31337;
 	public static final short ENCRYPTED_MESSAGE_PORT = 31338;
 
-	private static final String TAG = "DHAESKeyFactory";
+	private static final String TAG = "MessageEncryptionFactory";
 
 	protected static final String PUBLIC_KEY_FILENAME = "self.pub";
 	protected static final String PRIVATE_KEY_FILENAME = "self.priv";
-
-	protected static final String SECRET_KEY_SUFFIX = ".secret";
 	protected static final String PUBLIC_KEY_SUFFIX = ".pub";
 	
-	protected static final String PUBLIC_KEY_ALGORITHM = "DH";
-	protected static final String SECRET_KEY_ALGORITHM = "AES";
+	protected static final String KEY_EXCHANGE_PROTOCOL = "DH";
+	protected static final String ENCRYPTION_ALGORITHM = "AES";
 	
-	
-	// TODO: Refactor, possibly throw out
-	private static final int KEY_SIZE = 256;
-	private static final BigInteger G_128_BIT = new BigInteger("36633455825311975040466006092289991605");
-	private static final BigInteger P_128_BIT = new BigInteger("26364004858991988642926226571728229659");
-	private static final int L_128_BIT = 0;
-	private static final BigInteger G_256_BIT = new BigInteger("56049311486568487092072397528376649227987297532466944895394922797714993166476");
-	private static final BigInteger P_256_BIT = new BigInteger("23182371893214465678917756685478547584564464564564564561231237867864534675815");
-	private static final int L_256_BIT = 0;
+	/**
+	 * Diffie Hellman parameters P and G. Diffie-Hellman establishes a shared secret that can be 
+	 * used for secret communications by exchanging data over a public network.
+	 * 
+	 * @see http://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange
+	 */
+	private static final BigInteger G = new BigInteger("2");
+	private static final BigInteger P = new BigInteger("12108688227112739216776380134064766715378818547013724152875007462510649254490453813792027953626520527732659573810814342024931596696524172944913569097781271");
 	
 	
 	/**
@@ -68,8 +62,8 @@ public abstract class MessageEncryptionFactory {
 	* @throws InvalidAlgorithmParameterException 
 	*/
     public static KeyPair generateKeyPair(Context context) throws NoSuchAlgorithmException, IOException, InvalidAlgorithmParameterException {  	
-    	KeyPairGenerator keyGen = KeyPairGenerator.getInstance(PUBLIC_KEY_ALGORITHM);
-        DHParameterSpec dhSpec = new DHParameterSpec(P_128_BIT, G_128_BIT);
+    	KeyPairGenerator keyGen = KeyPairGenerator.getInstance(KEY_EXCHANGE_PROTOCOL);
+        DHParameterSpec dhSpec = new DHParameterSpec(P, G);
         keyGen.initialize(dhSpec);
         KeyPair keyPair = keyGen.generateKeyPair();
 
@@ -91,24 +85,22 @@ public abstract class MessageEncryptionFactory {
     
     
     /**
-     * Generate an AES shared, secrey key, using the private and public keys given
+     * Compute a shared secret for the ENCRYPTION_ALGORITHM. This should always be computed, and may never be stored.
      * 
      * @param privateKey
      * @param publicKey
-     * @return secreyKey
+     * @return secretKey
      * 
      * @throws NoSuchAlgorithmException
      * @throws GeneralSecurityException
      */
     public static SecretKey generateSecretKey(PrivateKey privateKey, PublicKey publicKey) throws NoSuchAlgorithmException, GeneralSecurityException {
-        // Prepare to generate the secret key with the private key and public key of the other party
-        KeyAgreement ka = KeyAgreement.getInstance(PUBLIC_KEY_ALGORITHM);
+        KeyAgreement ka = KeyAgreement.getInstance(KEY_EXCHANGE_PROTOCOL);
         ka.init(privateKey);
         ka.doPhase(publicKey, true);
         
-        // Generate the secret key
-        SecretKey secretKey = ka.generateSecret(SECRET_KEY_ALGORITHM);
-        return secretKey;
+        SecretKey secretKey = ka.generateSecret(ENCRYPTION_ALGORITHM);
+        return secretKey; 
     }
     
     
@@ -145,34 +137,6 @@ public abstract class MessageEncryptionFactory {
         }
         return pk.delete();
     }
-
-    
-    /**
-     * Delete a secret key
-     * 
-     * @param context
-     * @param number
-     * @return Boolean successful
-     */
-    public static boolean deleteSecretKey(Context context, String number){
-        File pk = new File(context.getFilesDir(), MessageEncryptionFactory.getSecretKeyFilename(number));
-        if(!pk.exists()){
-            Log.e(TAG, "Delete: File does not exist: " + pk.getAbsoluteFile());
-            return false;
-        }
-        return pk.delete();
-    }
-    
-    
-    /**
-     * Get the local filename of a stored secret key
-     * 
-     * @param number
-     * @return filename
-     */
-    public static String getSecretKeyFilename(String number){
-    	return number.concat(SECRET_KEY_SUFFIX);
-    }
     
     
     /**
@@ -187,7 +151,9 @@ public abstract class MessageEncryptionFactory {
     
     
     /**
-     * Get a stored private key
+     * Get a stored private key in PKCS8 format (Used to carry private certificate keypairs (encrypted or unencrypted)
+     * @see http://en.wikipedia.org/wiki/PKCS
+     * @see http://tools.ietf.org/html/rfc5208
      * 
      * @param context
      * @param keyFilename
@@ -196,11 +162,11 @@ public abstract class MessageEncryptionFactory {
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeySpecException
      */
-    public static PrivateKey getPrivateKey(Context context, String keyFilename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{
-    	byte[] keyBytes = getKeyFileBytes(context, keyFilename);
+    public static PrivateKey getPrivateKey(Context context) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{
+    	byte[] keyBytes = getKeyFileBytes(context, PRIVATE_KEY_FILENAME);
     	
-    	EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-		KeyFactory kf = KeyFactory.getInstance(PUBLIC_KEY_ALGORITHM);
+    	PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+		KeyFactory kf = KeyFactory.getInstance(KEY_EXCHANGE_PROTOCOL);
 		PrivateKey privateKey = kf.generatePrivate(spec);
     	
     	return privateKey;
@@ -208,7 +174,8 @@ public abstract class MessageEncryptionFactory {
     
     
     /**
-     * Get a stored public key
+     * Get a stored public key in x509 format
+     * @see http://en.wikipedia.org/wiki/X.509
      * 
      * @param context
      * @param keyFilename
@@ -217,12 +184,11 @@ public abstract class MessageEncryptionFactory {
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeySpecException
      */
-    public static PublicKey getPublicKey(Context context, String keyFilename) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{
-    	byte[] keyBytes = getKeyFileBytes(context, keyFilename);
+    public static PublicKey getPublicKey(Context context, String number) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{
+    	byte[] keyBytes = getKeyFileBytes(context, getPublicKeyFilename(number));
     	
-    	// Convert the public key bytes into a PublicKey object
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
-        KeyFactory keyFact = KeyFactory.getInstance(PUBLIC_KEY_ALGORITHM);
+        KeyFactory keyFact = KeyFactory.getInstance(KEY_EXCHANGE_PROTOCOL);
         PublicKey publicKey = keyFact.generatePublic(x509KeySpec);
     	
     	return publicKey;
@@ -257,23 +223,6 @@ public abstract class MessageEncryptionFactory {
     public static byte[] getOwnPublicKey(Context context) throws IOException{
     	return getKeyFileBytes(context, PUBLIC_KEY_FILENAME);
     }
-    
-    
-    /**
-     * Get a secret key to communicate with a device, specified by a phonenumber
-     * 
-     * @param context
-     * @param number
-     * @return secret key
-     * @throws GeneralSecurityException
-     * @throws IOException
-     */
-    public static SecretKey getSecretKey(Context context, String number) throws GeneralSecurityException, IOException{
-    	PrivateKey privateKey = getPrivateKey(context, PRIVATE_KEY_FILENAME);
-    	PublicKey publicKey = getPublicKey(context, getPublicKeyFilename(number));
-    	
-    	return generateSecretKey(privateKey, publicKey);
-    }
 	
     
     /**
@@ -287,29 +236,7 @@ public abstract class MessageEncryptionFactory {
 			context.openFileInput(PUBLIC_KEY_FILENAME);
 			context.openFileInput(PRIVATE_KEY_FILENAME);
 		}catch(Exception e){
-			Log.e("DH AES",e.getMessage());
-			for(int i = 0; i < e.getStackTrace().length; i++)
-				Log.e("DH AES",e.getStackTrace()[i].toString());
-			return false;
-		}
-		return true;
-	}
-	
-	
-	/**
-	 * Check if a number already has a secrey key stored
-	 * 
-	 * @param number
-	 * @param context
-	 * @return boolean
-	 */
-	public static boolean hasSecretKey(String number, Context context){
-		try{
-			context.openFileInput(number.concat(SECRET_KEY_SUFFIX));
-		}catch(Exception e){
-			Log.e("DH AES",e.getMessage());
-			for(int i = 0; i < e.getStackTrace().length; i++)
-				Log.e("DH AES",e.getStackTrace()[i].toString());
+			Log.e(TAG,e.getMessage());
 			return false;
 		}
 		return true;
@@ -334,39 +261,5 @@ public abstract class MessageEncryptionFactory {
 		dis.close();
 		
 		return keyBytes;
-    }
-	
-    
-    /**
-     * TODO: Refactor: Use or throw out
-     * 
-     * Generate random values used to generate private and public keys 
-     * 
-     * @return comma-separated string of 3 values:
-     * 	The first number is the prime modulus P.
-     * 	The second number is the base generator G.
-     * 	The third number is bit size of the random exponent L.
-     */
-    private static String genDhParams() {
-        try {
-            // Create the parameter generator for a 1024-bit DH key pair
-            AlgorithmParameterGenerator paramGen = AlgorithmParameterGenerator.getInstance(PUBLIC_KEY_ALGORITHM);
-            paramGen.init(KEY_SIZE);
-    
-            // Generate the parameters
-            AlgorithmParameters params = paramGen.generateParameters();
-            DHParameterSpec dhSpec
-                = (DHParameterSpec)params.getParameterSpec(DHParameterSpec.class);
-
-            
-            Log.i("P", dhSpec.getP().toString());
-            Log.i("G", dhSpec.getG().toString());
-            Log.i("L", Integer.toString(dhSpec.getL()));
-            
-            return ""+dhSpec.getP()+","+dhSpec.getG()+","+dhSpec.getL();
-        } catch (Exception e) {
-        	Log.e("genDH", e.getMessage());
-        	return null;
-        }
     }
 }

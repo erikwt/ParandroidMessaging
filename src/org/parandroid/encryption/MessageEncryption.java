@@ -2,6 +2,8 @@ package org.parandroid.encryption;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -25,9 +27,11 @@ public abstract class MessageEncryption {
 	 * @throws IOException - Key(s) missing
 	 */
 	public static byte[] encrypt(Context context, String number, String text) throws GeneralSecurityException, IOException{
-		SecretKey secretKey = MessageEncryptionFactory.getSecretKey(context, number);
+		PrivateKey privateKey = MessageEncryptionFactory.getPrivateKey(context);
+		PublicKey publicKey  = MessageEncryptionFactory.getPublicKey(context, number);
+		SecretKey secretKey = MessageEncryptionFactory.generateSecretKey(privateKey, publicKey);
 		
-		Cipher cipher = Cipher.getInstance(MessageEncryptionFactory.SECRET_KEY_ALGORITHM);
+		Cipher cipher = Cipher.getInstance(MessageEncryptionFactory.ENCRYPTION_ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
         byte[] cipherText = cipher.doFinal(text.getBytes());
@@ -48,9 +52,11 @@ public abstract class MessageEncryption {
 	 * @throws IOException - Key(s) missing
 	 */
 	public static String decrypt(Context context, String number, byte[] cipherText) throws GeneralSecurityException, IOException{		
-		SecretKey secretKey = MessageEncryptionFactory.getSecretKey(context, number);
+		PrivateKey privateKey = MessageEncryptionFactory.getPrivateKey(context);
+		PublicKey publicKey  = MessageEncryptionFactory.getPublicKey(context, number);
+		SecretKey secretKey = MessageEncryptionFactory.generateSecretKey(privateKey, publicKey);
 		
-		Cipher cipher = Cipher.getInstance(MessageEncryptionFactory.SECRET_KEY_ALGORITHM);
+		Cipher cipher = Cipher.getInstance(MessageEncryptionFactory.ENCRYPTION_ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
         
         byte[] text = cipher.doFinal(cipherText);
