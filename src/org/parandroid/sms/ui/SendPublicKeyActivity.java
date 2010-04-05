@@ -21,7 +21,7 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.parandroid.encryption.DHAESKeyFactory;
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 
 public class SendPublicKeyActivity extends Activity implements OnClickListener{
@@ -82,9 +82,8 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
 				Log.i(TAG,"Sending public key to " + num);
 				
 				try { 
-					byte[] publicKey = DHAESKeyFactory.getPublicKeyRaw(SendPublicKeyActivity.this);
-					//sm.sendTextMessage(num, null, publicKey , null, null);
-					sm.sendDataMessage(num, null, DHAESKeyFactory.PUBLIC_KEY_PORT, publicKey, null, null);
+					byte[] publicKey = MessageEncryptionFactory.getOwnPublicKey(SendPublicKeyActivity.this);
+					sm.sendDataMessage(num, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKey, null, null);
 					Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  num, Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {
 					Log.e(TAG, e.getMessage());

@@ -60,7 +60,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.parandroid.encryption.DHAESKeyFactory;
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.data.WorkingMessage;
 import org.parandroid.sms.transaction.Transaction;
