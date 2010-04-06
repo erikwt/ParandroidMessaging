@@ -3,6 +3,7 @@ package org.parandroid.sms.transaction;
 import org.parandroid.encoding.Base64Coder;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ui.ComposeMessageActivity;
+import org.parandroid.sms.ui.PublicKeyReceived;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -14,7 +15,7 @@ import android.provider.Telephony.Sms;
 import android.provider.Telephony.Threads;
 import android.provider.Telephony.Sms.Inbox;
 import android.provider.Telephony.Sms.Intents;
-import android.telephony.SmsMessage;
+import android.telephony.gsm.SmsMessage;
 import android.util.Log;
 
 public class EncryptedMessageReceiver extends BroadcastReceiver {
@@ -32,9 +33,9 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 		if(messages.length == 0) return;
 		
 		long threadId = Threads.getOrCreateThreadId(context, messages[0].getOriginatingAddress());
-		Intent targetIntent = ComposeMessageActivity.createIntent(context, threadId);
+		Intent targetIntent = new Intent(context, ComposeMessageActivity.class);
 		insertEncryptedMessage(messages, threadId);
-		
+				
 		Notification n = new Notification(context, R.drawable.stat_notify_encrypted_msg, notificationString, System.currentTimeMillis(), notificationString, notificationString, targetIntent);
 		mNotificationManager.notify(NOTIFICATIONID, n);
 	}
