@@ -539,7 +539,10 @@ public class MessageListItem extends LinearLayout implements
     }
 
     private void drawRightStatusIndicator(MessageItem msgItem) {
-        if (msgItem.isOutgoingMessage()) {
+    	if(msgItem.isEncryptedIncomingMessage() || msgItem.isEncryptedOutgoingMessage()){
+    		mRightStatusIndicator.setImageResource(R.drawable.stat_notify_encrypted_msg);
+            mRightStatusIndicator.setVisibility(View.VISIBLE);
+    	}else if (msgItem.isOutgoingMessage()) {
             if (isFailedMessage(msgItem)) {
                 mRightStatusIndicator.setImageResource(R.drawable.ic_sms_mms_not_delivered);
                 setErrorIndicatorClickListener(msgItem);
