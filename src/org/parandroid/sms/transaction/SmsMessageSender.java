@@ -17,18 +17,22 @@
 
 package org.parandroid.sms.transaction;
 
+import org.parandroid.encoding.Base64Coder;
 import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.MmsConfig;
 import org.parandroid.sms.LogTag;
 import org.parandroid.sms.ParandroidSmsApp;
 import org.parandroid.sms.R;
+import org.parandroid.sms.ui.MessageItem;
 import org.parandroid.sms.ui.MessagingPreferenceActivity;
 import org.parandroid.sms.ui.MessageUtils;
 import com.google.android.mms.MmsException;
 import com.google.android.mms.util.SqliteWrapper;
 
 import android.app.PendingIntent;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,13 +40,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.provider.Telephony;
 import android.provider.Telephony.Mms;
 import android.provider.Telephony.Sms;
+import android.provider.Telephony.Mms.Outbox;
+import android.provider.Telephony.Sms.Inbox;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 
 public class SmsMessageSender implements MessageSender {
@@ -53,6 +62,7 @@ public class SmsMessageSender implements MessageSender {
     private final String mServiceCenter;
     private final long mThreadId;
     private long mTimestamp;
+    private boolean mTryToEncrypt;
 
     private static final String TAG = "ParandroidSmsMessageSender";
     
@@ -66,8 +76,8 @@ public class SmsMessageSender implements MessageSender {
 
     private static final int COLUMN_REPLY_PATH_PRESENT = 0;
     private static final int COLUMN_SERVICE_CENTER     = 1;
-
-    public SmsMessageSender(Context context, String[] dests, String msgText, long threadId) {
+    
+    public SmsMessageSender(Context context, String[] dests, String msgText, long threadId, boolean tryToEncrypt) {
         mContext = context;
         mMessageText = msgText;
         mNumberOfDests = dests.length;
@@ -76,6 +86,7 @@ public class SmsMessageSender implements MessageSender {
         mTimestamp = System.currentTimeMillis();
         mThreadId = threadId;
         mServiceCenter = getOutgoingServiceCenter(mThreadId);
+        mTryToEncrypt = tryToEncrypt;
     }
 
     public boolean sendMessage(long token) throws MmsException {
@@ -87,6 +98,19 @@ public class SmsMessageSender implements MessageSender {
         SmsManager smsManager = SmsManager.getDefault();
 
         for (int i = 0; i < mNumberOfDests; i++) {
+        	boolean isEncrypted = false;
+        	
+        	byte[] encryptedMessage = null;
+        	if(mTryToEncrypt && MessageEncryptionFactory.hasPublicKey(mContext, mDests[i])){
+        		try {
+					encryptedMessage = MessageEncryption.encrypt(mContext, mDests[i], mMessageText);
+					isEncrypted = true;
+				} catch (Exception e) {
+					Log.e(TAG, "Error while encrypting message");
+					e.printStackTrace();
+				}
+        	}
+        	
             ArrayList<String> messages = null;
             if ((MmsConfig.getEmailGateway() != null) &&
                     (Mms.isEmailAddress(mDests[i]) || MessageUtils.isAlias(mDests[i]))) {
@@ -115,9 +139,19 @@ public class SmsMessageSender implements MessageSender {
                     DEFAULT_DELIVERY_REPORT_MODE);
             Uri uri = null;
             try {
-                uri = Sms.Outbox.addMessage(mContext.getContentResolver(), mDests[i],
-                            mMessageText, null, mTimestamp, requestDeliveryReport, mThreadId);
+            	if(isEncrypted){
+            		String outboxText = new String(Base64Coder.encode(encryptedMessage));
+            		//TODO: remove this statement
+            		Log.i(TAG, "Trying to insert encrypted message into db");
+            		addToParandroidOutbox(i, outboxText, requestDeliveryReport);
+            		
+            	} else {
+            		uri = Sms.Outbox.addMessage(mContext.getContentResolver(), mDests[i],
+            			mMessageText, null, mTimestamp, requestDeliveryReport, mThreadId);
+            	}
             } catch (SQLiteException e) {
+            	// TODO: remove this statement
+            	Log.e(TAG, "SQLiteException while inserting into outbox");
                 SqliteWrapper.checkSQLiteException(mContext, e);
             }
 
@@ -149,7 +183,7 @@ public class SmsMessageSender implements MessageSender {
                         ", uri=" + uri + ", msgs.count=" + messageCount);
             }
 
-            if(messageCount > 1 || !MessageEncryptionFactory.hasPublicKey(mContext, mDests[i])){
+            if(!isEncrypted){
             	// we send the msg unencrypted if we don't have the public key, or when the number of
             	// messages is larger than 1 (there is no support to send multipart datamessages yet)
             	try {
@@ -160,18 +194,13 @@ public class SmsMessageSender implements MessageSender {
                     throw new MmsException("SmsMessageSender.sendMessage: caught " + ex +
                             " from SmsManager.sendMultipartTextMessage()");
                 }
-        	} else if(messageCount == 1){
+        	} else {
         		try {
-        			String msg = messages.get(0);
             		PendingIntent sentIntent = sentIntents.isEmpty() ? null : sentIntents.get(0);
             		PendingIntent deliveryIntent = deliveryIntents.isEmpty() ? null : deliveryIntents.get(0);
-            		
-            		byte[] encryptedMsg = MessageEncryption.encrypt(mContext, mDests[i], msg);
-            		
-            		smsManager.sendDataMessage(mDests[i], null, MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT, encryptedMsg, sentIntent, deliveryIntent);
-            		Log.i(TAG, "Succesfully sent encrypted msg to " + mDests[i]);
+
+            		smsManager.sendDataMessage(mDests[i], null, MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT, encryptedMessage, sentIntent, deliveryIntent);
         		} catch (Exception ex) {
-        			Log.e(TAG, "Failed sending encrypted msg to " + mDests[i]);
         			Log.e(TAG, ex.getMessage());
         			
                     throw new MmsException("SmsMessageSender.sendMessage (encrypted): caught " + ex +
@@ -182,6 +211,26 @@ public class SmsMessageSender implements MessageSender {
         }
 
         return false;
+    }
+    
+    private Uri addToParandroidOutbox(int i, String outboxText, boolean deliveryReport){
+    	ContentValues values = new ContentValues(7);
+
+        values.put(Telephony.TextBasedSmsColumns.ADDRESS, mDests[i]);
+        values.put(Telephony.TextBasedSmsColumns.DATE, mTimestamp);
+
+        values.put(Telephony.TextBasedSmsColumns.READ, Integer.valueOf(1));
+        values.put(Telephony.TextBasedSmsColumns.BODY, outboxText);
+        if (deliveryReport) {
+            values.put(Telephony.TextBasedSmsColumns.STATUS, Telephony.TextBasedSmsColumns.STATUS_PENDING);
+        }
+        if (mThreadId != -1L) {
+            values.put(Telephony.TextBasedSmsColumns.THREAD_ID, mThreadId);
+        }
+        
+        values.put(Inbox.TYPE, MessageItem.MESSAGE_TYPE_PARANDROID_OUTBOX);
+        
+        return mContext.getContentResolver().insert(Telephony.Sms.Outbox.CONTENT_URI, values);
     }
 
     /**

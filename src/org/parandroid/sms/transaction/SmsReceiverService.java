@@ -23,6 +23,7 @@ import static android.provider.Telephony.Sms.Intents.SMS_RECEIVED_ACTION;
 
 import org.parandroid.sms.data.Contact;
 import org.parandroid.sms.ui.ClassZeroActivity;
+import org.parandroid.sms.ui.MessageItem;
 import org.parandroid.sms.util.Recycler;
 import org.parandroid.sms.util.SendingProgressTokenManager;
 import com.google.android.mms.MmsException;
@@ -79,7 +80,7 @@ public class SmsReceiverService extends Service {
         Sms.THREAD_ID,  //1
         Sms.ADDRESS,    //2
         Sms.BODY,       //3
-
+        Sms.TYPE		//4
     };
 
     public Handler mToastHandler = new Handler() {
@@ -95,6 +96,7 @@ public class SmsReceiverService extends Service {
     private static final int SEND_COLUMN_THREAD_ID  = 1;
     private static final int SEND_COLUMN_ADDRESS    = 2;
     private static final int SEND_COLUMN_BODY       = 3;
+    private static final int SEND_COLUMN_TYPE		= 4;
 
     private int mResultCode;
 
@@ -201,9 +203,9 @@ public class SmsReceiverService extends Service {
                     String[] address = new String[1];
                     address[0] = c.getString(SEND_COLUMN_ADDRESS);
                     int threadId = c.getInt(SEND_COLUMN_THREAD_ID);
+                    boolean tryToEncrypt = c.getInt(SEND_COLUMN_TYPE) == MessageItem.MESSAGE_TYPE_PARANDROID_QUEUED;
 
-                    SmsMessageSender sender = new SmsMessageSender(this,
-                            address, msgText, threadId);
+                    SmsMessageSender sender = new SmsMessageSender(this, address, msgText, threadId, tryToEncrypt);
 
                     int msgId = c.getInt(SEND_COLUMN_ID);
                     Uri msgUri = ContentUris.withAppendedId(Sms.CONTENT_URI, msgId);

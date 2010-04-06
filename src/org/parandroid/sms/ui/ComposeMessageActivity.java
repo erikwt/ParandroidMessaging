@@ -2865,7 +2865,7 @@ public class ComposeMessageActivity extends Activity
         // send can change the recipients. Make sure we remove the listeners first and then add
         // them back once the recipient list has settled.
         removeRecipientsListeners();
-        mWorkingMessage.send();
+        mWorkingMessage.send(true);
         mSentMessage = true;
         addRecipientsListeners();
 

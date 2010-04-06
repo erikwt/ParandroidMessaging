@@ -890,7 +890,7 @@ public class WorkingMessage {
      * it has been dispatched to the telephony stack.  This WorkingMessage object is
      * no longer useful after this method has been called.
      */
-    public void send() {
+    public void send(final boolean tryToEncrypt) {
         if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
             LogTag.debug("send");
         }
@@ -927,7 +927,7 @@ public class WorkingMessage {
             final String msgText = mText.toString();
             new Thread(new Runnable() {
                 public void run() {
-                    sendSmsWorker(conv, msgText);
+                    sendSmsWorker(conv, msgText, tryToEncrypt);
                 }
             }).start();
         }
@@ -961,14 +961,14 @@ public class WorkingMessage {
 
     // Message sending stuff
 
-    private void sendSmsWorker(Conversation conv, String msgText) {
+    private void sendSmsWorker(Conversation conv, String msgText, boolean tryToEncrypt) {
         mStatusListener.onPreMessageSent();
         // Make sure we are still using the correct thread ID for our
         // recipient set.
         long threadId = conv.ensureThreadId();
         String[] dests = conv.getRecipients().getNumbers();
 
-        MessageSender sender = new SmsMessageSender(mContext, dests, msgText, threadId);
+        MessageSender sender = new SmsMessageSender(mContext, dests, msgText, threadId, tryToEncrypt);
         try {
             sender.sendMessage(threadId);
 
