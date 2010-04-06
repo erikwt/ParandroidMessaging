@@ -20,7 +20,7 @@ import android.util.Log;
 
 public class EncryptedMessageReceiver extends BroadcastReceiver {
 
-	private static final String TAG = "EncryptedMessageReceiver";
+	private static final String TAG = "ParandroidEncryptedMessageReceiver";
 	public static final int NOTIFICATIONID = 31338;
 
 	@Override
@@ -62,7 +62,7 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
         // TODO: Actually insert in some database
         Log.v(TAG, "Encrypted message:");
         Log.v(TAG, "From: " + values.getAsString(Inbox.ADDRESS));
-        Log.v(TAG, new String(values.getAsByteArray(Inbox.BODY)));
+        Log.v(TAG, values.getAsString(Inbox.BODY));
 	}
 	
 	
