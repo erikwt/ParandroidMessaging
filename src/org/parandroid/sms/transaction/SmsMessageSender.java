@@ -17,9 +17,11 @@
 
 package org.parandroid.sms.transaction;
 
-
+import org.parandroid.encryption.MessageEncryption;
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.MmsConfig;
 import org.parandroid.sms.ParandroidSmsApp;
+import org.parandroid.sms.R;
 import org.parandroid.sms.ui.MessagingPreferenceActivity;
 import com.google.android.mms.MmsException;
 import com.google.android.mms.util.SqliteWrapper;
@@ -34,9 +36,13 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.Telephony.Sms;
+
 import android.provider.Telephony.Threads;
 import android.provider.Telephony.Sms.Conversations;
 import android.telephony.gsm.SmsManager;
+import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +56,9 @@ public class SmsMessageSender implements MessageSender {
     private final String mServiceCenter;
     private final long mThreadId;
     private long mTimestamp;
+
+
+    private static final String TAG = "ParandroidSmsMessageSender";
     
     // Default preference values
     private static final boolean DEFAULT_DELIVERY_REPORT_MODE  = false;
@@ -129,10 +138,43 @@ public class SmsMessageSender implements MessageSender {
                                 SmsReceiver.class),
                         0));
             }
-            smsManager.sendMultipartTextMessage(
-                    mDests[i], mServiceCenter, messages, sentIntents,
-                    deliveryIntents);
+
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.i(TAG, "sendMessage: address[" + i + "]=" + mDests[i] + ", threadId=" + mThreadId +
+                        ", uri=" + uri + ", msgs.count=" + messageCount);
+            }
+
+            if(messageCount > 1 || !MessageEncryptionFactory.hasPublicKey(mContext, mDests[i])){
+            	// we send the msg unencrypted if we don't have the public key, or when the number of
+            	// messages is larger than 1 (there is no support to send multipart datamessages yet)
+            	try {
+                    smsManager.sendMultipartTextMessage(
+                            mDests[i], mServiceCenter, messages, sentIntents,
+                            deliveryIntents);
+            	} catch (Exception ex) {
+                    throw new MmsException("SmsMessageSender.sendMessage: caught " + ex +
+                            " from SmsManager.sendMultipartTextMessage()");
+                }
+        	} else if(messageCount == 1){
+        		try {
+        			String msg = messages.get(0);
+            		PendingIntent sentIntent = sentIntents.isEmpty() ? null : sentIntents.get(0);
+            		PendingIntent deliveryIntent = deliveryIntents.isEmpty() ? null : deliveryIntents.get(0);
+            		
+            		byte[] encryptedMsg = MessageEncryption.encrypt(mContext, mDests[i], msg);
+            		
+            		smsManager.sendDataMessage(mDests[i], null, MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT, encryptedMsg, sentIntent, deliveryIntent);
+            		Log.i(TAG, "Succesfully sent encrypted msg to " + mDests[i]);
+        		} catch (Exception ex) {
+        			Log.e(TAG, "Failed sending encrypted msg to " + mDests[i]);
+        			Log.e(TAG, ex.getMessage());
+        			
+                    throw new MmsException("SmsMessageSender.sendMessage (encrypted): caught " + ex +
+                    " from SmsManager.sendDataMessage()");
+        		}
+        	}
         }
+
         return false;
     }
 

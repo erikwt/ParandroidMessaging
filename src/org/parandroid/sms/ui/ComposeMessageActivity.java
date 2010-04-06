@@ -97,7 +97,6 @@ import android.provider.Telephony.Sms;
 import android.provider.Telephony.Threads;
 import android.telephony.gsm.SmsManager;
 import android.telephony.gsm.SmsMessage;
-
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.InputFilter;
