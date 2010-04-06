@@ -610,6 +610,8 @@
     <string name="send_public_key_success">Successfully sent public key to</string>
 
     <string name="send_public_key_failure">Failed sending public key to</string>
+    <string name="send_encrypted_message_success">Succesfully sent encrypted message to</string>
+    <string name="send_encrypted_message_failure">Failed sending encrypted message to</string>
     <string name="public_key">Parandroid public key</string>
     <string name="tap_to_accept">Tap the import icon to accept this public key.</string>
     <string name="import_public_key">Import public key</string>
