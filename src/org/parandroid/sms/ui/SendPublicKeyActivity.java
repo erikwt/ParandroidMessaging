@@ -8,7 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.Contacts;
-import android.telephony.SmsManager;
+import android.telephony.gsm.SmsManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
