@@ -115,7 +115,7 @@ public abstract class MessageEncryptionFactory {
     	
     	for(String f : context.getFilesDir().list()){
     		if(f.endsWith(PUBLIC_KEY_SUFFIX) && !PUBLIC_KEY_FILENAME.equals(f))
-    			publicKeys.add(f);
+    			publicKeys.add(f.substring(0, f.length() - PUBLIC_KEY_SUFFIX.length()));
     	}
     	
     	return publicKeys;
@@ -224,6 +224,23 @@ public abstract class MessageEncryptionFactory {
     	return getKeyFileBytes(context, PUBLIC_KEY_FILENAME);
     }
 	
+    /**
+     * Check if we have the public key for the given number
+     * 
+     * @param context
+     * @param number
+     * @return boolean
+     */
+    public static boolean hasPublicKey(Context context, String number){
+    	try{
+			context.openFileInput(getPublicKeyFilename(number));
+		}catch(Exception e){
+			Log.e(TAG,e.getMessage());
+			return false;
+		}
+		return true;
+    }
+    
     
     /**
      * Check if the current device has a keypair
