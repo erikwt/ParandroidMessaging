@@ -1,6 +1,7 @@
 package org.parandroid.sms.transaction;
 
 import org.parandroid.encoding.Base64Coder;
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ui.ComposeMessageActivity;
 import org.parandroid.sms.ui.PublicKeyReceived;
@@ -25,6 +26,11 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		String uricontent = intent.getDataString();
+        String port = uricontent.substring(uricontent.lastIndexOf(":") + 1);
+        Log.v(TAG, "Reveiced package on port " + port);
+        if(Integer.parseInt(port) != MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT) return;
+
 		Log.v(TAG, "Received encrypted message");
 		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		String notificationString = context.getString(R.string.received_encrypted_message);
