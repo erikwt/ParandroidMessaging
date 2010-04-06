@@ -17,6 +17,11 @@
 
 package org.parandroid.sms.ui;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
+import org.parandroid.encoding.Base64Coder;
+import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.model.SlideModel;
@@ -50,7 +55,10 @@ import android.util.Log;
  * the formatting of which is done outside this model in MessageListItem.
  */
 public class MessageItem {
-    private static String TAG = "MessageItem";
+    private static String TAG = "Parandroid MessageItem";
+
+    public final static int MESSAGE_TYPE_PARANDROID_INBOX = 7;
+    public final static int MESSAGE_TYPE_PARANDROID_OUTBOX = 8; 
 
     final Context mContext;
     final String mType;
@@ -118,6 +126,21 @@ public class MessageItem {
                 mContact = infoCache.getContactName(context, mAddress);
             }
             mBody = cursor.getString(columnsMap.mColumnSmsBody);
+            
+            if(isEncryptedIncomingMessage()){
+            	try {
+                	// decrypt from inbox
+					mBody = MessageEncryption.decrypt(context, mAddress, Base64Coder.decode(mBody));
+				} catch (GeneralSecurityException e) {
+					Log.e(TAG, "Error decrypting message");
+					e.printStackTrace();
+				} catch (IOException e) {
+					Log.e(TAG, "Error decrypting message");
+					e.printStackTrace();
+				}
+            }else if(isEncryptedOutgoingMessage()){
+            	
+            }
             
             if (!isOutgoingMessage()) {
                 // Set "sent" time stamp
@@ -255,7 +278,15 @@ public class MessageItem {
                                     && ((mBoxId == Sms.MESSAGE_TYPE_FAILED)
                                             || (mBoxId == Sms.MESSAGE_TYPE_OUTBOX)
                                             || (mBoxId == Sms.MESSAGE_TYPE_QUEUED));
-        return isOutgoingMms || isOutgoingSms;
+        return (isOutgoingMms || isOutgoingSms) && !isEncryptedIncomingMessage();
+    }
+    
+    public boolean isEncryptedIncomingMessage(){
+    	return isSms() && mBoxId == MESSAGE_TYPE_PARANDROID_INBOX;
+    }
+    
+    public boolean isEncryptedOutgoingMessage(){
+    	return isSms() && mBoxId == MESSAGE_TYPE_PARANDROID_OUTBOX;
     }
 
     // Note: This is the only mutable field in this class.  Think of

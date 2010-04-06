@@ -1,17 +1,27 @@
 package org.parandroid.sms.transaction;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+
 import org.parandroid.encoding.Base64Coder;
+import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ui.ComposeMessageActivity;
-import org.parandroid.sms.ui.PublicKeyReceived;
+import org.parandroid.sms.ui.MessageItem;
+import org.parandroid.sms.ui.MessageListItem;
+
+import com.google.android.mms.util.SqliteWrapper;
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.provider.Telephony.Sms;
 import android.provider.Telephony.Threads;
 import android.provider.Telephony.Sms.Inbox;
@@ -39,9 +49,10 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 		if(messages.length == 0) return;
 		
 		long threadId = Threads.getOrCreateThreadId(context, messages[0].getOriginatingAddress());
+
 		Intent targetIntent = new Intent(context, ComposeMessageActivity.class);
-		insertEncryptedMessage(messages, threadId);
-				
+		insertEncryptedMessage(context, messages, threadId);
+
 		Notification n = new Notification(context, R.drawable.stat_notify_encrypted_msg, notificationString, System.currentTimeMillis(), notificationString, notificationString, targetIntent);
 		mNotificationManager.notify(NOTIFICATIONID, n);
 	}
@@ -53,22 +64,34 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 	 * @param messages
 	 * @param threadId
 	 */
-	private void insertEncryptedMessage(SmsMessage[] messages, long threadId){
+	private void insertEncryptedMessage(Context context, SmsMessage[] messages, long threadId){
 		SmsMessage msg = messages[0];
 		ContentValues values = extractContentValues(msg);
         
-        StringBuilder body = new StringBuilder();
-        for (int i = 0; i < messages.length; i++) {
-            body.append(Base64Coder.encode(messages[i].getUserData()));
-        }
-        values.put(Inbox.BODY, body.toString());
-        
+		int len = 0, offset = 0;
+		ArrayList<byte[]> dataParts = new ArrayList<byte[]>();
+		for(SmsMessage m : messages){
+			byte[] data = m.getUserData();
+			len += data.length;
+			dataParts.add(data);
+		}
+		byte[] body = new byte[len];
+		for(byte[] part : dataParts){
+			System.arraycopy(part, 0, body, offset, part.length);
+			offset += part.length;
+		}
+		
+        values.put(Inbox.BODY, new String(Base64Coder.encode(body)));
         values.put(Sms.THREAD_ID, threadId);
+        values.put(Inbox.TYPE, MessageItem.MESSAGE_TYPE_PARANDROID_INBOX);
         
-        // TODO: Actually insert in some database
-        Log.v(TAG, "Encrypted message:");
-        Log.v(TAG, "From: " + values.getAsString(Inbox.ADDRESS));
-        Log.v(TAG, values.getAsString(Inbox.BODY));
+        ContentResolver resolver = context.getContentResolver();
+        SqliteWrapper.insert(context, resolver, Inbox.CONTENT_URI, values);
+
+// Jeffrey: TODO: cupcake backporting: it looks like 1.5 does not delete old 
+// messages when they are received, to I commented these lines. @see SmsReceiverService::insertMessage()
+//        threadId = values.getAsLong(Sms.THREAD_ID);
+//        Recycler.getSmsRecycler().deleteOldMessagesByThreadId(context, threadId);
 	}
 	
 	
