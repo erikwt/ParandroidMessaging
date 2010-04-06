@@ -15,7 +15,6 @@ import android.provider.Telephony.Sms.Intents;
 import android.telephony.gsm.SmsMessage;
 import android.util.Log;
 
-
 public class PublicKeyReceiver extends BroadcastReceiver {
 
 	private static final String TAG = "PublicKeyReceiver";
