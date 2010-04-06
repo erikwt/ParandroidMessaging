@@ -143,7 +143,7 @@ public class SmsMessageSender implements MessageSender {
             		String outboxText = new String(Base64Coder.encode(encryptedMessage));
             		//TODO: remove this statement
             		Log.i(TAG, "Trying to insert encrypted message into db");
-            		addToParandroidOutbox(i, outboxText, requestDeliveryReport);
+            		addToParandroidOutbox(i, outboxText);
             		
             	} else {
             		uri = Sms.Outbox.addMessage(mContext.getContentResolver(), mDests[i],
@@ -213,17 +213,18 @@ public class SmsMessageSender implements MessageSender {
         return false;
     }
     
-    private Uri addToParandroidOutbox(int i, String outboxText, boolean deliveryReport){
+    private Uri addToParandroidOutbox(int destIndex, String outboxText){
     	ContentValues values = new ContentValues(7);
 
-        values.put(Telephony.TextBasedSmsColumns.ADDRESS, mDests[i]);
+        values.put(Telephony.TextBasedSmsColumns.ADDRESS, mDests[destIndex]);
         values.put(Telephony.TextBasedSmsColumns.DATE, mTimestamp);
 
         values.put(Telephony.TextBasedSmsColumns.READ, Integer.valueOf(1));
         values.put(Telephony.TextBasedSmsColumns.BODY, outboxText);
-        if (deliveryReport) {
-            values.put(Telephony.TextBasedSmsColumns.STATUS, Telephony.TextBasedSmsColumns.STATUS_PENDING);
-        }
+        
+        // currently we do not support delivery reports
+        values.put(Telephony.TextBasedSmsColumns.STATUS, Telephony.TextBasedSmsColumns.STATUS_NONE);
+        
         if (mThreadId != -1L) {
             values.put(Telephony.TextBasedSmsColumns.THREAD_ID, mThreadId);
         }
