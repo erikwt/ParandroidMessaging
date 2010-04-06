@@ -618,7 +618,8 @@
     <string name="import_public_key_failure">Error importing public key!</string>
 
     <string name="send_public_key_dialog">Are you sure you want to send your public key to</string>
-    <string name="received_public_key">Received parandroid public key</string>
+    <string name="received_public_key">Received Parandroid public key</string>
+    <string name="received_encrypted_message">Received Parandroid encrypted message</string>
     <string name="public_keys_saved">Public keys</string>
     <string name="public_keys_pending">Pending</string>
     <string name="delete_public_key">Delete public key</string>
