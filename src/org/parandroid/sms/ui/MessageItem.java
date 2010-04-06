@@ -58,7 +58,8 @@ public class MessageItem {
     private static String TAG = "Parandroid MessageItem";
 
     public final static int MESSAGE_TYPE_PARANDROID_INBOX = 7;
-    public final static int MESSAGE_TYPE_PARANDROID_OUTBOX = 8; 
+    public final static int MESSAGE_TYPE_PARANDROID_OUTBOX = 8;
+    public final static int MESSAGE_TYPE_PARANDROID_QUEUED = 9;
 
     final Context mContext;
     final String mType;
@@ -109,7 +110,7 @@ public class MessageItem {
             // Set contact and message body
             mBoxId = cursor.getInt(columnsMap.mColumnSmsType);
             mAddress = cursor.getString(columnsMap.mColumnSmsAddress);
-            if (Sms.isOutgoingFolder(mBoxId)) {
+            if (Sms.isOutgoingFolder(mBoxId) || isEncryptedOutgoingMessage()) {
                 String meString = context.getString(
                         R.string.messagelist_sender_self);
 
@@ -127,9 +128,8 @@ public class MessageItem {
             }
             mBody = cursor.getString(columnsMap.mColumnSmsBody);
             
-            if(isEncryptedIncomingMessage()){
+            if(isEncryptedIncomingMessage() || isEncryptedOutgoingMessage() ){
             	try {
-                	// decrypt from inbox
 					mBody = MessageEncryption.decrypt(context, mAddress, Base64Coder.decode(mBody));
 				} catch (GeneralSecurityException e) {
 					Log.e(TAG, "Error decrypting message");
@@ -138,8 +138,6 @@ public class MessageItem {
 					Log.e(TAG, "Error decrypting message");
 					e.printStackTrace();
 				}
-            }else if(isEncryptedOutgoingMessage()){
-            	
             }
             
             if (!isOutgoingMessage()) {
@@ -278,7 +276,7 @@ public class MessageItem {
                                     && ((mBoxId == Sms.MESSAGE_TYPE_FAILED)
                                             || (mBoxId == Sms.MESSAGE_TYPE_OUTBOX)
                                             || (mBoxId == Sms.MESSAGE_TYPE_QUEUED));
-        return (isOutgoingMms || isOutgoingSms) && !isEncryptedIncomingMessage();
+        return isOutgoingMms || isOutgoingSms || isEncryptedOutgoingMessage();
     }
     
     public boolean isEncryptedIncomingMessage(){

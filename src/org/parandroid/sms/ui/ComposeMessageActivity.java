@@ -3106,7 +3106,7 @@ public class ComposeMessageActivity extends Activity
             final String msgText = mMsgText.toString();
             new Thread(new Runnable() {
                 public void run() {
-                    sendSmsWorker(dests, msgText);
+                    sendSmsWorker(dests, msgText, true);
                 }
             }).start();
         }
@@ -3127,12 +3127,12 @@ public class ComposeMessageActivity extends Activity
     /**
      * Do the actual work of sending a message.  Runs outside of the main thread.
      */
-    private void sendSmsWorker(String[] dests, String msgText) {
+    private void sendSmsWorker(String[] dests, String msgText, boolean tryToEncrypt) {
         // Make sure we are still using the correct thread ID for our
         // recipient set.
         long threadId = getOrCreateThreadId(dests);
 
-        MessageSender sender = new SmsMessageSender(this, dests, msgText, threadId);
+        MessageSender sender = new SmsMessageSender(this, dests, msgText, threadId, tryToEncrypt);
         try {
             sender.sendMessage(threadId);
             setThreadId(threadId);

@@ -24,6 +24,7 @@ import com.android.internal.telephony.TelephonyIntents;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ParandroidSmsApp;
 import org.parandroid.sms.ui.ClassZeroActivity;
+import org.parandroid.sms.ui.MessageItem;
 import org.parandroid.sms.util.SendingProgressTokenManager;
 import com.google.android.mms.MmsException;
 import com.google.android.mms.util.SqliteWrapper;
@@ -73,7 +74,7 @@ public class SmsReceiverService extends Service {
         Sms.THREAD_ID,  //1
         Sms.ADDRESS,    //2
         Sms.BODY,       //3
-
+        Sms.TYPE		//4
     };
 
     public Handler mToastHandler = new Handler() {
@@ -89,6 +90,7 @@ public class SmsReceiverService extends Service {
     private static final int SEND_COLUMN_THREAD_ID  = 1;
     private static final int SEND_COLUMN_ADDRESS    = 2;
     private static final int SEND_COLUMN_BODY       = 3;
+    private static final int SEND_COLUMN_TYPE		= 4;
 
     private int mResultCode;
 
@@ -189,20 +191,29 @@ public class SmsReceiverService extends Service {
         if (c != null) {
             try {
                 if (c.moveToFirst()) {
-                    int msgId = c.getInt(SEND_COLUMN_ID);
                     String msgText = c.getString(SEND_COLUMN_BODY);
                     String[] address = new String[1];
                     address[0] = c.getString(SEND_COLUMN_ADDRESS);
                     int threadId = c.getInt(SEND_COLUMN_THREAD_ID);
+                    boolean tryToEncrypt = c.getInt(SEND_COLUMN_TYPE) == MessageItem.MESSAGE_TYPE_PARANDROID_QUEUED;
 
-                    SmsMessageSender sender = new SmsMessageSender(this,
-                            address, msgText, threadId);
+                    SmsMessageSender sender = new SmsMessageSender(this, address, msgText, threadId, tryToEncrypt);
+
+                    int msgId = c.getInt(SEND_COLUMN_ID);
+                    Uri msgUri = ContentUris.withAppendedId(Sms.CONTENT_URI, msgId);
+
+                    if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                        Log.v(TAG, "sendFirstQueuedMessage and delete old msgUri " + msgUri +
+                                ", address: " + address +
+                                ", threadId: " + threadId +
+                                ", body: " + msgText);
+                    }
+
                     try {
                         sender.sendMessage(SendingProgressTokenManager.NO_TOKEN);
 
                         // Since sendMessage adds a new message to the outbox rather than
                         // moving the old one, the old one must be deleted here
-                        Uri msgUri = ContentUris.withAppendedId(Sms.CONTENT_URI, msgId);
                         SqliteWrapper.delete(this, resolver, msgUri, null, null);
                     } catch (MmsException e) {
                         Log.e(TAG, "Failed to send message: " + e);
