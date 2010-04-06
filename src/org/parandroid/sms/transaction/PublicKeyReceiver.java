@@ -2,6 +2,7 @@ package org.parandroid.sms.transaction;
 
 import java.util.ArrayList;
 
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ui.PublicKeyReceived;
 
@@ -12,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Telephony.Sms.Intents;
 import android.telephony.SmsMessage;
+import android.util.Log;
 
 public class PublicKeyReceiver extends BroadcastReceiver {
 
@@ -20,6 +22,11 @@ public class PublicKeyReceiver extends BroadcastReceiver {
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		String uricontent = intent.getDataString();
+        String port = uricontent.substring(uricontent.lastIndexOf(":") + 1);
+        Log.v(TAG, "Reveiced package on port " + port);
+        if(Integer.parseInt(port) != MessageEncryptionFactory.PUBLIC_KEY_PORT) return;
+        
 		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		String message = context.getString(R.string.received_public_key);
 		
