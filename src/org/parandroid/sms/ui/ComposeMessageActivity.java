@@ -93,7 +93,7 @@ import android.provider.ContactsContract.CommonDataKinds.Email;
 import android.provider.Telephony.Mms;
 import android.provider.Telephony.Sms;
 import android.telephony.SmsMessage;
-import android.telephony.gsm.SmsManager;
+import android.telephony.SmsManager;
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.InputFilter;
