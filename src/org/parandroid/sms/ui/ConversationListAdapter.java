@@ -17,6 +17,7 @@
 
 package org.parandroid.sms.ui;
 
+import org.parandroid.encoding.Base64Coder;
 import org.parandroid.sms.R;
 import org.parandroid.sms.util.ContactInfoCache;
 import org.parandroid.sms.util.DraftCache;
@@ -210,8 +211,11 @@ public class ConversationListAdapter extends CursorAdapter {
                 threadId = cursor.getLong(COLUMN_ID);
                 spaceSeparatedRcptIds = cursor.getString(COLUMN_RECIPIENTS_IDS);
                 from = getFromTextFromMessageThread(spaceSeparatedRcptIds);
+                
                 subject = MessageUtils.extractEncStrFromCursor(
                         cursor, COLUMN_SNIPPET, COLUMN_SNIPPET_CHARSET);
+                
+                
                 date = cursor.getLong(COLUMN_DATE);
                 read = cursor.getInt(COLUMN_READ) != 0;
                 error = cursor.getInt(COLUMN_ERROR) != 0;
@@ -276,6 +280,15 @@ public class ConversationListAdapter extends CursorAdapter {
 
             if (TextUtils.isEmpty(subject)) {
                 subject = mContext.getString(R.string.no_subject_view);
+            }else if(subject.indexOf(" ") == -1){
+				// No space, might be encrypted
+				try{
+					Base64Coder.decode(subject);
+					// Encrypted message detected, show parandroid snippet
+					subject = context.getString(R.string.parandroid_snippet);
+				}catch(Exception e){
+				// 	Not base64, so not encrypted.
+				}
             }
 
             if (LOCAL_LOGV) Log.v(TAG, "pre-create ConversationHeader");
