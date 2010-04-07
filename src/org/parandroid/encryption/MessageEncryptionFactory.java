@@ -23,7 +23,10 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.DHParameterSpec;
 
+import org.parandroid.sms.ui.InsertPasswordActivity;
+
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 public abstract class MessageEncryptionFactory {
@@ -31,7 +34,7 @@ public abstract class MessageEncryptionFactory {
 	public static final short PUBLIC_KEY_PORT = 31337;
 	public static final short ENCRYPTED_MESSAGE_PORT = 31338;
 
-	private static final String TAG = "MessageEncryptionFactory";
+	private static final String TAG = "Parandroid MessageEncryptionFactory";
 
 	protected static final String PUBLIC_KEY_FILENAME = "self.pub";
 	protected static final String PRIVATE_KEY_FILENAME = "self.priv";
@@ -39,6 +42,9 @@ public abstract class MessageEncryptionFactory {
 	
 	protected static final String KEY_EXCHANGE_PROTOCOL = "DH";
 	protected static final String ENCRYPTION_ALGORITHM = "AES";
+	
+	public static String password = null;
+	public static boolean passwordDialogPending = false;
 	
 	/**
 	 * Diffie Hellman parameters P and G. Diffie-Hellman establishes a shared secret that can be 
@@ -95,7 +101,13 @@ public abstract class MessageEncryptionFactory {
      * @throws GeneralSecurityException
      */
     public static SecretKey generateSecretKey(PrivateKey privateKey, PublicKey publicKey) throws NoSuchAlgorithmException, GeneralSecurityException {
-        KeyAgreement ka = KeyAgreement.getInstance(KEY_EXCHANGE_PROTOCOL);
+        if(privateKey == null)
+        	throw new GeneralSecurityException("Missing private key");
+        
+        if(publicKey == null)
+        	throw new GeneralSecurityException("Missing public key");
+    	
+    	KeyAgreement ka = KeyAgreement.getInstance(KEY_EXCHANGE_PROTOCOL);
         ka.init(privateKey);
         ka.doPhase(publicKey, true);
         
@@ -172,13 +184,26 @@ public abstract class MessageEncryptionFactory {
      * @throws InvalidKeySpecException
      */
     public static PrivateKey getPrivateKey(Context context) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{
-    	byte[] keyBytes = getKeyFileBytes(context, PRIVATE_KEY_FILENAME);
+    	if(passwordInMemory()){
+    		byte[] keyBytes = getKeyFileBytes(context, PRIVATE_KEY_FILENAME);
+        	
+        	PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
+    		KeyFactory kf = KeyFactory.getInstance(KEY_EXCHANGE_PROTOCOL);
+    		PrivateKey privateKey = kf.generatePrivate(spec);
+        	
+        	return privateKey;
+    	} 
     	
-    	PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-		KeyFactory kf = KeyFactory.getInstance(KEY_EXCHANGE_PROTOCOL);
-		PrivateKey privateKey = kf.generatePrivate(spec);
+    	if(!passwordDialogPending){
+    		passwordDialogPending = true;
+    		
+    		Log.i(TAG, "The password is disabled. User needs to enter it again");
+    		
+    		Intent intent = new Intent(context, InsertPasswordActivity.class);
+            context.startActivity(intent);
+    	} 
     	
-    	return privateKey;
+    	return null;
     }
     
     
@@ -288,4 +313,22 @@ public abstract class MessageEncryptionFactory {
 		
 		return keyBytes;
     }
+    
+    /**
+     * Disables the password, forcing the user to insert it again when trying
+     * to read encrypted messages.
+     */
+    public static void forgetPassword(){
+    	password = null;
+    	Log.i(TAG, "Disabled the password");
+    }
+    
+    public static boolean passwordInMemory(){
+    	return password != null;
+    }
+    
+    public static void setPassword(String password){
+    	MessageEncryptionFactory.password = password;
+    }
+    
 }
