@@ -106,6 +106,9 @@ public class ConversationList extends ListActivity
     private static final int MENU_ADD_TO_CONTACTS      = 3;
     private static final int MENU_SEND_IM              = 4;
 
+    
+    public static final int REQUEST_CODE_SET_PASSWORD = 0;
+
     private ThreadListQueryHandler mQueryHandler;
     private ConversationListAdapter mListAdapter;
     private CharSequence mTitle;
@@ -399,6 +402,17 @@ public class ConversationList extends ListActivity
     }
 
 	private void generateKeypair() {
+		if(MessageEncryptionFactory.isAuthenticating()) return;
+        
+    	if(!MessageEncryptionFactory.isAuthenticated()){
+    		MessageEncryptionFactory.setAuthenticating(true);
+    		
+    		Intent intent = new Intent(this, SetPasswordActivity.class);
+        	startActivityForResult(intent, REQUEST_CODE_SET_PASSWORD);
+        	
+        	return;
+        }
+    	
 		ProgressDialog generateKeypairProgressDialog = ProgressDialog.show(ConversationList.this, "", getString(R.string.generating_keypair), true);
 		Toast generateKeypairErrorToast = Toast.makeText(ConversationList.this, R.string.generated_keypair_failure, Toast.LENGTH_SHORT);
 		
@@ -415,6 +429,18 @@ public class ConversationList extends ListActivity
 			generateKeypairErrorToast.show();             	 
 		}
 	}
+	
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	switch(requestCode){
+    	case REQUEST_CODE_SET_PASSWORD:
+    		generateKeypair();
+    		
+    	default:
+    		Log.i(TAG, "Unknown requestCode for onActivityResult: " + requestCode);
+    		break;
+    	}
+    }
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
