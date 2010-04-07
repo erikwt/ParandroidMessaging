@@ -16,6 +16,7 @@ import android.provider.Telephony.Sms.Conversations;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.parandroid.encoding.Base64Coder;
 import org.parandroid.sms.R;
 import org.parandroid.sms.LogTag;
 import org.parandroid.sms.transaction.MessagingNotification;
@@ -507,6 +508,15 @@ public class Conversation {
             String snippet = MessageUtils.extractEncStrFromCursor(c, SNIPPET, SNIPPET_CS);
             if (TextUtils.isEmpty(snippet)) {
                 snippet = context.getString(R.string.no_subject_view);
+            }else if(snippet.indexOf(" ") == -1){
+            	// No space, might be encrypted
+            	try{
+            		Base64Coder.decode(snippet);
+            		// Encrypted message detected, show parandroid snippet
+            		snippet = context.getString(R.string.parandroid_snippet);
+            	}catch(Exception e){
+            		// Not base64, so not encrypted.
+            	}
             }
             conv.mSnippet = snippet;
 

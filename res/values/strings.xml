@@ -695,6 +695,7 @@
 
     <!-- Parandroid SMS -->
     <string name="app_label">Parandroid Messaging</string>
+    <string name="parandroid_snippet">Parandroid encrypted message</string>
     
     <string name="menu_send_public_key">Send public key</string>
     <string name="menu_generate_keypair">Generate new keypair</string>
