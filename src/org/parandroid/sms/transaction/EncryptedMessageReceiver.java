@@ -9,7 +9,9 @@ import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ui.ComposeMessageActivity;
+import org.parandroid.sms.ui.EncryptedMessageNotificationActivity;
 import org.parandroid.sms.ui.MessageItem;
+import org.parandroid.sms.ui.MessageUtils;
 import org.parandroid.sms.util.Recycler;
 import org.parandroid.sms.ui.MessageListItem;
 
@@ -50,11 +52,16 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 		if(messages.length == 0) return;
 		
 		long threadId = Threads.getOrCreateThreadId(context, messages[0].getOriginatingAddress());
-		Intent targetIntent = ComposeMessageActivity.createIntent(context, threadId);
 		insertEncryptedMessage(context, messages, threadId);
 		
+		int notificationId = MessageUtils.getNotificationId(messages[0].getOriginatingAddress());
+
+		Intent targetIntent = new Intent(context, EncryptedMessageNotificationActivity.class);
+		targetIntent.putExtra("notificationId", notificationId);
+		targetIntent.putExtra("threadId", threadId);
+		
 		Notification n = new Notification(context, R.drawable.stat_notify_encrypted_msg, notificationString, System.currentTimeMillis(), notificationString, notificationString, targetIntent);
-		mNotificationManager.notify(NOTIFICATIONID, n);
+		mNotificationManager.notify(notificationId, n);
 	}
 	
 	

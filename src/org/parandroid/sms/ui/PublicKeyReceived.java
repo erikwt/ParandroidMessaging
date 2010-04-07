@@ -2,7 +2,6 @@ package org.parandroid.sms.ui;
 
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
-import org.parandroid.sms.transaction.PublicKeyReceiver;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,12 +21,12 @@ public class PublicKeyReceived extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mNotificationManager.cancel(PublicKeyReceiver.NOTIFICATIONID);
-		
 		Intent i = getIntent();
-		final String sender = (String) i.getExtra("sender");
-		final byte[] publicKey = (byte[]) i.getExtra("publickey");
+		final String sender = i.getStringExtra("sender");
+		final byte[] publicKey = i.getByteArrayExtra("publickey");
+
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		mNotificationManager.cancel(i.getIntExtra("notificationId", MessageUtils.DEFAULT_NOTIFICATION_ID));
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(getText(R.string.import_public_key_dialog) + " " + sender)
@@ -36,17 +35,18 @@ public class PublicKeyReceived extends Activity {
 		   	 	.setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		                try {
-		                	// TODO: Get message and save key
 							MessageEncryptionFactory.savePublicKey(PublicKeyReceived.this, sender, publicKey);
 							Toast.makeText(PublicKeyReceived.this, R.string.import_public_key_success, Toast.LENGTH_SHORT).show();
 						} catch (Exception e) {
 							Log.e(TAG, e.getMessage());
 							Toast.makeText(PublicKeyReceived.this, R.string.import_public_key_failure, Toast.LENGTH_SHORT).show();
 						}
+						finish();
 		           }
 		       }).setNegativeButton(PublicKeyReceived.this.getText(R.string.no), new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		                dialog.cancel();
+						finish();
 		           }
 		       });
 		
