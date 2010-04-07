@@ -8,6 +8,7 @@ import java.io.File;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -15,19 +16,29 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyAgreement;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DHParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.parandroid.sms.ui.InsertPasswordActivity;
 import org.parandroid.sms.util.ContactInfoCache;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.GetChars;
 import android.util.Log;
 
 public abstract class MessageEncryptionFactory {
@@ -43,9 +54,16 @@ public abstract class MessageEncryptionFactory {
 	
 	protected static final String KEY_EXCHANGE_PROTOCOL = "DH";
 	protected static final String ENCRYPTION_ALGORITHM = "AES";
+	protected static final String PRIVATE_KEY_ENCRYPTION_ALGORITHM = "PBEWithMD5AndDES";
+	
+	protected static final byte[] PRIVATE_KEY_ENCRYPTION_SALT = {
+        (byte)0xc7, (byte)0x73, (byte)0x21, (byte)0x8c,
+        (byte)0x7e, (byte)0xc8, (byte)0xee, (byte)0x99
+    };
+	
 	
 	public static String password = null;
-	public static boolean passwordDialogPending = false;
+	private static boolean isAuthenticating = false;
 	
 	/**
 	 * Diffie Hellman parameters P and G. Diffie-Hellman establishes a shared secret that can be 
@@ -67,8 +85,14 @@ public abstract class MessageEncryptionFactory {
 	* @throws NoSuchAlgorithmException
 	* @throws IOException 
 	* @throws InvalidAlgorithmParameterException 
+	 * @throws BadPaddingException 
+	 * @throws IllegalBlockSizeException 
+	 * @throws NoSuchPaddingException 
+	 * @throws InvalidKeyException 
+	 * @throws InvalidKeySpecException 
 	*/
-    public static KeyPair generateKeyPair(Context context) throws NoSuchAlgorithmException, IOException, InvalidAlgorithmParameterException {  	
+    public static KeyPair generateKeyPair(Context context) throws Exception {  	
+    	
     	KeyPairGenerator keyGen = KeyPairGenerator.getInstance(KEY_EXCHANGE_PROTOCOL);
         DHParameterSpec dhSpec = new DHParameterSpec(P, G);
         keyGen.initialize(dhSpec);
@@ -79,7 +103,7 @@ public abstract class MessageEncryptionFactory {
 		FileOutputStream privOut = context.openFileOutput(PRIVATE_KEY_FILENAME, Context.MODE_PRIVATE);
 		
 		pubOut.write(keyPair.getPublic().getEncoded());
-		privOut.write(keyPair.getPrivate().getEncoded());
+		privOut.write(encryptPrivateKey(keyPair.getPrivate()));
 		
 		pubOut.flush();
 		privOut.flush();
@@ -88,7 +112,7 @@ public abstract class MessageEncryptionFactory {
         privOut.close();
         
 	    return keyPair;
-	}
+    }
     
     
     /**
@@ -188,28 +212,23 @@ public abstract class MessageEncryptionFactory {
      * @throws IOException
      * @throws NoSuchAlgorithmException
      * @throws InvalidKeySpecException
+     * @throws BadPaddingException 
+     * @throws IllegalBlockSizeException 
+     * @throws NoSuchPaddingException 
+     * @throws InvalidKeyException 
      */
-    public static PrivateKey getPrivateKey(Context context) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{
-    	if(passwordInMemory()){
-    		byte[] keyBytes = getKeyFileBytes(context, PRIVATE_KEY_FILENAME);
-        	
-        	PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-    		KeyFactory kf = KeyFactory.getInstance(KEY_EXCHANGE_PROTOCOL);
-    		PrivateKey privateKey = kf.generatePrivate(spec);
-        	
-        	return privateKey;
-    	} 
+    public static PrivateKey getPrivateKey(Context context) throws Exception {
     	
-    	if(!passwordDialogPending){
-    		passwordDialogPending = true;
-    		
-    		Log.i(TAG, "The password is disabled. User needs to enter it again");
-    		
-    		Intent intent = new Intent(context, InsertPasswordActivity.class);
-            context.startActivity(intent);
-    	} 
+    	if(!isAuthenticated()) return null;
     	
-    	return null;
+		byte[] keyBytes = getKeyFileBytes(context, PRIVATE_KEY_FILENAME);
+    	byte[] pk = decryptPrivateKey(keyBytes);
+		
+    	PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(pk);
+		KeyFactory kf = KeyFactory.getInstance(KEY_EXCHANGE_PROTOCOL);
+		PrivateKey privateKey = kf.generatePrivate(spec);
+    	
+    	return privateKey;
     }
     
     
@@ -299,6 +318,31 @@ public abstract class MessageEncryptionFactory {
 		return true;
 	}
     
+    /**
+     * Disables the password, forcing the user to insert it again when trying
+     * to read encrypted messages.
+     */
+    public static void forgetPassword(){
+    	password = null;
+    	Log.i(TAG, "Disabled the password");
+    }
+    
+    public static boolean isAuthenticated(){
+    	return password != null;
+    }
+    
+    public static void setPassword(String password){
+    	MessageEncryptionFactory.password = password;
+    }
+    
+    public static boolean isAuthenticating(){
+    	return isAuthenticating;
+    }
+    
+    public static void setAuthenticating(boolean auth){
+    	isAuthenticating = auth;
+    }
+    
 	
 	/**
 	 * Get the raw bytes of a file
@@ -320,21 +364,31 @@ public abstract class MessageEncryptionFactory {
 		return keyBytes;
     }
     
-    /**
-     * Disables the password, forcing the user to insert it again when trying
-     * to read encrypted messages.
-     */
-    public static void forgetPassword(){
-    	password = null;
-    	Log.i(TAG, "Disabled the password");
+    private static Cipher getCipher(int mode) throws Exception {
+    	if(!isAuthenticated()) return null;
+
+    	char[] passwordChars = new char[password.length()];
+    	password.getChars(0, password.length() - 1, passwordChars, 0);
+    	
+    	PBEParameterSpec pbeParamSpec = new PBEParameterSpec(MessageEncryptionFactory.PRIVATE_KEY_ENCRYPTION_SALT, 20);
+    	PBEKeySpec pbeKeySpec = new PBEKeySpec(passwordChars);
+    	
+        SecretKeyFactory keyFac = SecretKeyFactory.getInstance(MessageEncryptionFactory.PRIVATE_KEY_ENCRYPTION_ALGORITHM);
+        SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
+
+        Cipher cipher = Cipher.getInstance(MessageEncryptionFactory.PRIVATE_KEY_ENCRYPTION_ALGORITHM);
+    	cipher.init(mode, pbeKey, pbeParamSpec);
+    	
+    	return cipher;
     }
     
-    public static boolean passwordInMemory(){
-    	return password != null;
+    private static byte[] encryptPrivateKey(PrivateKey pk) throws Exception {
+    	Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
+        return cipher.doFinal(pk.getEncoded());
     }
     
-    public static void setPassword(String password){
-    	MessageEncryptionFactory.password = password;
+    private static byte[] decryptPrivateKey(byte[] cipherText) throws Exception {
+    	Cipher cipher = getCipher(Cipher.DECRYPT_MODE);
+        return cipher.doFinal(cipherText);
     }
-    
 }
