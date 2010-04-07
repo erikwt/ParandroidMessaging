@@ -22,7 +22,6 @@ import java.security.GeneralSecurityException;
 
 import org.parandroid.encoding.Base64Coder;
 import org.parandroid.encryption.MessageEncryption;
-import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.model.SlideModel;
 import org.parandroid.sms.model.SlideshowModel;
