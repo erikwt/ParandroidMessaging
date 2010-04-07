@@ -1,44 +1,53 @@
 package org.parandroid.sms.ui;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 
 import android.app.Activity;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.view.MenuItem;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class PublicKeyManagerActivity extends Activity {
 
 	private static final String TAG = "PublicKeyManagerActivity";
     private static final int CONTEXT_MENU_DELETE = 0;
 
-    private ArrayList<String> publicKeys;
+    private String[] numbers, descriptions;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.public_key_manager);
+	    setTitle(R.string.menu_manage_public_keys);
 	    init();
 	}
     
     private void init(){
-        final ArrayList<String> items = MessageEncryptionFactory.getPublicKeys(this);
-        publicKeys = items;
+        HashMap<String,String> items = MessageEncryptionFactory.getPublicKeyList(this);
 	    ListView publicKeysList = (ListView) findViewById(R.id.public_keys);
-        registerForContextMenu(publicKeysList);
-	    final ArrayAdapter<String> publicKeys = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);
+	    
+        if(items.size() == 0){
+        	descriptions = new String[]{ getString(R.string.no_public_keys) };
+        	unregisterForContextMenu(publicKeysList);
+        }else{
+        	registerForContextMenu(publicKeysList);
+            String[] stringArray = new String[]{};
+            numbers = items.keySet().toArray(stringArray);
+            this.descriptions = items.values().toArray(stringArray);
+        }
+
+        final String[] descriptionList = this.descriptions;
+	    final ArrayAdapter<String> publicKeys = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, descriptionList);
 	    publicKeysList.setAdapter(publicKeys);
     }
 
@@ -53,11 +62,11 @@ public class PublicKeyManagerActivity extends Activity {
             case CONTEXT_MENU_DELETE:
                 AlertDialog.Builder generateKeypairDialogBuilder = new AlertDialog.Builder(this);
         	    generateKeypairDialogBuilder.setMessage(getText(R.string.delete_public_key_dialog))
-        		   .setTitle(getText(R.string.delete_public_key))
+        		   .setTitle(descriptions[info.position])
         		   .setCancelable(false)
         	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
         	           public void onClick(DialogInterface dialog, int id) {
-                            MessageEncryptionFactory.deletePublicKey(PublicKeyManagerActivity.this, publicKeys.get(info.position));
+                            MessageEncryptionFactory.deletePublicKey(PublicKeyManagerActivity.this, numbers[info.position]);
                             init();
         	           }
         	       })
