@@ -79,7 +79,11 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteException;
+
 import android.graphics.Bitmap;
+import android.drm.mobile1.DrmException;
+import android.drm.mobile1.DrmRawContent;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -170,8 +174,10 @@ public class ComposeMessageActivity extends Activity
     public static final int REQUEST_CODE_ATTACH_SOUND     = 14;
     public static final int REQUEST_CODE_RECORD_SOUND     = 15;
     public static final int REQUEST_CODE_CREATE_SLIDESHOW = 16;
-    
-    private static final String TAG = "ComposeMessageActivity";
+    public static final int REQUEST_CODE_ECM_EXIT_DIALOG  = 17;
+
+    private static final String TAG = "Parandroid ComposeMessageActivity";
+
     private static final boolean DEBUG = false;
     private static final boolean TRACE = false;
     private static final boolean LOCAL_LOGV = DEBUG ? Config.LOGD : Config.LOGV;

@@ -42,10 +42,10 @@ import org.parandroid.sms.ParandroidSmsApp;
  * </ul>
  */
 public class MmsSystemEventReceiver extends BroadcastReceiver {
-    private static final String TAG = "MmsSystemEventReceiver";
+    private static final String TAG = "Parandroid MmsSystemEventReceiver";
 
     private static void wakeUpService(Context context) {
-        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.v(TAG, "wakeUpService: start transaction service ...");
         }
 
@@ -54,7 +54,7 @@ public class MmsSystemEventReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.v(TAG, "Intent received: " + intent);
         }
 
@@ -65,7 +65,7 @@ public class MmsSystemEventReceiver extends BroadcastReceiver {
         } else if (action.equals(TelephonyIntents.ACTION_ANY_DATA_CONNECTION_STATE_CHANGED)) {
             String state = intent.getStringExtra(Phone.STATE_KEY);
 
-            if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "ANY_DATA_STATE event received: " + state);
             }
 
