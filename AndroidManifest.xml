@@ -286,7 +286,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ui.InsertPasswordActivity">
+        <activity android:name=".ui.AuthenticateActivity">
         </activity>
         
         <activity android:name=".ui.EncryptedMessageNotificationActivity">

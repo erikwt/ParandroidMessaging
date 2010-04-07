@@ -175,6 +175,7 @@ public class ComposeMessageActivity extends Activity
     public static final int REQUEST_CODE_RECORD_SOUND     = 15;
     public static final int REQUEST_CODE_CREATE_SLIDESHOW = 16;
     public static final int REQUEST_CODE_ECM_EXIT_DIALOG  = 17;
+    public static final int REQUEST_CODE_AUTHENTICATE	  = 18;
 
     private static final String TAG = "Parandroid ComposeMessageActivity";
 
@@ -215,9 +216,7 @@ public class ComposeMessageActivity extends Activity
 
     private static final int SUBJECT_MAX_LENGTH    =  40;
     private static final int RECIPIENTS_MAX_LENGTH = 312;
-
     private static final int MESSAGE_LIST_QUERY_TOKEN = 9527;
-
     private static final int DELETE_MESSAGE_TOKEN  = 9700;
     private static final int DELETE_CONVERSATION_TOKEN  = 9701;
 
@@ -229,7 +228,7 @@ public class ComposeMessageActivity extends Activity
     private static final int MMS_THRESHOLD = 4;
 
     private static final int CHARS_REMAINING_BEFORE_COUNTER_SHOWN = 10;
-
+    
     private static final long NO_DATE_FOR_DIALOG = -1L;
     
     private static final int REFRESH_PRESENCE = 45236;
@@ -2241,12 +2240,20 @@ public class ComposeMessageActivity extends Activity
                     + ", resultCode=" + resultCode + ", data=" + data);
         }
         mWaitingForSubActivity = false;     // We're back!
-        
-        if (resultCode != RESULT_OK) {
-            // Make sure if there was an error that our message
-            // type remains correct.
-            convertMessageIfNeeded(HAS_ATTACHMENT, hasAttachment());
-            return;
+
+        if(requestCode != REQUEST_CODE_AUTHENTICATE){
+	        // If there's no data (because the user didn't select a picture and
+	        // just hit BACK, for example), there's nothing to do.
+	        if (requestCode != REQUEST_CODE_TAKE_PICTURE) {
+	            if (data == null) {
+	                return;
+	            }
+	        } else if (resultCode != RESULT_OK) {
+	            // Make sure if there was an error that our message
+	            // type remains correct.
+	            convertMessageIfNeeded(HAS_ATTACHMENT, hasAttachment());
+	            return;
+	        }
         }
 
         if (!requiresMms()) {
@@ -2343,6 +2350,10 @@ public class ComposeMessageActivity extends Activity
                             getResourcesString(R.string.failed_to_add_media, getAudioString()));
                 }
                 break;
+                
+            case REQUEST_CODE_AUTHENTICATE:
+            	sendMessage();
+            	break;
 
             default:
                 // TODO
@@ -3077,10 +3088,25 @@ public class ComposeMessageActivity extends Activity
         recipients.addAll(Arrays.asList(numbers));
         return Threads.getOrCreateThreadId(this, recipients);
     }
-
-
+    
     private void sendMessage() {
-        // Need this for both SMS and MMS.
+    	final boolean tryToEncrypt = true;
+    	
+        if(tryToEncrypt){
+	    	if(MessageEncryptionFactory.isAuthenticating()) return;
+	        
+	    	if(!MessageEncryptionFactory.isAuthenticated()){
+	    		MessageEncryptionFactory.setAuthenticating(true);
+	    		mWaitingForSubActivity = true;
+	    		
+	    		Intent intent = new Intent(this, AuthenticateActivity.class);
+	        	startActivityForResult(intent, REQUEST_CODE_AUTHENTICATE);
+	        	
+	        	return;
+	        }
+        }
+    	
+    	// Need this for both SMS and MMS.
         final String[] dests = mRecipientList.getToNumbers();
         
         // removeSubjectIfEmpty will convert a message that is solely an MMS
@@ -3112,7 +3138,7 @@ public class ComposeMessageActivity extends Activity
             final String msgText = mMsgText.toString();
             new Thread(new Runnable() {
                 public void run() {
-                    sendSmsWorker(dests, msgText, true);
+                    sendSmsWorker(dests, msgText, tryToEncrypt);
                 }
             }).start();
         }
