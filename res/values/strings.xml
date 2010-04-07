@@ -715,6 +715,7 @@
     <string name="confirm_password">Confirm password</string>
     <string name="passwords_dont_match">Passwords don\'t match, try again</string>
     <string name="passwords_too_short">Password too short, minimal length is:</string>
+    <string name="wrong_password">Wrong password, try again</string>
     
     <string name="send_public_key_success">Successfully sent public key to</string>
     <string name="send_public_key_failure">Failed sending public key to</string>
