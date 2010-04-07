@@ -140,12 +140,21 @@ public abstract class MessageEncryptionFactory {
     
     
     /**
-     * Get the local filename of a stored public key
+     * Get the local filename of a stored public key.
+     * Trailing country-codes will be omitted
      * 
      * @param number
      * @return filename
      */
     public static String getPublicKeyFilename(String number){
+    	try{
+	    	if(number.startsWith("00")) 	number = number.substring(4);
+	    	else if(number.startsWith("0"))	number = number.substring(3);
+	    	else if(number.startsWith("+")) number = number.substring(3);
+    	}catch(Exception e){
+    		Log.e(TAG, "Unknown number format detected. Number: " + number);
+    	}
+    	
     	return number.concat(PUBLIC_KEY_SUFFIX);
     }
     
