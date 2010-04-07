@@ -12,6 +12,7 @@ import org.parandroid.sms.ui.ComposeMessageActivity;
 import org.parandroid.sms.ui.EncryptedMessageNotificationActivity;
 import org.parandroid.sms.ui.MessageItem;
 import org.parandroid.sms.ui.MessageUtils;
+import org.parandroid.sms.ui.MessagingPreferenceActivity;
 import org.parandroid.sms.util.Recycler;
 import org.parandroid.sms.ui.MessageListItem;
 
@@ -24,12 +25,15 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.provider.Telephony.Sms;
 import android.provider.Telephony.Threads;
 import android.provider.Telephony.Sms.Inbox;
 import android.provider.Telephony.Sms.Intents;
 import android.telephony.SmsMessage;
+import android.text.TextUtils;
 import android.util.Log;
 
 public class EncryptedMessageReceiver extends BroadcastReceiver {
@@ -61,6 +65,21 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 		targetIntent.putExtra("threadId", threadId);
 		
 		Notification n = new Notification(context, R.drawable.stat_notify_encrypted_msg, notificationString, System.currentTimeMillis(), notificationString, notificationString, targetIntent);
+		
+		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+		if (sp.getBoolean(MessagingPreferenceActivity.NOTIFICATION_ENABLED, true)) {
+			if(sp.getBoolean(MessagingPreferenceActivity.NOTIFICATION_VIBRATE, true))
+				n.defaults |= Notification.DEFAULT_VIBRATE;
+			
+			String ringtoneStr = sp.getString(MessagingPreferenceActivity.NOTIFICATION_RINGTONE, null);
+			n.sound = TextUtils.isEmpty(ringtoneStr) ? null : Uri.parse(ringtoneStr);
+			
+			n.flags |= Notification.FLAG_SHOW_LIGHTS;
+	        n.ledARGB = 0xff00ff00;
+	        n.ledOnMS = 500;
+	        n.ledOffMS = 2000;
+        }
+		
 		mNotificationManager.notify(notificationId, n);
 	}
 	
