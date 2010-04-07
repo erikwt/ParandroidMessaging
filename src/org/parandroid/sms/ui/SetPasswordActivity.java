@@ -1,6 +1,5 @@
 package org.parandroid.sms.ui;
 
-
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 
@@ -11,30 +10,41 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
-public class AuthenticateActivity extends Activity implements OnClickListener {
+public class SetPasswordActivity extends Activity implements OnClickListener {
 
-	private static final String TAG = "Parandroid AuthenticateActivity";
-		
+	private static final String TAG = "Parandroid SetPasswordActivity";
+	
 	private EditText passwordField;
+	private EditText passwordConfirmField;
 	private Button submitButton;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        setContentView(R.layout.authenticate_activity);
+        setContentView(R.layout.set_password_activity);
         
         submitButton = (Button) findViewById(R.id.submitbutton);
         submitButton.setOnClickListener(this);
         
         passwordField = (EditText) findViewById(R.id.password);  
         passwordField.setHint(getString(R.string.enter_password));
+        
+        passwordConfirmField = (EditText) findViewById(R.id.password_confirm);  
+        passwordConfirmField.setHint(getString(R.string.confirm_password));
     }
     
     public void onClick(View v) {		
 		if(v.equals(submitButton)){
 			String password = passwordField.getText().toString(); 
+			String passwordConfirm = passwordConfirmField.getText().toString();
+			
+			if(!password.equals(passwordConfirm)){
+				Toast.makeText(this, R.string.passwords_dont_match, Toast.LENGTH_SHORT);
+				return;
+			}
 			
 			MessageEncryptionFactory.setPassword(password);
 			MessageEncryptionFactory.setAuthenticating(false);
@@ -48,4 +58,5 @@ public class AuthenticateActivity extends Activity implements OnClickListener {
     	super.onStop();
 		MessageEncryptionFactory.setAuthenticating(false);
     }
+	
 }
