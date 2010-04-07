@@ -17,9 +17,15 @@
 
 package org.parandroid.sms.ui;
 
-import java.io.IOException;
 import java.util.Map;
 
+import org.parandroid.encryption.MessageEncryptionFactory;
+import org.parandroid.sms.R;
+import org.parandroid.sms.transaction.Transaction;
+import org.parandroid.sms.transaction.TransactionBundle;
+import org.parandroid.sms.transaction.TransactionService;
+import org.parandroid.sms.util.DownloadManager;
+import org.parandroid.sms.util.SmileyParser;
 import com.google.android.mms.pdu.PduHeaders;
 import com.google.android.mms.pdu.PduPersister;
 
@@ -29,8 +35,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
+
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
@@ -48,13 +56,11 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.style.AbsoluteSizeSpan;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.LineBackgroundSpan;
 import android.text.style.StyleSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -64,16 +70,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.parandroid.encryption.MessageEncryptionFactory;
-import org.parandroid.sms.R;
-import org.parandroid.sms.transaction.Transaction;
-import org.parandroid.sms.transaction.TransactionBundle;
-import org.parandroid.sms.transaction.TransactionService;
-import org.parandroid.sms.util.DownloadManager;
-import org.parandroid.sms.util.SmileyParser;
-import com.google.android.mms.pdu.PduHeaders;
 
 /**
  * This class provides view of a message in the messages list.
