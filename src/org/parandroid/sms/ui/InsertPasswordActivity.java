@@ -40,8 +40,8 @@ public class InsertPasswordActivity extends Activity implements OnClickListener 
 			
 			// TODO: check if the password is correct?
 			MessageEncryptionFactory.setPassword(password);
+			MessageEncryptionFactory.setAuthenticating(false);
 			
-			MessageEncryptionFactory.passwordDialogPending = false;
 			finish();
 		}
 	}

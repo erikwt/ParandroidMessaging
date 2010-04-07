@@ -32,7 +32,7 @@ public abstract class MessageEncryption {
 	 * @throws GeneralSecurityException
 	 * @throws IOException - Key(s) missing
 	 */
-	public static byte[] encrypt(Context context, String number, String text) throws GeneralSecurityException, IOException{
+	public static byte[] encrypt(Context context, String number, String text) throws Exception {
 		PrivateKey privateKey = MessageEncryptionFactory.getPrivateKey(context);
 		PublicKey publicKey  = MessageEncryptionFactory.getPublicKey(context, number);
 		SecretKey secretKey = MessageEncryptionFactory.generateSecretKey(privateKey, publicKey);
@@ -57,7 +57,7 @@ public abstract class MessageEncryption {
 	 * @throws GeneralSecurityException
 	 * @throws IOException - Key(s) missing
 	 */
-	public static String decrypt(Context context, String number, byte[] cipherText) throws GeneralSecurityException, IOException{		
+	public static String decrypt(Context context, String number, byte[] cipherText) throws Exception {		
 		PrivateKey privateKey = MessageEncryptionFactory.getPrivateKey(context);
 		PublicKey publicKey  = MessageEncryptionFactory.getPublicKey(context, number);
 		

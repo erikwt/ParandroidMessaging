@@ -22,6 +22,7 @@ import java.security.GeneralSecurityException;
 
 import org.parandroid.encoding.Base64Coder;
 import org.parandroid.encryption.MessageEncryption;
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.data.Contact;
 import org.parandroid.sms.model.SlideModel;
@@ -40,6 +41,7 @@ import com.google.android.mms.pdu.SendReq;
 
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.Telephony.Mms;
@@ -134,16 +136,19 @@ public class MessageItem {
             }
             mBody = cursor.getString(columnsMap.mColumnSmsBody);
             
-            if(isEncryptedIncomingMessage() || isEncryptedOutgoingMessage() ){
-            	try {
-					mBody = MessageEncryption.decrypt(context, mAddress, Base64Coder.decode(mBody));
-				} catch (GeneralSecurityException e) {
-					Log.e(TAG, "Error decrypting message");
-					e.printStackTrace();
-				} catch (IOException e) {
-					Log.e(TAG, "Error decrypting message");
-					e.printStackTrace();
-				}
+            if(isEncryptedIncomingMessage() || isEncryptedOutgoingMessage()){
+	            if(MessageEncryptionFactory.isAuthenticated()){
+	            	try {
+						mBody = MessageEncryption.decrypt(context, mAddress, Base64Coder.decode(mBody));
+					} catch (Exception e) {
+						Log.e(TAG, "Error decrypting message");
+						e.printStackTrace();
+					}
+	            }else if(!MessageEncryptionFactory.isAuthenticating()){
+	            	MessageEncryptionFactory.setAuthenticating(true);
+	            	Intent intent = new Intent(context, InsertPasswordActivity.class);
+	            	context.startActivity(intent);
+	            }
             }
             
             if (!isOutgoingMessage()) {
