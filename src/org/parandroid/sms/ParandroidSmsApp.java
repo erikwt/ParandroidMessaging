@@ -24,7 +24,7 @@ import org.parandroid.sms.drm.DrmUtils;
 import org.parandroid.sms.layout.LayoutManager;
 import org.parandroid.sms.ui.ComposeMessageActivity;
 import org.parandroid.sms.ui.ConversationList;
-import org.parandroid.sms.ui.InsertPasswordActivity;
+import org.parandroid.sms.ui.AuthenticateActivity;
 import org.parandroid.sms.util.ContactInfoCache;
 import org.parandroid.sms.util.DownloadManager;
 import org.parandroid.sms.util.DraftCache;
