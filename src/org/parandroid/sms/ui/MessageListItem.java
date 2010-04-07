@@ -17,8 +17,15 @@
 
 package org.parandroid.sms.ui;
 
-import java.io.IOException;
 import java.util.Map;
+
+import org.parandroid.sms.R;
+import org.parandroid.sms.data.WorkingMessage;
+import org.parandroid.sms.transaction.Transaction;
+import org.parandroid.sms.transaction.TransactionBundle;
+import org.parandroid.sms.transaction.TransactionService;
+import org.parandroid.sms.util.DownloadManager;
+import org.parandroid.sms.util.SmileyParser;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -26,7 +33,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -42,32 +48,20 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.style.AbsoluteSizeSpan;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.parandroid.encryption.MessageEncryptionFactory;
-import org.parandroid.sms.R;
-import org.parandroid.sms.data.WorkingMessage;
-import org.parandroid.sms.transaction.Transaction;
-import org.parandroid.sms.transaction.TransactionBundle;
-import org.parandroid.sms.transaction.TransactionService;
-import org.parandroid.sms.util.DownloadManager;
-import org.parandroid.sms.util.SmileyParser;
 import com.google.android.mms.pdu.PduHeaders;
 
 /**
