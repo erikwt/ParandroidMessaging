@@ -129,8 +129,8 @@ public abstract class MessageEncryptionFactory {
     	for(String f : context.getFilesDir().list()){
     		if(f.endsWith(PUBLIC_KEY_SUFFIX) && !PUBLIC_KEY_FILENAME.equals(f)){
     			String number = f.substring(0, f.length() - PUBLIC_KEY_SUFFIX.length());
-    			
     			String name = ContactInfoCache.getInstance().getContactName(context, number);
+    			
     			if(name == null) publicKeys.put(number, number);
     			else publicKeys.put(number, name + " <" + number + ">");
     		}
