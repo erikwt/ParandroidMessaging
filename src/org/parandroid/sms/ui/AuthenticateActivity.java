@@ -43,4 +43,10 @@ public class AuthenticateActivity extends Activity implements OnClickListener {
 			finish();
 		}
 	}
+
+	@Override
+    public void onStop(){
+    	super.onStop();
+		MessageEncryptionFactory.setAuthenticating(false);
+    }
 }
