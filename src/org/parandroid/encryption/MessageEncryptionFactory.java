@@ -17,13 +17,14 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.DHParameterSpec;
 
 import org.parandroid.sms.ui.InsertPasswordActivity;
+import org.parandroid.sms.data.Contact;
 
 import android.content.Context;
 import android.content.Intent;
@@ -117,17 +118,21 @@ public abstract class MessageEncryptionFactory {
     
     
     /**
-     * Get a list of the currently stored public keys, excluding your own
+     * Get a list of the currently stored public keys, excluding your own. Hashmap with number and description
      * 
      * @param context
      * @return Public key list
      */
-    public static ArrayList<String> getPublicKeys(Context context){
-    	ArrayList<String> publicKeys = new ArrayList<String>();
+    public static HashMap<String, String> getPublicKeyList(Context context){
+    	HashMap<String, String> publicKeys = new HashMap<String, String>();
     	
     	for(String f : context.getFilesDir().list()){
-    		if(f.endsWith(PUBLIC_KEY_SUFFIX) && !PUBLIC_KEY_FILENAME.equals(f))
-    			publicKeys.add(f.substring(0, f.length() - PUBLIC_KEY_SUFFIX.length()));
+    		if(f.endsWith(PUBLIC_KEY_SUFFIX) && !PUBLIC_KEY_FILENAME.equals(f)){
+    			String number = f.substring(0, f.length() - PUBLIC_KEY_SUFFIX.length());
+    			String name = Contact.get(number, false).getName();
+    			if(name == null) publicKeys.put(number, number);
+    			else publicKeys.put(number, name + " <" + number + ">");
+    		}
     	}
     	
     	return publicKeys;
