@@ -23,7 +23,7 @@ public class AuthenticateActivity extends Activity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        setContentView(R.layout.insert_password_activity);
+        setContentView(R.layout.authenticate_activity);
         
         submitButton = (Button) findViewById(R.id.submitbutton);
         submitButton.setOnClickListener(this);
