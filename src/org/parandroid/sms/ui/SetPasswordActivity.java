@@ -20,6 +20,8 @@ public class SetPasswordActivity extends Activity implements OnClickListener {
 	private EditText passwordConfirmField;
 	private Button submitButton;
 	
+	public static final int PASSWORD_MIN_LENGTH = 4;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,8 +43,16 @@ public class SetPasswordActivity extends Activity implements OnClickListener {
 			String password = passwordField.getText().toString(); 
 			String passwordConfirm = passwordConfirmField.getText().toString();
 			
+			if(password.length() < PASSWORD_MIN_LENGTH){
+				Toast.makeText(this, getString(R.string.passwords_too_short) + " " + PASSWORD_MIN_LENGTH, Toast.LENGTH_LONG).show();
+				return;
+			}
+			
 			if(!password.equals(passwordConfirm)){
-				Toast.makeText(this, R.string.passwords_dont_match, Toast.LENGTH_SHORT);
+				passwordField.setText("");
+				passwordConfirmField.setText("");
+				
+				Toast.makeText(this, R.string.passwords_dont_match, Toast.LENGTH_LONG).show();
 				return;
 			}
 			

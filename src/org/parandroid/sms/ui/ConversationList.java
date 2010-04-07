@@ -98,10 +98,12 @@ public class ConversationList extends ListActivity
     public static final int MENU_MANAGE_PUBLIC_KEYS	  = 7;
 
     // IDs of the context menu items for the list of conversations.
-    public static final int MENU_DELETE                = 0;
-    private static final int MENU_VIEW                 = 1;
-    private static final int MENU_VIEW_CONTACT         = 2;
-    private static final int MENU_ADD_TO_CONTACTS      = 3;
+    public static final int MENU_DELETE               = 0;
+    public static final int MENU_VIEW                 = 1;
+    public static final int MENU_VIEW_CONTACT         = 2;
+    public static final int MENU_ADD_TO_CONTACTS      = 3;
+    
+    public static final int REQUEST_CODE_SET_PASSWORD = 0;
 
     private ThreadListQueryHandler mQueryHandler;
     private ConversationListAdapter mListAdapter;
@@ -396,6 +398,17 @@ public class ConversationList extends ListActivity
     }
 
 	private void generateKeypair() {
+		if(MessageEncryptionFactory.isAuthenticating()) return;
+        
+    	if(!MessageEncryptionFactory.isAuthenticated()){
+    		MessageEncryptionFactory.setAuthenticating(true);
+    		
+    		Intent intent = new Intent(this, SetPasswordActivity.class);
+        	startActivityForResult(intent, REQUEST_CODE_SET_PASSWORD);
+        	
+        	return;
+        }
+    	
 		ProgressDialog generateKeypairProgressDialog = ProgressDialog.show(ConversationList.this, "", getString(R.string.generating_keypair), true);
 		Toast generateKeypairErrorToast = Toast.makeText(ConversationList.this, R.string.generated_keypair_failure, Toast.LENGTH_SHORT);
 		
@@ -412,6 +425,18 @@ public class ConversationList extends ListActivity
 			generateKeypairErrorToast.show();             	 
 		}
 	}
+	
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	switch(requestCode){
+    	case REQUEST_CODE_SET_PASSWORD:
+    		generateKeypair();
+    		
+    	default:
+    		Log.i(TAG, "Unknown requestCode for onActivityResult: " + requestCode);
+    		break;
+    	}
+    }
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
