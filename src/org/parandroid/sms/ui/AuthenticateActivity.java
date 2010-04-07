@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class AuthenticateActivity extends Activity implements OnClickListener {
 
@@ -36,10 +37,22 @@ public class AuthenticateActivity extends Activity implements OnClickListener {
 		if(v.equals(submitButton)){
 			String password = passwordField.getText().toString(); 
 			
-			MessageEncryptionFactory.setPassword(password);
-			MessageEncryptionFactory.setAuthenticating(false);
-			
-			finish();
+			try{
+				MessageEncryptionFactory.setPassword(password);
+				MessageEncryptionFactory.setAuthenticating(false);
+				
+				// If this fails, the password is wrong. Reset all in catch
+				MessageEncryptionFactory.getPrivateKey(this);
+				
+				finish();
+			}catch(Exception e){
+				passwordField.setText("");
+				
+				Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_LONG).show();
+				
+				MessageEncryptionFactory.forgetPassword();
+				MessageEncryptionFactory.setAuthenticating(true);
+			}
 		}
 	}
 
