@@ -2,6 +2,7 @@ package org.parandroid.sms.ui;
 
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
+import org.parandroid.sms.data.Contact;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -28,8 +29,11 @@ public class PublicKeyReceived extends Activity {
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancel(i.getIntExtra("notificationId", MessageUtils.DEFAULT_NOTIFICATION_ID));
 		
+		String name = Contact.get(sender, false).getName();
+		if(name == null) name = "";
+		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(getText(R.string.import_public_key_dialog) + " " + sender)
+		builder.setMessage(getText(R.string.import_public_key_dialog) + " " + name + " (" + sender + ")")
 				.setTitle(getText(R.string.import_public_key))
 		   	 	.setCancelable(false)
 		   	 	.setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {

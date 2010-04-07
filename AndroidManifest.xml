@@ -273,8 +273,7 @@
         <activity android:name=".ui.PublicKeyManagerActivity">
         </activity>
         
-        <activity android:name=".ui.PublicKeyReceived"
-            android:theme="@android:style/Theme.Dialog">
+        <activity android:name=".ui.PublicKeyReceived">
         </activity>
         
         <receiver android:name=".transaction.PublicKeyReceiver"
