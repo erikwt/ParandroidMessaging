@@ -1,10 +1,10 @@
 package org.parandroid.encryption;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.File;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
@@ -16,7 +16,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
@@ -31,14 +30,10 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
-import org.parandroid.sms.ui.InsertPasswordActivity;
 import org.parandroid.sms.util.ContactInfoCache;
 
 import android.content.Context;
-import android.content.Intent;
-import android.text.GetChars;
 import android.util.Log;
 
 public abstract class MessageEncryptionFactory {

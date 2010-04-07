@@ -139,7 +139,7 @@ public class MessageItem {
 					}
 	            }else if(!MessageEncryptionFactory.isAuthenticating()){
 	            	MessageEncryptionFactory.setAuthenticating(true);
-	            	Intent intent = new Intent(context, InsertPasswordActivity.class);
+	            	Intent intent = new Intent(context, AuthenticateActivity.class);
 	            	context.startActivity(intent);
 	            }
             }
