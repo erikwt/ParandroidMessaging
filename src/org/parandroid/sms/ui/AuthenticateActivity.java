@@ -12,15 +12,14 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class InsertPasswordActivity extends Activity implements OnClickListener {
+public class AuthenticateActivity extends Activity implements OnClickListener {
 
-	private static final String TAG = "Parandroid InsertPasswordActivity";
+	private static final String TAG = "Parandroid AuthenticateActivity";
 		
 	private EditText passwordField;
 	private Button submitButton;
 	
-	/** Called when the activity is first created. */
-    @Override
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
@@ -30,7 +29,7 @@ public class InsertPasswordActivity extends Activity implements OnClickListener 
         submitButton.setOnClickListener(this);
         
         passwordField = (EditText) findViewById(R.id.password);  
-        passwordField.setHint("Enter password"); // TODO: Localize
+        passwordField.setHint(getString(R.string.enter_password));
     }
     
     public void onClick(View v) {		
@@ -38,7 +37,6 @@ public class InsertPasswordActivity extends Activity implements OnClickListener 
 			Log.i(TAG, "clicked submitButton in password thing");
 			String password = passwordField.getText().toString(); 
 			
-			// TODO: check if the password is correct?
 			MessageEncryptionFactory.setPassword(password);
 			MessageEncryptionFactory.setAuthenticating(false);
 			
