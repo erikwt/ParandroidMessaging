@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
+import org.parandroid.sms.ui.MessageUtils;
 import org.parandroid.sms.ui.PublicKeyReceived;
 
 import android.app.Notification;
@@ -18,7 +19,6 @@ import android.util.Log;
 public class PublicKeyReceiver extends BroadcastReceiver {
 
 	private static final String TAG = "PublicKeyReceiver";
-	public static final int NOTIFICATIONID = 31337;
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -50,9 +50,13 @@ public class PublicKeyReceiver extends BroadcastReceiver {
 			System.arraycopy(part, 0, pubKeyData, offset, part.length);
 			offset += part.length;
 		}
+
+		int notificationId = MessageUtils.getNotificationId(msg.getOriginatingAddress()); 
 		
 		targetIntent.putExtra("publickey", pubKeyData);
+		targetIntent.putExtra("notificationId", notificationId);
 		Notification n = new Notification(context, R.drawable.stat_notify_public_key_recieved, message, System.currentTimeMillis(), message, message, targetIntent);
-		mNotificationManager.notify(NOTIFICATIONID, n);
+		mNotificationManager.notify(notificationId, n);
 	}
+		
 }

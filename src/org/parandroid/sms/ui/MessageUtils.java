@@ -82,6 +82,8 @@ public class MessageUtils {
     interface ResizeImageResultCallback {
         void onResizeResult(PduPart part);
     }
+    
+    public static final int DEFAULT_NOTIFICATION_ID = 37231; 
 
     private static final String TAG = "MessageUtils";
     private static String sLocalNumber;
@@ -832,4 +834,20 @@ public class MessageUtils {
             context.startActivity(intent);
         }
     }
+
+    public static int getNotificationId(String address){
+		String numericAddress = address.replaceAll("\\+", "");
+		int notificationId = DEFAULT_NOTIFICATION_ID;
+		
+		try {
+			notificationId = Integer.parseInt(numericAddress.substring(5));
+		} catch (Exception e){
+			Log.e(TAG, "Error parsing integer: " + numericAddress);
+		}
+		
+		
+		Log.i(TAG, "determined notificationid: "+ notificationId);
+		return notificationId;
+	}
+
 }

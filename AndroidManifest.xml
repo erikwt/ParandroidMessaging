@@ -288,6 +288,9 @@
             </intent-filter>
         </receiver>
         
+        <activity android:name=".ui.EncryptedMessageNotificationActivity">
+        </activity>
+        
         <receiver android:name=".transaction.EncryptedMessageReceiver"
             android:permission="android.permission.BROADCAST_SMS">
             

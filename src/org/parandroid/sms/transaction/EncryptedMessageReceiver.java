@@ -9,7 +9,10 @@ import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ui.ComposeMessageActivity;
+import org.parandroid.sms.ui.EncryptedMessageNotificationActivity;
 import org.parandroid.sms.ui.MessageItem;
+
+import org.parandroid.sms.ui.MessageUtils;
 import org.parandroid.sms.ui.MessageListItem;
 
 import com.google.android.mms.util.SqliteWrapper;
@@ -49,12 +52,16 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 		if(messages.length == 0) return;
 		
 		long threadId = Threads.getOrCreateThreadId(context, messages[0].getOriginatingAddress());
-
-		Intent targetIntent = new Intent(context, ComposeMessageActivity.class);
 		insertEncryptedMessage(context, messages, threadId);
+		
+		int notificationId = MessageUtils.getNotificationId(messages[0].getOriginatingAddress());
 
+		Intent targetIntent = new Intent(context, EncryptedMessageNotificationActivity.class);
+		targetIntent.putExtra("notificationId", notificationId);
+		targetIntent.putExtra("threadId", threadId);
+		
 		Notification n = new Notification(context, R.drawable.stat_notify_encrypted_msg, notificationString, System.currentTimeMillis(), notificationString, notificationString, targetIntent);
-		mNotificationManager.notify(NOTIFICATIONID, n);
+		mNotificationManager.notify(notificationId, n);
 	}
 	
 	
@@ -89,7 +96,7 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
         SqliteWrapper.insert(context, resolver, Inbox.CONTENT_URI, values);
 
 // Jeffrey: TODO: cupcake backporting: it looks like 1.5 does not delete old 
-// messages when they are received, to I commented these lines. @see SmsReceiverService::insertMessage()
+// messages when they are received, so I commented these lines. @see SmsReceiverService::insertMessage()
 //        threadId = values.getAsLong(Sms.THREAD_ID);
 //        Recycler.getSmsRecycler().deleteOldMessagesByThreadId(context, threadId);
 	}
