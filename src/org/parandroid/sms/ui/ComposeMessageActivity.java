@@ -163,6 +163,7 @@ public class ComposeMessageActivity extends Activity
     public static final int REQUEST_CODE_RECORD_SOUND     = 15;
     public static final int REQUEST_CODE_CREATE_SLIDESHOW = 16;
     public static final int REQUEST_CODE_ECM_EXIT_DIALOG  = 17;
+    public static final int REQUEST_CODE_AUTHENTICATE	  = 18;
 
     private static final String TAG = "Parandroid ComposeMessageActivity";
 
@@ -202,13 +203,10 @@ public class ComposeMessageActivity extends Activity
     private static final int MENU_SEND_PUBLIC_KEY  = 31;
 
     private static final int RECIPIENTS_MAX_LENGTH = 312;
-
     private static final int MESSAGE_LIST_QUERY_TOKEN = 9527;
-
     private static final int DELETE_MESSAGE_TOKEN  = 9700;
-
     private static final int CHARS_REMAINING_BEFORE_COUNTER_SHOWN = 10;
-
+    
     private static final long NO_DATE_FOR_DIALOG = -1L;
 
     private static final String EXIT_ECM_RESULT = "exit_ecm_result";
@@ -2362,15 +2360,17 @@ public class ComposeMessageActivity extends Activity
         }
         mWaitingForSubActivity = false;     // We're back!
 
-        // If there's no data (because the user didn't select a picture and
-        // just hit BACK, for example), there's nothing to do.
-        if (requestCode != REQUEST_CODE_TAKE_PICTURE) {
-            if (data == null) {
-                return;
-            }
-        } else if (resultCode != RESULT_OK){
-            if (DEBUG) log("onActivityResult: bail due to resultCode=" + resultCode);
-            return;
+        if(requestCode != REQUEST_CODE_AUTHENTICATE){
+	        // If there's no data (because the user didn't select a picture and
+	        // just hit BACK, for example), there's nothing to do.
+	        if (requestCode != REQUEST_CODE_TAKE_PICTURE) {
+	            if (data == null) {
+	                return;
+	            }
+	        } else if (resultCode != RESULT_OK){
+	            if (DEBUG) log("onActivityResult: bail due to resultCode=" + resultCode);
+	            return;
+	        }
         }
 
         switch(requestCode) {
@@ -2426,6 +2426,10 @@ public class ComposeMessageActivity extends Activity
                     sendMessage(false);
                 }
                 break;
+                
+            case REQUEST_CODE_AUTHENTICATE:
+            	sendMessage(false);
+            	break;
 
             default:
                 // TODO
@@ -2846,7 +2850,23 @@ public class ComposeMessageActivity extends Activity
     }
 
     private void sendMessage(boolean bCheckEcmMode) {
-        if (bCheckEcmMode) {
+        boolean tryToEncrypt = true;
+    	
+        if(tryToEncrypt){
+	    	if(MessageEncryptionFactory.isAuthenticating()) return;
+	        
+	    	if(!MessageEncryptionFactory.isAuthenticated()){
+	    		MessageEncryptionFactory.setAuthenticating(true);
+	    		mWaitingForSubActivity = true;
+	    		
+	    		Intent intent = new Intent(this, AuthenticateActivity.class);
+	        	startActivityForResult(intent, REQUEST_CODE_AUTHENTICATE);
+	        	
+	        	return;
+	        }
+        }
+	    	
+    	if (bCheckEcmMode) {
             String inEcm = SystemProperties.get(TelephonyProperties.PROPERTY_INECM_MODE);
             if (Boolean.parseBoolean(inEcm)) {
                 try {
