@@ -17,8 +17,13 @@
 
 package org.parandroid.sms;
 
+
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.drm.DrmUtils;
 import org.parandroid.sms.layout.LayoutManager;
+import org.parandroid.sms.ui.ComposeMessageActivity;
+import org.parandroid.sms.ui.ConversationList;
+import org.parandroid.sms.ui.InsertPasswordActivity;
 import org.parandroid.sms.util.ContactInfoCache;
 import org.parandroid.sms.util.DownloadManager;
 import org.parandroid.sms.util.DraftCache;
@@ -26,12 +31,17 @@ import org.parandroid.sms.util.SmileyParser;
 import org.parandroid.sms.util.RateController;
 
 import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class ParandroidSmsApp extends Application {
-    public static final String LOG_TAG = "ParandroidSms";
-
+    public static final String TAG = "ParandroidSms";
+    
     @Override
     public void onCreate() {
         super.onCreate();
@@ -46,6 +56,8 @@ public class ParandroidSmsApp extends Application {
         DrmUtils.cleanupStorage(this);
         LayoutManager.init(this);
         SmileyParser.init(this);
+        
+        registerReceiver(mScreenOffReceiver, mScreenOffFilter);
     }
 
     @Override
@@ -57,4 +69,20 @@ public class ParandroidSmsApp extends Application {
     public void onConfigurationChanged(Configuration newConfig) {
         LayoutManager.getInstance().onConfigurationChanged(newConfig);
     }
+    
+    private final IntentFilter mScreenOffFilter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+    
+    private final BroadcastReceiver mScreenOffReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+                MessageEncryptionFactory.forgetPassword();
+                
+                Intent targetIntent = new Intent(context, ConversationList.class);
+                targetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(targetIntent);
+            }
+        }
+    };
+    
 }

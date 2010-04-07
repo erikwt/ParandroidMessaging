@@ -2,7 +2,7 @@ package org.parandroid.sms.ui;
 
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
-import org.parandroid.sms.data.Contact;
+import org.parandroid.sms.util.ContactInfoCache;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -29,7 +29,7 @@ public class PublicKeyReceived extends Activity {
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancel(i.getIntExtra("notificationId", MessageUtils.DEFAULT_NOTIFICATION_ID));
 		
-		String name = Contact.get(sender, false).getName();
+		String name = ContactInfoCache.getInstance().getContactName(PublicKeyReceived.this, sender);
 		if(name == null) name = "";
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);

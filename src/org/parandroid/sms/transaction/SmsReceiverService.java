@@ -60,7 +60,7 @@ import android.widget.Toast;
  * main thread that SmsReceiver runs on.
  */
 public class SmsReceiverService extends Service {
-    private static final String TAG = "SmsReceiverService";
+    private static final String TAG = "Parandroid SmsReceiverService";
 
     private ServiceHandler mServiceHandler;
     private Looper mServiceLooper;
@@ -96,7 +96,7 @@ public class SmsReceiverService extends Service {
 
     @Override
     public void onCreate() {
-        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.v(TAG, "onCreate");
         }
 
@@ -112,7 +112,7 @@ public class SmsReceiverService extends Service {
 
     @Override
     public void onStart(Intent intent, int startId) {
-        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.v(TAG, "onStart: #" + startId + ": " + intent.getExtras());
         }
 
@@ -126,7 +126,7 @@ public class SmsReceiverService extends Service {
 
     @Override
     public void onDestroy() {
-        if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
+        if (Log.isLoggable(TAG, Log.VERBOSE)) {
             Log.v(TAG, "onDestroy");
         }
         mServiceLooper.quit();
@@ -149,7 +149,7 @@ public class SmsReceiverService extends Service {
          */
         @Override
         public void handleMessage(Message msg) {
-            if (Log.isLoggable(ParandroidSmsApp.LOG_TAG, Log.VERBOSE)) {
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "Handling incoming message: " + msg);
             }
             int serviceId = msg.arg1;
@@ -310,10 +310,10 @@ public class SmsReceiverService extends Service {
             displayClassZeroMessage(context, sms);
             return null;
         } else if (sms.isReplace()) {
-        	Log.i(TAG, "ParandroidSMS: Replacing message(s)");
+        	Log.i(TAG, "Replacing message(s)");
             return replaceMessage(context, msgs);
         } else {
-        	Log.i(TAG, "ParandroidSMS: Storing message(s)");
+        	Log.i(TAG, "Storing message(s)");
             return storeMessage(context, msgs);
         }
     }
