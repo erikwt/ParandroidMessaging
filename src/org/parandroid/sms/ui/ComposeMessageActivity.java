@@ -2881,7 +2881,7 @@ public class ComposeMessageActivity extends Activity
 	        	return;
 	        }
         }
-	    	
+        
     	if (bCheckEcmMode) {
             String inEcm = SystemProperties.get(TelephonyProperties.PROPERTY_INECM_MODE);
             if (Boolean.parseBoolean(inEcm)) {
