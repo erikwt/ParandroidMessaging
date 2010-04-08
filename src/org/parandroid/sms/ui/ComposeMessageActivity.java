@@ -328,6 +328,9 @@ public class ComposeMessageActivity extends Activity
         Log.d(TAG, logMsg);
     }
     
+    
+    public static boolean onForeground = false;
+
     //==========================================================
     // Inner classes
     //==========================================================
@@ -1718,6 +1721,9 @@ public class ComposeMessageActivity extends Activity
     @Override
     protected void onResume() {
         super.onResume();
+        
+        ComposeMessageActivity.onForeground = true;
+        
         startPresencePollingRequest();
     }
 
@@ -1784,6 +1790,7 @@ public class ComposeMessageActivity extends Activity
         return !(hasText() || hasSubject() || hasAttachment());
     }
 
+
     private void removeSubjectIfEmpty() {
         // subject editor is visible without any contents.
         if ((mMessageState == HAS_SUBJECT) && !hasSubject()) {
@@ -1800,6 +1807,8 @@ public class ComposeMessageActivity extends Activity
     @Override
     protected void onStop() {
         super.onStop();
+
+        ComposeMessageActivity.onForeground = false;
         
         if (mMsgListAdapter != null) {
             mMsgListAdapter.changeCursor(null);
