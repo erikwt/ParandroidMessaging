@@ -17,6 +17,8 @@
 
 package org.parandroid.sms.ui;
 
+import java.security.PrivateKey;
+
 import org.parandroid.sms.LogTag;
 import org.parandroid.sms.R;
 import org.parandroid.sms.data.Contact;
@@ -88,14 +90,17 @@ public class ConversationList extends ListActivity
     public static final int MENU_GENERATE_KEYPAIR     = 5;
     public static final int MENU_SEND_PUBLIC_KEY	  = 6;
     public static final int MENU_MANAGE_PUBLIC_KEYS	  = 7;
+    public static final int MENU_CHANGE_PASSWORD	  = 8;
 
     // IDs of the context menu items for the list of conversations.
     public static final int MENU_DELETE               = 0;
     public static final int MENU_VIEW                 = 1;
     public static final int MENU_VIEW_CONTACT         = 2;
     public static final int MENU_ADD_TO_CONTACTS      = 3;
-    
-    public static final int REQUEST_CODE_SET_PASSWORD = 0;
+
+    public static final int REQUEST_CODE_SET_PASSWORD 					= 0;
+    public static final int REQUEST_CODE_CHANGE_PASSWORD				= 1;
+    public static final int REQUEST_CODE_CHANGE_PASSWORD_AUTHENTICATE	= 2;
 
     private ThreadListQueryHandler mQueryHandler;
     private ConversationListAdapter mListAdapter;
@@ -334,14 +339,19 @@ public class ConversationList extends ListActivity
         menu.add(0, MENU_COMPOSE_NEW, 0, R.string.menu_compose_new).setIcon(
                 com.android.internal.R.drawable.ic_menu_compose);
         
-        menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_keypair).setIcon(
-                R.drawable.ic_generate_keypair);
+        if(MessageEncryptionFactory.hasKeypair(this))
+        	menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_new_keypair).setIcon(R.drawable.ic_generate_keypair);
+        else
+        	menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_keypair).setIcon(R.drawable.ic_generate_keypair);
 
         menu.add(0, MENU_SEND_PUBLIC_KEY, 0, R.string.menu_send_public_key).setIcon(
         		R.drawable.ic_send_public_key);
 
         menu.add(0, MENU_MANAGE_PUBLIC_KEYS, 0, R.string.menu_manage_public_keys).setIcon(
         		R.drawable.ic_manage_public_keys);
+
+        menu.add(0, MENU_CHANGE_PASSWORD, 0, R.string.menu_change_password).setIcon(
+        		R.drawable.ic_generate_keypair);
 
         if (mListAdapter.getCount() > 0) {
             menu.add(0, MENU_DELETE_ALL, 0, R.string.menu_delete_all).setIcon(
@@ -395,6 +405,9 @@ public class ConversationList extends ListActivity
 	        case MENU_MANAGE_PUBLIC_KEYS:
 	        	managePublicKeys();
 	            break;
+	        case MENU_CHANGE_PASSWORD:
+	        	changePassword();
+	        	break;
             case MENU_SEARCH:
                 onSearchRequested();
                 break;
@@ -411,6 +424,54 @@ public class ConversationList extends ListActivity
                 return true;
         }
         return false;
+    }
+    
+    private String oldPassword = null;
+    private void changePassword(){
+    	if(MessageEncryptionFactory.isAuthenticating()) return;
+    	
+    	if(!MessageEncryptionFactory.isAuthenticated()){
+    		MessageEncryptionFactory.setAuthenticating(true);
+    		oldPassword = MessageEncryptionFactory.getPassword();
+    		
+    		Intent intent = new Intent(this, AuthenticateActivity.class);
+        	startActivityForResult(intent, REQUEST_CODE_CHANGE_PASSWORD_AUTHENTICATE);
+        	
+        	return;
+        }else{
+        	MessageEncryptionFactory.setAuthenticating(true);
+    		oldPassword = MessageEncryptionFactory.getPassword();
+    		
+    		Intent intent = new Intent(this, SetPasswordActivity.class);
+        	startActivityForResult(intent, REQUEST_CODE_CHANGE_PASSWORD);
+        	
+        	return;
+        }
+    }
+    
+    private void doChangePassword(){
+    	if(!MessageEncryptionFactory.isAuthenticated()) return;
+    	
+    	String newPassword = MessageEncryptionFactory.getPassword();
+
+    	if(newPassword.equals(oldPassword)){
+    		oldPassword = null;
+			Toast.makeText(this, R.string.password_not_changed, Toast.LENGTH_LONG).show();
+			return;
+    	}
+    	
+    	MessageEncryptionFactory.setPassword(oldPassword);
+    	
+    	try {
+			PrivateKey pk = MessageEncryptionFactory.getPrivateKey(this);
+			MessageEncryptionFactory.setPassword(newPassword);
+			MessageEncryptionFactory.writePrivateKey(this, pk);
+			oldPassword = null;
+			Toast.makeText(this, R.string.successfully_changed_password, Toast.LENGTH_LONG).show();
+		} catch (Exception e) {
+			Toast.makeText(this, R.string.failed_changing_password, Toast.LENGTH_LONG).show();
+			e.printStackTrace();
+		}
     }
     
     private void sendPublicKey(){
@@ -457,6 +518,15 @@ public class ConversationList extends ListActivity
     	switch(requestCode){
     	case REQUEST_CODE_SET_PASSWORD:
     		generateKeypair();
+    		break;
+
+    	case REQUEST_CODE_CHANGE_PASSWORD_AUTHENTICATE:
+    		changePassword();
+    		break;
+
+    	case REQUEST_CODE_CHANGE_PASSWORD:
+    		doChangePassword();
+    		break;
     		
     	default:
     		Log.i(TAG, "Unknown requestCode for onActivityResult: " + requestCode);

@@ -226,6 +226,16 @@ public abstract class MessageEncryptionFactory {
     }
     
     
+    public static void writePrivateKey(Context context, PrivateKey pk) throws Exception {
+    	FileOutputStream privOut = context.openFileOutput(PRIVATE_KEY_FILENAME, Context.MODE_PRIVATE);
+    	
+    	privOut.write(encryptPrivateKey(pk));
+		
+		privOut.flush();
+        privOut.close();
+    }
+    
+    
     /**
      * Get a stored public key in x509 format
      * @see http://en.wikipedia.org/wiki/X.509
@@ -327,6 +337,10 @@ public abstract class MessageEncryptionFactory {
     
     public static void setPassword(String password){
     	MessageEncryptionFactory.password = password;
+    }
+    
+    public static String getPassword(){
+    	return MessageEncryptionFactory.password;
     }
     
     public static boolean isAuthenticating(){
