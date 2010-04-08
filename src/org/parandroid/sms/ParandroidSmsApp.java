@@ -81,11 +81,16 @@ public class ParandroidSmsApp extends Application {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
-                MessageEncryptionFactory.forgetPassword();
+                if(ComposeMessageActivity.onForeground && MessageEncryptionFactory.isAuthenticated()){
+                	ComposeMessageActivity.onForeground = false;
+                	
+                	// Escape from running conversation
+	                Intent targetIntent = new Intent(context, ConversationList.class);
+	                targetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	                getApplicationContext().startActivity(targetIntent);
+                }
                 
-                Intent targetIntent = new Intent(context, ConversationList.class);
-                targetIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getApplicationContext().startActivity(targetIntent);
+                MessageEncryptionFactory.forgetPassword();
             }
         }
     };

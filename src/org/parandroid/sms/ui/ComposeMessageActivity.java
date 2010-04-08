@@ -268,6 +268,9 @@ public class ComposeMessageActivity extends Activity
         logMsg = "[" + tid + "] [" + methodName + "] " + logMsg;
         Log.d(TAG, logMsg);
     }
+    
+    
+    public static boolean onForeground = false;
 
     //==========================================================
     // Inner classes
@@ -1868,6 +1871,8 @@ public class ComposeMessageActivity extends Activity
         //Contact.startPresenceObserver();
 
         addRecipientsListeners();
+        
+        ComposeMessageActivity.onForeground = true;
     }
 
     @Override
@@ -1886,6 +1891,8 @@ public class ComposeMessageActivity extends Activity
     protected void onStop() {
         super.onStop();
 
+        ComposeMessageActivity.onForeground = false;
+        
         if (mMsgListAdapter != null) {
             mMsgListAdapter.changeCursor(null);
         }
