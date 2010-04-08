@@ -607,6 +607,8 @@
     	to the contacts that are also using Parandroid Messaging. Do you want to send your public key now? You can always
     	send it later manually.</string>
     <string name="generated_keypair_failure">Failed generating keypair</string>
+    <string name="contact_name">Contact name</string>
+    <string name="no_recipient">No recipient given</string>
     <string name="enter_password">Enter password</string>
     <string name="confirm_password">Confirm password</string>
     <string name="passwords_dont_match">Passwords don\'t match, try again</string>
@@ -615,6 +617,7 @@
     
     <string name="send_public_key_success">Successfully sent public key to</string>
 
+    <string name="failed_opening_public_key">Failed opening public key</string>
     <string name="send_public_key_failure">Failed sending public key to</string>
     <string name="send_encrypted_message_success">Succesfully sent encrypted message to</string>
     <string name="send_encrypted_message_failure">Failed sending encrypted message to</string>
