@@ -67,6 +67,7 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
 				
 				String number = filterPhoneNumber(s, true);
 				if(number == null || !isNumeric(number)){
+
 					if(contactCursor.getCount() != 1 || !contactCursor.moveToFirst()){
 						// TODO: Good errormessage
 						Toast.makeText(this, "Error for contact " + s + ", found " + new Integer(contactCursor.getCount()).toString() + " records.", Toast.LENGTH_SHORT).show();
@@ -76,11 +77,15 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
 					
 					int columnIndex = contactCursor.getColumnIndex(Contacts.People.NUMBER);
 					number = contactCursor.getString(columnIndex);
-					
+
 					while(number == null && contactCursor.moveToNext()){
 						number = contactCursor.getString(columnIndex);
+
 					}
+					
+					s = number;
 				}
+
 
 				receipientNumbers.add(s);
 			}
