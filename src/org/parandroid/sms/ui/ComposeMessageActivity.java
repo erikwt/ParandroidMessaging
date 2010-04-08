@@ -2859,7 +2859,7 @@ public class ComposeMessageActivity extends Activity
     }
 
     private void sendMessage(boolean bCheckEcmMode) {
-        boolean tryToEncrypt = mTryToEncrypt.isChecked() && hasRecipientsWithPublicKey();
+        boolean tryToEncrypt = mTryToEncrypt.isChecked() && (mTryToEncrypt.isShown());
     	        
         if(tryToEncrypt){
 	    	if(MessageEncryptionFactory.isAuthenticating()) return;
