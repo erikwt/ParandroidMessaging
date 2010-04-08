@@ -163,7 +163,7 @@
                             android:layout_height="wrap_content"
                             android:autoText="true"
                             android:capitalize="sentences"
-                            android:nextFocusRight="@+id/send_button"
+                            android:nextFocusRight="@+id/try_to_encrypt"
                             android:hint="@string/type_to_compose_text_enter_to_send"
                             android:maxLines="4"
                             android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
@@ -187,6 +187,18 @@
                             android:visibility="gone"
                         />
                     </RelativeLayout>
+                    
+         				
+                    <CheckBox android:id="@+id/try_to_encrypt"
+                    	android:checked="true"
+                        android:layout_marginLeft="5dip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="fill_parent"
+                        android:layout_gravity="center_vertical"
+                        android:nextFocusLeft="@+id/embedded_text_editor"
+                        android:nextFocusRight="@+id/send_button"
+                        android:button="@drawable/parandroid_btn_check"
+                    />
 
                     <Button android:id="@+id/send_button"
                         android:layout_marginLeft="5dip"
@@ -194,7 +206,7 @@
                         android:layout_height="fill_parent"
                         style="?android:attr/buttonStyle"
                         android:layout_gravity="center_vertical"
-                        android:nextFocusLeft="@+id/embedded_text_editor"
+                        android:nextFocusLeft="@+id/try_to_encrypt"
                         android:text="@string/send"
                     />
                 </LinearLayout>
