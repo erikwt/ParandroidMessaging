@@ -1573,10 +1573,9 @@ public class ComposeMessageActivity extends Activity
                         mTextEditor.requestFocus();
                     }
                 }
-                
             }
         });
-
+                
         mTopPanel.setVisibility(View.VISIBLE);
     }
 
@@ -3658,20 +3657,21 @@ public class ComposeMessageActivity extends Activity
         }
     }
 
-    private void updateContactInfo() {
-        boolean updated = false;
-        if (mContactInfoCursor != null && mContactInfoCursor.moveToFirst()) {
-            mPresenceStatus = mContactInfoCursor.getInt(PRESENCE_STATUS_COLUMN);
-            if (mPresenceStatus != Contacts.People.OFFLINE) {
-                int presenceIcon = Presence.getPresenceIconResourceId(mPresenceStatus);
-                setPresenceIcon(presenceIcon);
-                updated = true;
-            }
-        } 
-        if (!updated) {
-            setPresenceIcon(0);
-        }
-    }
+
+	private void updateContactInfo() {
+	    boolean updated = false;
+	    if (mContactInfoCursor != null && mContactInfoCursor.moveToFirst()) {
+	        mPresenceStatus = mContactInfoCursor.getInt(PRESENCE_STATUS_COLUMN);
+	        if (mPresenceStatus != Contacts.People.OFFLINE) {
+	            int presenceIcon = Presence.getPresenceIconResourceId(mPresenceStatus);
+	            setPresenceIcon(presenceIcon);
+	            updated = true;
+	        }
+	    } 
+	    if (!updated) {
+	        setPresenceIcon(0);
+	    }
+	}
     
     private boolean hasRecipientsWithPublicKey(){    	
     	if(!MessageEncryptionFactory.hasKeypair(this)) return false;
@@ -3695,4 +3695,5 @@ public class ComposeMessageActivity extends Activity
     	
     }
 }
+
 
