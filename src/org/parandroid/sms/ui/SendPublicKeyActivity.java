@@ -1,5 +1,6 @@
 package org.parandroid.sms.ui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -38,6 +39,9 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        setTitle(R.string.menu_send_public_key);
+        
         setContentView(R.layout.send_public_key_activity);
         
         sendButton = (Button) findViewById(R.id.sendbutton);
@@ -47,7 +51,7 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
         ContactListAdapter contactadapter = new ContactListAdapter(this,peopleCursor);  
           
         receipients = (MultiAutoCompleteTextView) findViewById(R.id.receipients);  
-        receipients.setHint("Contact name"); // TODO: Localize
+        receipients.setHint(R.string.contact_name);
         receipients.setAdapter(contactadapter);  
         receipients.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
     }
@@ -56,11 +60,12 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
 		if(v.equals(sendButton)){
 			ArrayList<String> receipientNumbers = new ArrayList<String>();
 			String selection = receipients.getText().toString();
+
 			for(String s : selection.split(", ")){
 				// TODO: Safe query
 				Cursor contactCursor = getContentResolver().query(Contacts.People.CONTENT_URI, PEOPLE_PROJECTION, "NAME LIKE '" + s + "'", null, Contacts.People.DEFAULT_SORT_ORDER);
 				
-				String number = filterPhoneNumber(s);
+				String number = filterPhoneNumber(s, true);
 				if(number == null || !isNumeric(number)){
 					if(contactCursor.getCount() != 1 || !contactCursor.moveToFirst()){
 						// TODO: Good errormessage
@@ -71,25 +76,41 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
 					
 					int columnIndex = contactCursor.getColumnIndex(Contacts.People.NUMBER);
 					number = contactCursor.getString(columnIndex);
+					
+					while(number == null && contactCursor.moveToNext()){
+						number = contactCursor.getString(columnIndex);
+					}
 				}
 
-				receipientNumbers.add(number);
+				receipientNumbers.add(s);
+			}
+			
+			if(receipientNumbers.size() == 0){
+				Toast.makeText(this, R.string.no_recipient, Toast.LENGTH_SHORT).show();
+				return;
+			}
+
+			byte[] publicKey;
+			try {
+				publicKey = MessageEncryptionFactory.getOwnPublicKey(SendPublicKeyActivity.this);
+			} catch (IOException e1) {
+				Toast.makeText(this, R.string.failed_opening_public_key, Toast.LENGTH_LONG).show();
+				return;
 			}
 			
 			for(String num : receipientNumbers){
-				num = filterPhoneNumber(num);
+				num = filterPhoneNumber(num, false);
 				SmsManager sm = SmsManager.getDefault();
 				Log.i(TAG,"Sending public key to " + num);
 				
 				try { 
-					byte[] publicKey = MessageEncryptionFactory.getOwnPublicKey(SendPublicKeyActivity.this);
 					sm.sendDataMessage(num, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKey, null, null);
 					Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  num, Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {
-					Log.e(TAG, e.getMessage());
+					receipients.setText("");
+					Log.e(TAG, "Error sending public key: " + e.getMessage());
 					Toast.makeText(this, getText(R.string.send_public_key_failure) + " " +  num, Toast.LENGTH_SHORT).show();
 				}
-				
 			}
 			
 			finish();
@@ -101,7 +122,7 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
      * @param phoneNumber A phone number to clean (e.g. "+1 (212) 479-7990")
      * @return A string without the separators (e.g. "12124797990")
      */
-    public static String filterPhoneNumber(String phoneNumber) {
+    public static String filterPhoneNumber(String phoneNumber, boolean filterPlus) {
         if (phoneNumber == null) {
         	Log.e(TAG, "Phonenumber is null!");
             return null;
@@ -113,7 +134,7 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
         for (int i = 0; i < length; i++) {
             char character = phoneNumber.charAt(i);
 
-            if (PHONE_NUMBER_SEPARATORS.indexOf(character) == -1) {
+            if (PHONE_NUMBER_SEPARATORS.concat(filterPlus ? "+" : "").indexOf(character) == -1) {
                 builder.append(character);
             }
         }
@@ -178,15 +199,11 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
         Contacts.People.NAME,  
     };
     
-    public boolean isNumeric(String input)
-    {
-       try
-       {
-          Integer.parseInt( input );
+    public boolean isNumeric(String input){
+       try{
+          Long.parseLong(input);
           return true;
-       }
-       catch( Exception e)
-       {
+       }catch( Exception e){
           return false;
        }
     }
