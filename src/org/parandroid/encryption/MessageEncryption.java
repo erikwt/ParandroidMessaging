@@ -57,8 +57,12 @@ public abstract class MessageEncryption {
 	 * @throws GeneralSecurityException
 	 * @throws IOException - Key(s) missing
 	 */
-	public static String decrypt(Context context, String number, byte[] cipherText) throws Exception {		
+	public static String decrypt(Context context, String number, byte[] cipherText) throws Exception {
 		PrivateKey privateKey = MessageEncryptionFactory.getPrivateKey(context);
+		return decrypt(context, privateKey, number, cipherText);
+	}
+	
+	public static String decrypt(Context context, PrivateKey privateKey, String number, byte[] cipherText) throws Exception {	
 		PublicKey publicKey  = MessageEncryptionFactory.getPublicKey(context, number);
 		
 		if(privateKey == null || publicKey == null){

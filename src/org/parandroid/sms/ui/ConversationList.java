@@ -55,6 +55,9 @@ import android.provider.Telephony.Threads;
 import android.provider.Telephony.Sms.Conversations;
 import android.text.TextUtils;
 import android.util.Config;
+
+import android.provider.Telephony.Sms.Inbox;
+
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -75,6 +78,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.parandroid.encoding.Base64Coder;
+import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
 
 /**
@@ -109,9 +114,11 @@ public class ConversationList extends ListActivity
     private static final int MENU_ADD_TO_CONTACTS      = 3;
     private static final int MENU_SEND_IM              = 4;
 
-    public static final int REQUEST_CODE_SET_PASSWORD                   = 0;
-    public static final int REQUEST_CODE_CHANGE_PASSWORD                = 1;
-    public static final int REQUEST_CODE_CHANGE_PASSWORD_AUTHENTICATE   = 2;
+    public static final int REQUEST_CODE_SET_PASSWORD 					= 0;
+    public static final int REQUEST_CODE_SET_FIRST_PASSWORD				= 1;
+    public static final int REQUEST_CODE_CHANGE_PASSWORD				= 2;
+    public static final int REQUEST_CODE_CHANGE_PASSWORD_AUTHENTICATE	= 3;
+    public static final int REQUEST_CODE_SET_NEW_PASSWORD				= 4;
 
     private ThreadListQueryHandler mQueryHandler;
     private ConversationListAdapter mListAdapter;
@@ -200,7 +207,7 @@ public class ConversationList extends ListActivity
         		   .setCancelable(false)
         	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
         	           public void onClick(DialogInterface dialog, int id) {
-        	                generateKeypair();
+        	                generateFirstKeypair();
         	           }
         	       })
         	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
@@ -359,23 +366,7 @@ public class ConversationList extends ListActivity
 	            createNewMessage();
 	            break;
 	        case MENU_GENERATE_KEYPAIR:
-	        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	        	builder.setMessage(getText(R.string.generate_keypair_dialog))
-	        			.setTitle(getText(R.string.generate_keypair_title))
-        		   	 	.setCancelable(false)
-	        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
-	        	           public void onClick(DialogInterface dialog, int id) {
-	        	                generateKeypair();
-	        	           }
-	        	       })
-	        	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
-	        	           public void onClick(DialogInterface dialog, int id) {
-	        	                dialog.cancel();
-	        	           }
-	        	       });
-	        	
-	        	AlertDialog alert = builder.create();
-	        	alert.show();
+	        	generateKeypairStage1();
 	            break;
 	        case MENU_SEND_PUBLIC_KEY:
 	        	sendPublicKey();
@@ -460,19 +451,96 @@ public class ConversationList extends ListActivity
     	Intent intent = new Intent(this, PublicKeyManagerActivity.class);
         startActivity(intent);
     }
+    
+    private void generateKeypairStage1(){
+    	if(!MessageEncryptionFactory.hasKeypair(this)){
+    		generateFirstKeypair();
+    		return;
+    	}
+    	
+    	generateKeypairStage2();
+    }
+    
+    private PrivateKey oldPrivateKey = null;
+    private void generateKeypairStage2(){
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	builder.setMessage(getText(R.string.generate_new_keypair_dialog))
+    			.setTitle(getText(R.string.generate_keypair_title))
+		   	 	.setCancelable(false)
+    	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	        	   try{
+    	        		   generateNewKeypair();
+    	        	   }catch(Exception e){
+    	        		   e.printStackTrace();
+    	        		   Toast.makeText(ConversationList.this, R.string.generated_keypair_failure, Toast.LENGTH_LONG);
+    	        	   }
+    	           }
+    	       })
+    	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	                dialog.cancel();
+    	           }
+    	       });
+    	
+    	AlertDialog alert = builder.create();
+    	alert.show();
+    }
 
-	private void generateKeypair() {
+    private boolean hasSetNewPassword = false;
+	private void generateNewKeypair() {
 		if(MessageEncryptionFactory.isAuthenticating()) return;
         
     	if(!MessageEncryptionFactory.isAuthenticated()){
     		MessageEncryptionFactory.setAuthenticating(true);
     		
-    		Intent intent = new Intent(this, SetPasswordActivity.class);
+    		Intent intent = new Intent(this, AuthenticateActivity.class);
         	startActivityForResult(intent, REQUEST_CODE_SET_PASSWORD);
         	
         	return;
         }
     	
+    	if(!hasSetNewPassword){
+ 		   	try {
+				oldPrivateKey = MessageEncryptionFactory.getPrivateKey(ConversationList.this);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+    		MessageEncryptionFactory.setAuthenticating(true);
+    		
+    		Intent intent = new Intent(this, SetPasswordActivity.class);
+        	startActivityForResult(intent, REQUEST_CODE_SET_NEW_PASSWORD);
+        	
+        	return;
+    	}else hasSetNewPassword = false;
+    	
+    	doGenerateKeypair();
+		try {
+			encryptBackward();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+	
+	
+	private void generateFirstKeypair(){
+		if(!MessageEncryptionFactory.isAuthenticated()){
+    		MessageEncryptionFactory.setAuthenticating(true);
+    		
+    		Intent intent = new Intent(this, SetPasswordActivity.class);
+        	startActivityForResult(intent, REQUEST_CODE_SET_FIRST_PASSWORD);
+        	
+        	return;
+        }
+		
+		doGenerateKeypair();
+	}
+	
+	
+	private void doGenerateKeypair(){
 		ProgressDialog generateKeypairProgressDialog = ProgressDialog.show(ConversationList.this, "", getString(R.string.generating_keypair), true);
 		Toast generateKeypairErrorToast = Toast.makeText(ConversationList.this, R.string.generated_keypair_failure, Toast.LENGTH_SHORT);
 		
@@ -490,11 +558,54 @@ public class ConversationList extends ListActivity
 		}
 	}
 	
+	private String[] BACKWARD_PROJECTION = new String[] { Inbox._ID, Inbox.ADDRESS, Inbox.BODY };
+	private void encryptBackward() throws Exception{		
+		Uri uriSms = Uri.parse("content://sms");
+		String selection = Inbox.TYPE + "='" + MessageItem.MESSAGE_TYPE_PARANDROID_INBOX + 
+			"' OR " + Inbox.TYPE + "='" + MessageItem.MESSAGE_TYPE_PARANDROID_OUTBOX + "'";
+		
+		Cursor c = getContentResolver().query(uriSms, BACKWARD_PROJECTION, selection, null, null);
+		if(!c.moveToFirst()){
+			Log.i(TAG, "backward: No messages");
+			return;
+		}
+		
+		do{
+			try{
+				String address = c.getString(c.getColumnIndex(Inbox.ADDRESS));
+
+				Log.i(TAG, "backward: oldpriv: " + oldPrivateKey);
+				Log.i(TAG, "backward: address: " + address);
+				
+				String body = c.getString(c.getColumnIndex(Inbox.BODY));
+				Log.i(TAG, "backward: oldbody: " + body);
+				
+				String clearBody = MessageEncryption.decrypt(this, oldPrivateKey, address, Base64Coder.decode(body));
+				Log.i(TAG, "backward: clear: " + clearBody);
+				
+				String newBody = new String(Base64Coder.encode(MessageEncryption.encrypt(this, address, clearBody)));
+				Log.i(TAG, "backward: newbody: " + newBody);
+				
+				c.updateString(c.getColumnIndex(Inbox.BODY), newBody);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}while(c.moveToNext());
+		
+		c.commitUpdates();
+		oldPrivateKey = null;
+	}
+	
+	
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	switch(requestCode){
     	case REQUEST_CODE_SET_PASSWORD:
-    		generateKeypair();
+    		generateNewKeypair();
+    		break;
+    		
+    	case REQUEST_CODE_SET_FIRST_PASSWORD:
+    		generateFirstKeypair();
     		break;
 
     	case REQUEST_CODE_CHANGE_PASSWORD_AUTHENTICATE:
@@ -503,6 +614,11 @@ public class ConversationList extends ListActivity
 
     	case REQUEST_CODE_CHANGE_PASSWORD:
     		doChangePassword();
+    		break;
+    		
+    	case REQUEST_CODE_SET_NEW_PASSWORD:
+    		hasSetNewPassword = true;
+    		generateNewKeypair();
     		break;
     		
     	default:

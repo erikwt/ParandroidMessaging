@@ -599,7 +599,7 @@
     <string name="menu_manage_public_keys">Manage public keys</string>
     <string name="menu_change_password">Change password</string>
     
-    <string name="generate_keypair_dialog">Are you sure you want to generate a new keypair? You\'ll have to resend
+    <string name="generate_new_keypair_dialog">Are you sure you want to generate a new keypair? You\'ll have to resend
     	your public key to the contacts you want to securely communicate with.</string>
     <string name="no_keypair_dialog">You don\'t have a keypair yet. You need to have one to securely communicate
     	with your contacts. Do you want to generate a keypair now?</string>

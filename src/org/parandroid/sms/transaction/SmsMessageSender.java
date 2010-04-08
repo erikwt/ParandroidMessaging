@@ -198,7 +198,8 @@ public class SmsMessageSender implements MessageSender {
             		PendingIntent sentIntent = sentIntents.isEmpty() ? null : sentIntents.get(0);
             		PendingIntent deliveryIntent = deliveryIntents.isEmpty() ? null : deliveryIntents.get(0);
 
-            		smsManager.sendDataMessage(mDests[i], null, MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT, encryptedMessage, sentIntent, deliveryIntent);
+            		// TODO: remove comment
+            		// smsManager.sendDataMessage(mDests[i], null, MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT, encryptedMessage, sentIntent, deliveryIntent);
         		} catch (Exception ex) {
         			Log.e(TAG, ex.getMessage());
         			
