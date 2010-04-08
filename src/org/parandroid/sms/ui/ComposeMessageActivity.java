@@ -121,6 +121,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -223,6 +224,7 @@ public class ComposeMessageActivity extends Activity
     private View mBottomPanel;              // View containing the text editor, send button, ec.
     private EditText mTextEditor;           // Text editor to type your message into
     private TextView mTextCounter;          // Shows the number of characters used in text editor
+    private CheckBox mTryToEncrypt;
     private Button mSendButton;             // Press to detonate
     private EditText mSubjectTextEditor;    // Text editor for MMS subject
 
@@ -553,6 +555,7 @@ public class ComposeMessageActivity extends Activity
             mWorkingMessage.setHasEmail(mRecipientsEditor.containsEmail(), true);
 
             checkForTooManyRecipients();
+            
 
             // Walk backwards in the text box, skipping spaces.  If the last
             // character is a comma, update the title bar.
@@ -570,6 +573,8 @@ public class ComposeMessageActivity extends Activity
 
             // If we have gone to zero recipients, disable send button.
             updateSendButtonState();
+            
+            updateTryToEncryptCheckboxState();
         }
     };
 
@@ -1575,6 +1580,7 @@ public class ComposeMessageActivity extends Activity
                         mTextEditor.requestFocus();
                     }
                 }
+                
             }
         });
 
@@ -1618,7 +1624,7 @@ public class ComposeMessageActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+        
         setContentView(R.layout.compose_message_activity);
         setProgressBarVisibility(false);
 
@@ -1627,7 +1633,7 @@ public class ComposeMessageActivity extends Activity
 
         // Initialize members for UI elements.
         initResourceRefs();
-
+        
         mContentResolver = getContentResolver();
         mBackgroundQueryHandler = new BackgroundQueryHandler(mContentResolver);
 
@@ -1697,6 +1703,8 @@ public class ComposeMessageActivity extends Activity
 
         // Mark the current thread as read.
         mConversation.markAsRead();
+        
+        updateTryToEncryptCheckboxState();
 
         // Load the draft for this thread, if we aren't already handling
         // existing data, such as a shared picture or forwarded message.
@@ -2702,6 +2710,7 @@ public class ComposeMessageActivity extends Activity
         mTextEditor.setOnEditorActionListener(this);
         mTextEditor.addTextChangedListener(mTextEditorWatcher);
         mTextCounter = (TextView) findViewById(R.id.text_counter);
+        mTryToEncrypt = (CheckBox) findViewById(R.id.try_to_encrypt);
         mSendButton = (Button) findViewById(R.id.send_button);
         mSendButton.setOnClickListener(this);
         mTopPanel = findViewById(R.id.recipients_subject_linear);
@@ -2850,8 +2859,8 @@ public class ComposeMessageActivity extends Activity
     }
 
     private void sendMessage(boolean bCheckEcmMode) {
-        boolean tryToEncrypt = true;
-    	
+        boolean tryToEncrypt = mTryToEncrypt.isChecked() && hasRecipientsWithPublicKey();
+    	        
         if(tryToEncrypt){
 	    	if(MessageEncryptionFactory.isAuthenticating()) return;
 	        
@@ -2959,6 +2968,12 @@ public class ComposeMessageActivity extends Activity
 
         mSendButton.setEnabled(enable);
         mSendButton.setFocusable(enable);
+    }
+    
+    private void updateTryToEncryptCheckboxState() {
+    	int state = hasRecipientsWithPublicKey() ? View.VISIBLE : View.GONE;
+    	
+    	mTryToEncrypt.setVisibility(state);
     }
 
     private long getMessageDate(Uri uri) {
@@ -3272,10 +3287,28 @@ public class ComposeMessageActivity extends Activity
         }
 
         return intent;
-   }
+    }
+    
+    private boolean hasRecipientsWithPublicKey(){    	
+    	if(!MessageEncryptionFactory.hasKeypair(this)) return false;
+    	
+    	String[] numbers;
+    	if (isRecipientsEditorVisible()) {
+    		// compose message: we are able to select recipients
+    		String[] tmp = new String[]{};
+    		numbers = mRecipientsEditor.getNumbers().toArray(tmp);
+    	} else {
+    		// in a conversation, so recipients are known
+    		numbers = getRecipients().getNumbers();
+    	}
+    	
+    	for(String number : numbers){
+    		if(MessageEncryptionFactory.hasPublicKey(this, number)){
+    			return true;
+    		} 
+    	}
+    	
+    	return false;
+    	
+    }
 }
-
-
-
-
-
