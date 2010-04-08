@@ -685,6 +685,8 @@
     <string name="tap_to_accept">Tap the import icon to accept this public key.</string>
     <string name="import_public_key">Import public key</string>
     <string name="import_public_key_dialog">Do you want to accept this public key from</string>
+    <string name="import_public_key_overwrite">Overwrite public key</string>
+    <string name="import_public_key_dialog_overwrite">Do you want to overwrite the current public key of</string>
     <string name="import_public_key_success">Successfully imported public key.</string>
     <string name="import_public_key_failure">Error importing public key!</string>
 
