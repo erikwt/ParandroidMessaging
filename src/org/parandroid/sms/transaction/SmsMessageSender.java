@@ -194,16 +194,19 @@ public class SmsMessageSender implements MessageSender {
                             " from SmsManager.sendMultipartTextMessage()");
                 }
         	} else {
-        		try {
-            		PendingIntent sentIntent = sentIntents.isEmpty() ? null : sentIntents.get(0);
-            		PendingIntent deliveryIntent = deliveryIntents.isEmpty() ? null : deliveryIntents.get(0);
-
-            		smsManager.sendDataMessage(mDests[i], null, MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT, encryptedMessage, sentIntent, deliveryIntent);
-        		} catch (Exception ex) {
-        			Log.e(TAG, ex.getMessage());
-        			
-                    throw new MmsException("SmsMessageSender.sendMessage (encrypted): caught " + ex +
-                    " from SmsManager.sendDataMessage()");
+        		MultipartDataMessageSender.MAX_BYTES = 130;
+        		boolean sent = false;
+        		while(!sent && MultipartDataMessageSender.MAX_BYTES > 100){
+	        		try {
+	            		PendingIntent sentIntent = sentIntents.isEmpty() ? null : sentIntents.get(0);
+	            		PendingIntent deliveryIntent = deliveryIntents.isEmpty() ? null : deliveryIntents.get(0);
+	
+	            		MultipartDataMessageSender.sendMultipartDataMessage(smsManager, mDests[i], MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT, encryptedMessage, sentIntent, deliveryIntent);
+	            		sent = true;
+	        		} catch (NullPointerException ex) {
+	        			MultipartDataMessageSender.MAX_BYTES--;
+	        			Log.e(TAG, "Failed sending message, going for lower maxbytes: " + MultipartDataMessageSender.MAX_BYTES);
+	        		}
         		}
         	}
         }

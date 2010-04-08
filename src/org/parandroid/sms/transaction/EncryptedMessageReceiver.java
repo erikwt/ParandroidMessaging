@@ -1,14 +1,11 @@
 package org.parandroid.sms.transaction;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.parandroid.encoding.Base64Coder;
-import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
-import org.parandroid.sms.ui.ComposeMessageActivity;
 import org.parandroid.sms.ui.EncryptedMessageNotificationActivity;
 import org.parandroid.sms.ui.MessageItem;
 
@@ -36,11 +33,14 @@ import android.telephony.SmsMessage;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.android.mms.util.SqliteWrapper;
+
 public class EncryptedMessageReceiver extends BroadcastReceiver {
 
-	private static final String TAG = "ParandroidEncryptedMessageReceiver";
-	public static final int NOTIFICATIONID = 31338;
+	private static final String TAG = "Parandroid EncryptedMessageReceiver";
 
+	private static HashMap<Integer, HashMap<Integer, byte[]>> messageStore = new HashMap<Integer, HashMap<Integer, byte[]>>();
+	
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		String uricontent = intent.getDataString();
@@ -48,15 +48,59 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
         Log.v(TAG, "Reveiced package on port " + port);
         if(Integer.parseInt(port) != MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT) return;
 
+        SmsMessage[] messages = Intents.getMessagesFromIntent(intent);        
+        SmsMessage message = messages[0];
+                
+        byte[] data = message.getUserData();
+        
+        int count = data[0];
+        int totalMessages = data[1];
+        int msgId = data[2];
+                
+        if(!messageStore.containsKey(msgId)){
+        	HashMap<Integer, byte[]> messageParts = new HashMap<Integer, byte[]>();
+        	messageStore.put(msgId, messageParts);
+        }
+        
+        HashMap<Integer, byte[]> messageParts = messageStore.get(msgId);
+        
+        byte[] part = new byte[data.length - 3];
+        System.arraycopy(data, 3, part, 0, part.length);
+        
+        messageParts.put(count, part);
+        
+        if(messageParts.size() == totalMessages){
+            Log.v(TAG, "Received all parts of message: " + msgId);
+        	handleMultipartDataMessage(context, messages, msgId);
+        	messageStore.remove(msgId);
+        }
+	}
+	
+	
+	private void handleMultipartDataMessage(Context context, SmsMessage[] messages, int msgId){
+		HashMap<Integer, byte[]> messageParts = messageStore.get(msgId);
+		
+		int len = 0, offset = 0;
+		ArrayList<byte[]> dataParts = new ArrayList<byte[]>();
+		
+		for(int i = messageParts.size() - 1; i >= 0; i--){
+			byte[] part = messageParts.get(i);
+			len += part.length;
+			dataParts.add(part);
+		}
+		
+		byte[] body = new byte[len];
+		for(byte[] part : dataParts){
+			System.arraycopy(part, 0, body, offset, part.length);
+			offset += part.length;
+		}
+		
 		Log.v(TAG, "Received encrypted message");
 		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		String notificationString = context.getString(R.string.received_encrypted_message);
 		
-		SmsMessage[] messages = Intents.getMessagesFromIntent(intent);
-		if(messages.length == 0) return;
-		
 		long threadId = Threads.getOrCreateThreadId(context, messages[0].getOriginatingAddress());
-		insertEncryptedMessage(context, messages, threadId);
+		insertEncryptedMessage(context, messages, body, threadId);
 		
 		int notificationId = MessageUtils.getNotificationId(messages[0].getOriginatingAddress());
 
@@ -90,23 +134,10 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 	 * @param messages
 	 * @param threadId
 	 */
-	private void insertEncryptedMessage(Context context, SmsMessage[] messages, long threadId){
+	private void insertEncryptedMessage(Context context, SmsMessage[] messages, byte[] body, long threadId){
 		SmsMessage msg = messages[0];
 		ContentValues values = extractContentValues(msg);
-        
-		int len = 0, offset = 0;
-		ArrayList<byte[]> dataParts = new ArrayList<byte[]>();
-		for(SmsMessage m : messages){
-			byte[] data = m.getUserData();
-			len += data.length;
-			dataParts.add(data);
-		}
-		byte[] body = new byte[len];
-		for(byte[] part : dataParts){
-			System.arraycopy(part, 0, body, offset, part.length);
-			offset += part.length;
-		}
-		
+        		
         values.put(Inbox.BODY, new String(Base64Coder.encode(body)));
         values.put(Sms.THREAD_ID, threadId);
         values.put(Inbox.TYPE, MessageItem.MESSAGE_TYPE_PARANDROID_INBOX);
