@@ -387,7 +387,7 @@ public class ConversationList extends ListActivity
 	            createNewMessage();
 	            break;
 	        case MENU_GENERATE_KEYPAIR:
-	        	generateKeypairStage1();
+	        	generateKeypair();
 	            break;
 	        case MENU_SEND_PUBLIC_KEY:
 	        	sendPublicKey();
@@ -474,17 +474,12 @@ public class ConversationList extends ListActivity
         startActivity(intent);
     }
     
-    private void generateKeypairStage1(){
+    private void generateKeypair(){
     	if(!MessageEncryptionFactory.hasKeypair(this)){
     		generateFirstKeypair();
     		return;
     	}
     	
-    	generateKeypairStage2();
-    }
-    
-    private PrivateKey oldPrivateKey = null;
-    private void generateKeypairStage2(){
     	AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	builder.setMessage(getText(R.string.generate_new_keypair_dialog))
     			.setTitle(getText(R.string.generate_keypair_title))
@@ -508,9 +503,12 @@ public class ConversationList extends ListActivity
     	AlertDialog alert = builder.create();
     	alert.show();
     }
-
+    
+    
+    private PrivateKey oldPrivateKey = null;
     private boolean hasSetNewPassword = false;
-	private void generateNewKeypair() {
+	
+    private void generateNewKeypair() {
 		if(MessageEncryptionFactory.isAuthenticating()) return;
         
     	if(!MessageEncryptionFactory.isAuthenticated()){
