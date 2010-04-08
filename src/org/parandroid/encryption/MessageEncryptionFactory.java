@@ -186,7 +186,7 @@ public abstract class MessageEncryptionFactory {
     public static String getPublicKeyFilename(String number){
     	try{
 	    	if(number.startsWith("00")) 	number = number.substring(4);
-	    	else if(number.startsWith("0"))	number = number.substring(3);
+	    	else if(number.startsWith("0"))	number = number.substring(1);
 	    	else if(number.startsWith("+")) number = number.substring(3);
     	}catch(Exception e){
     		Log.e(TAG, "Unknown number format detected. Number: " + number);
