@@ -20,5 +20,15 @@ public class EncryptedMessageNotificationActivity extends Activity {
 
 		Intent targetIntent = ComposeMessageActivity.createIntent(getApplicationContext(), i.getLongExtra("threadId", -1));
 		startActivity(targetIntent);
+		
+		finish();
+	}
+	
+	@Override
+	protected void onResume() {
+		Intent targetIntent = new Intent(this, ConversationList.class);
+		startActivity(targetIntent);
+		
+		finish();
 	}
 }
