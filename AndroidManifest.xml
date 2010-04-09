@@ -17,8 +17,7 @@
  * limitations under the License.
  */
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="org.parandroid.sms">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.parandroid.sms">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
@@ -38,9 +37,13 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INSTALL_DRM" />
 
+    <uses-sdk android:minSdkVersion="7" />
+
     <application android:name="ParandroidSmsApp"
             android:label="@string/app_label"
             android:icon="@drawable/ic_launcher_smsmms"
+		    android:versionCode="1"
+		    android:versionName="0.9"
             android:allowTaskReparenting="true">
 
         <service android:name=".transaction.TransactionService"
