@@ -3,7 +3,7 @@ package org.parandroid.sms.transaction;
 import java.util.Random;
 
 import android.app.PendingIntent;
-import android.telephony.SmsManager;
+import android.telephony.gsm.SmsManager;
 
 public class MultipartDataMessageSender {
 	
