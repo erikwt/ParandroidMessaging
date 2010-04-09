@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">    
+        
+        <ImageView
+          android:src="@drawable/ic_launcher_smsmms"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+            android:padding="10px"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="@string/about_string"
+            android:padding="10px"
+            android:paddingLeft="0px"
+            android:textSize="18px" 
+            android:gravity="center_vertical|center_horizontal"
+        />
+    </LinearLayout>
+    
+        <TextView
+            android:autoLink="all"
+            android:linksClickable="true"  
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/parandroid_about"
+            android:padding="10px"/>
+                
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/parandroid_developers"
+            android:padding="10px"/>
+</LinearLayout>

@@ -649,14 +649,27 @@
 
     <!-- Parandroid SMS -->
     <string name="app_label">Parandroid Messaging</string>
+    <string name="about_string">Parandroid Messaging 0.9 BETA</string>
     <string name="parandroid_snippet">Parandroid encrypted message</string>
+    <string name="parandroid_about">
+        Send and receive encrypted SMS (text) messages between Android phones, to improve privacy.
+        
+        \n\nSee http://www.parandroid.org for more info.\nReleased under the Apache 2.0 open source license.
+    </string>
+    <string name="parandroid_developers">
+        Erik Wallentinsen\n
+        Jeffrey Klardie
+    </string>
     
     <string name="menu_send_public_key">Send public key</string>
     <string name="menu_generate_keypair">Generate keypair</string>
     <string name="menu_generate_new_keypair">Generate new keypair</string>
     <string name="menu_manage_public_keys">Manage public keys</string>
     <string name="menu_change_password">Change password</string>
+    <string name="menu_about">About</string>
+    
     <string name="specify_recipients">Specify recipients</string>
+    <string name="about_title">About Parandroid</string>
     
     <string name="generate_new_keypair_dialog">Are you sure you want to generate a new keypair? You\'ll have to resend
     	your public key to the contacts you want to securely communicate with.</string>
