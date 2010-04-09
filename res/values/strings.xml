@@ -702,5 +702,9 @@
     <string name="failed_changing_password">Failed changing password</string>
     <string name="successfully_changed_password">Successfully changed password</string>
     <string name="password_not_changed">Password not changed</string>
+    <string name="parandroid_authenticate">Please enter your password to decrypt your private key.</string>
+    <string name="parandroid_authenticate_title">Parandroid authenticate</string>
+    <string name="parandroid_set_password">Please enter your new password to encrypt your private key.</string>
+    <string name="parandroid_set_password_title">Set Parandroid password</string>
 </resources>
 
