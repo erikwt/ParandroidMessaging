@@ -292,6 +292,9 @@
         <activity android:name=".ui.SetPasswordActivity">
         </activity>
         
+        <activity android:name=".ui.SpecifyRecipientsActivity">
+        </activity>
+        
         <activity android:name=".ui.EncryptedMessageNotificationActivity">
         </activity>
         
