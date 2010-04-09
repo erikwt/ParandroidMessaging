@@ -18,10 +18,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.LinearLayout.LayoutParams;
 
 public class SpecifyRecipientsActivity extends Activity implements OnClickListener {
 
@@ -30,7 +32,7 @@ public class SpecifyRecipientsActivity extends Activity implements OnClickListen
 	private String[] recipientNumbers;
 	private RecipientList recipients;
 	private ArrayList<CheckBox> checkboxes;
-	private Button sendButton;
+	private Button sendButton, cancelButton;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,20 @@ public class SpecifyRecipientsActivity extends Activity implements OnClickListen
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         view.addView(layout);
+        
+        LinearLayout infoWrapper = new LinearLayout(this);
+        infoWrapper.setOrientation(LinearLayout.HORIZONTAL);
+        layout.addView(infoWrapper);
+        
+        ImageView parandroidLogo = new ImageView(this);
+        parandroidLogo.setImageResource(R.drawable.stat_notify_encrypted_msg);
+        parandroidLogo.setPadding(10, 10, 10, 10);
+        infoWrapper.addView(parandroidLogo);
+        
+        TextView parandroidText = new TextView(this);
+        parandroidText.setText(R.string.parandroid_specify_recipients);
+        parandroidText.setPadding(10, 10, 10, 10);
+        infoWrapper.addView(parandroidText);
 
         TextView textEncrypted = new TextView(this);
         textEncrypted.setText(R.string.send_encrypted_to);
@@ -85,10 +101,21 @@ public class SpecifyRecipientsActivity extends Activity implements OnClickListen
         for(CheckBox checkbox : plainTextCheckboxes)
         	layout.addView(checkbox);
         
+        LinearLayout buttonWrapper = new LinearLayout(this);
+        layout.addView(buttonWrapper);
+        
+        LayoutParams buttonParams = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1);
         sendButton = new Button(this);
         sendButton.setText(R.string.send);
         sendButton.setOnClickListener(this);
-        layout.addView(sendButton);
+        sendButton.setLayoutParams(buttonParams);
+        buttonWrapper.addView(sendButton);
+        
+        cancelButton = new Button(this);
+        cancelButton.setText(R.string.no);
+        cancelButton.setOnClickListener(this);
+        cancelButton.setLayoutParams(buttonParams);
+        buttonWrapper.addView(cancelButton);
         
         setContentView(view);
         
@@ -105,7 +132,11 @@ public class SpecifyRecipientsActivity extends Activity implements OnClickListen
 	        }
 
 			ComposeMessageActivity.setRecipients(newRecipients);
+			setResult(RESULT_OK);
 			
+			finish();
+		} else if(v.equals(cancelButton)){
+			setResult(RESULT_CANCELED);
 			finish();
 		}
 	}
