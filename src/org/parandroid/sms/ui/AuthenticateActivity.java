@@ -18,22 +18,26 @@ public class AuthenticateActivity extends Activity implements OnClickListener {
 	private static final String TAG = "Parandroid AuthenticateActivity";
 		
 	private EditText passwordField;
-	private Button submitButton;
+	private Button submitButton, cancelButton;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.authenticate_activity);
-        
+        setTitle(R.string.parandroid_authenticate_title);
+
         submitButton = (Button) findViewById(R.id.submitbutton);
         submitButton.setOnClickListener(this);
+        
+        cancelButton = (Button) findViewById(R.id.cancelbutton);
+        cancelButton.setOnClickListener(this);
         
         passwordField = (EditText) findViewById(R.id.password);  
         passwordField.setHint(getString(R.string.enter_password));
     }
     
-    public void onClick(View v) {		
+    public void onClick(View v) {
 		if(v.equals(submitButton)){
 			String password = passwordField.getText().toString(); 
 			
@@ -53,6 +57,9 @@ public class AuthenticateActivity extends Activity implements OnClickListener {
 				MessageEncryptionFactory.forgetPassword();
 				MessageEncryptionFactory.setAuthenticating(true);
 			}
+		}else if(v.equals(cancelButton)){
+			MessageEncryptionFactory.setAuthenticating(false);
+			finish();
 		}
 	}
 
