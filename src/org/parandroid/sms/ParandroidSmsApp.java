@@ -37,6 +37,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -81,7 +82,11 @@ public class ParandroidSmsApp extends Application {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
-                if(ComposeMessageActivity.onForeground && MessageEncryptionFactory.isAuthenticated()){
+            	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            	boolean forgetPasswordOnSleep = prefs.getBoolean("pref_key_forget_on_sleep", true);
+            	boolean closeOnSleep = prefs.getBoolean("pref_key_close_on_sleep", true);
+            	
+                if(closeOnSleep && ComposeMessageActivity.onForeground && MessageEncryptionFactory.isAuthenticated()){
                 	ComposeMessageActivity.onForeground = false;
                 	
                 	// Escape from running conversation
@@ -90,7 +95,9 @@ public class ParandroidSmsApp extends Application {
 	                getApplicationContext().startActivity(targetIntent);
                 }
                 
-                MessageEncryptionFactory.forgetPassword();
+                if(forgetPasswordOnSleep){
+                	MessageEncryptionFactory.forgetPassword();
+                }
             }
         }
     };

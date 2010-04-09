@@ -18,6 +18,17 @@
  */
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+  <PreferenceCategory android:title="@string/pref_parandroid"
+                      android:key="pref_parandroid">
+    <CheckBoxPreference android:defaultValue="true"
+                      android:key="pref_key_forget_on_sleep"
+                      android:summary="@string/forget_on_sleep"
+                      android:title="@string/forget_on_sleep_title" />
+    <CheckBoxPreference android:defaultValue="true"
+                      android:key="pref_key_close_on_sleep"
+                      android:summary="@string/close_on_sleep"
+                      android:title="@string/close_on_sleep_title" />
+   </PreferenceCategory>
   <PreferenceCategory android:title="@string/pref_sms_storage_title"
                       android:key="pref_key_storage_settings">
     <CheckBoxPreference android:defaultValue="false"
