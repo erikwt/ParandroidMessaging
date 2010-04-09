@@ -136,6 +136,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -165,6 +166,7 @@ public class ComposeMessageActivity extends Activity
     public static final int REQUEST_CODE_CREATE_SLIDESHOW = 16;
     public static final int REQUEST_CODE_ECM_EXIT_DIALOG  = 17;
     public static final int REQUEST_CODE_AUTHENTICATE	  = 18;
+    public static final int REQUEST_CODE_SPECIFY_RECIPIENTS = 19;
 
     private static final String TAG = "Parandroid ComposeMessageActivity";
 
@@ -252,6 +254,8 @@ public class ComposeMessageActivity extends Activity
                                         // help clarify the situation.
 
     private WorkingMessage mWorkingMessage;         // The message currently being composed.
+    
+    private static ContactList specifiedRecipiets;
 
     private AlertDialog mSmileyDialog;
 
@@ -559,7 +563,6 @@ public class ComposeMessageActivity extends Activity
             mWorkingMessage.setHasEmail(mRecipientsEditor.containsEmail(), true);
 
             checkForTooManyRecipients();
-            
 
             // Walk backwards in the text box, skipping spaces.  If the last
             // character is a comma, update the title bar.
@@ -578,6 +581,7 @@ public class ComposeMessageActivity extends Activity
             // If we have gone to zero recipients, disable send button.
             updateSendButtonState();
             
+            // If we added a recipient for which we have a public key, show tryToEncrypt button
             updateTryToEncryptCheckboxState();
         }
     };
@@ -1513,7 +1517,7 @@ public class ComposeMessageActivity extends Activity
         }
         return mConversation.getRecipients();
     }
-
+    
     private void bindToContactHeaderWidget(ContactList list) {
         mContactHeader.wipeClean();
         mContactHeader.invalidate();
@@ -1596,6 +1600,8 @@ public class ComposeMessageActivity extends Activity
                 }
             }
         });
+        
+        updateTryToEncryptCheckboxState();
 
         mTopPanel.setVisibility(View.VISIBLE);
     }
@@ -1642,7 +1648,9 @@ public class ComposeMessageActivity extends Activity
         mBackgroundQueryHandler = new BackgroundQueryHandler(mContentResolver);
 
         initialize(savedInstanceState);
+
         ComposeMessageActivity.encryptIfNeeded = true;
+        updateTryToEncryptCheckboxState();
         
         if (TRACE) {
             android.os.Debug.startMethodTracing("compose");
@@ -1709,8 +1717,6 @@ public class ComposeMessageActivity extends Activity
         // Mark the current thread as read.
         mConversation.markAsRead();
         
-        updateTryToEncryptCheckboxState();
-
         // Load the draft for this thread, if we aren't already handling
         // existing data, such as a shared picture or forwarded message.
         boolean isForwardedMessage = false;
@@ -1809,6 +1815,8 @@ public class ComposeMessageActivity extends Activity
 
             initialize(null);
             loadMessageContent();
+            
+            updateTryToEncryptCheckboxState();
         }
 
     }
@@ -1881,6 +1889,8 @@ public class ComposeMessageActivity extends Activity
         //Contact.startPresenceObserver();
 
         addRecipientsListeners();
+        
+        updateTryToEncryptCheckboxState();
         
         ComposeMessageActivity.onForeground = true;
     }
@@ -2080,7 +2090,7 @@ public class ComposeMessageActivity extends Activity
     };
 
     public void onPreMessageSent() {
-        runOnUiThread(mResetMessageRunnable);
+    	runOnUiThread(mResetMessageRunnable);
     }
 
     public void onMessageSent() {
@@ -2371,13 +2381,15 @@ public class ComposeMessageActivity extends Activity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (DEBUG) {
+    	updateTryToEncryptCheckboxState();
+    	
+    	if (DEBUG) {
             log("onActivityResult: requestCode=" + requestCode
                     + ", resultCode=" + resultCode + ", data=" + data);
         }
         mWaitingForSubActivity = false;     // We're back!
 
-        if(requestCode != REQUEST_CODE_AUTHENTICATE){
+        if(requestCode != REQUEST_CODE_AUTHENTICATE && requestCode != REQUEST_CODE_SPECIFY_RECIPIENTS){
 	        // If there's no data (because the user didn't select a picture and
 	        // just hit BACK, for example), there's nothing to do.
 	        if (requestCode != REQUEST_CODE_TAKE_PICTURE) {
@@ -2447,11 +2459,35 @@ public class ComposeMessageActivity extends Activity
             case REQUEST_CODE_AUTHENTICATE:
             	if(resultCode == RESULT_OK) sendMessage(false);
             	break;
+            	
+            case REQUEST_CODE_SPECIFY_RECIPIENTS:
+            	if(specifiedRecipiets.size() == 0){
+            		Toast.makeText(this, R.string.specify_recipients_none_checked, Toast.LENGTH_LONG).show();
+            		break;
+            	}
+            	
+            	if(mRecipientsEditor.getNumbers().size() != specifiedRecipiets.size()) {
+            		// only change recipients if we actually removed some (it's only
+            		// possible to uncheck recipients in the specifyRecipientsActivity)
+            	
+	            	if(isRecipientsEditorVisible()){
+	            		// compose message, update recipients and window title
+            			mRecipientsEditor.populate(specifiedRecipiets);
+            			bindToContactHeaderWidget(specifiedRecipiets);
+	            	} else {
+	            		// existing conversation, update recipients
+	            		mConversation.setRecipients(specifiedRecipiets);
+	            	}
+            	}
+            	
+            	sendMessage(false, true);
+            	break;
 
             default:
                 // TODO
                 break;
         }
+        
     }
 
     private final ResizeImageResultCallback mResizeImageCallback = new ResizeImageResultCallback() {
@@ -2578,7 +2614,7 @@ public class ComposeMessageActivity extends Activity
         if (extras == null) {
             return false;
         }
-
+        
         String mimeType = intent.getType();
         String action = intent.getAction();
         if (Intent.ACTION_SEND.equals(action)) {
@@ -2866,10 +2902,10 @@ public class ComposeMessageActivity extends Activity
         }
         return recipientCount;
     }
-
-    private void sendMessage(boolean bCheckEcmMode) {
-        boolean tryToEncrypt = mTryToEncrypt.isChecked() && (mTryToEncrypt.isShown());
-    	        
+    
+    private void sendMessage(boolean bCheckEcmMode, boolean ignoreMissingPublicKeys) {
+    	boolean tryToEncrypt = mTryToEncrypt.isChecked() && (mTryToEncrypt.getVisibility() == View.VISIBLE);
+        
         if(tryToEncrypt){
 	    	if(MessageEncryptionFactory.isAuthenticating()) return;
 	        
@@ -2882,6 +2918,17 @@ public class ComposeMessageActivity extends Activity
 	        	
 	        	return;
 	        }
+	    	
+	    	// When we want to send an encrypted message to multiple recipients, and we have
+	    	// no public key for one or more recipients, we want to display a checklist so the
+	    	// user can specify to who the message should be sent.
+	    	if(hasRecipientsWithoutPublicKey() && !ignoreMissingPublicKeys) {
+	    		Intent intent = new Intent(this, SpecifyRecipientsActivity.class);
+	    		intent.putExtra("recipients", getRecipientNumbers());
+	        	startActivityForResult(intent, REQUEST_CODE_SPECIFY_RECIPIENTS);
+	        	
+	        	return;
+	    	}
         }
         
     	if (bCheckEcmMode) {
@@ -2902,7 +2949,7 @@ public class ComposeMessageActivity extends Activity
         // send can change the recipients. Make sure we remove the listeners first and then add
         // them back once the recipient list has settled.
         removeRecipientsListeners();
-        mWorkingMessage.send(true);
+        mWorkingMessage.send(tryToEncrypt);
         mSentMessage = true;
         addRecipientsListeners();
 
@@ -2912,8 +2959,12 @@ public class ComposeMessageActivity extends Activity
         }
     }
 
+    private void sendMessage(boolean bCheckEcmMode) {
+        sendMessage(bCheckEcmMode, false);
+    }
+
     private void resetMessage() {
-        if (Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
+    	if (Log.isLoggable(LogTag.APP, Log.VERBOSE)) {
             log("resetMessage");
         }
 
@@ -3298,18 +3349,21 @@ public class ComposeMessageActivity extends Activity
         return intent;
     }
     
-    private boolean hasRecipientsWithPublicKey(){    	
+    private String[] getRecipientNumbers() {   	
+    	if (isRecipientsEditorVisible()) {
+    		// compose message, so get recipients from recipientsEditor
+    		String[] tmp = new String[]{};
+    		return mRecipientsEditor.getNumbers().toArray(tmp);
+    	}
+    	
+    	// we are in a conversation, so just fetch those numbers
+    	return mConversation.getRecipients().getNumbers();
+    }
+        
+    private boolean hasRecipientsWithPublicKey() {    	
     	if(!MessageEncryptionFactory.hasKeypair(this)) return false;
     	
-    	String[] numbers;
-    	if (isRecipientsEditorVisible()) {
-    		// compose message: we are able to select recipients
-    		String[] tmp = new String[]{};
-    		numbers = mRecipientsEditor.getNumbers().toArray(tmp);
-    	} else {
-    		// in a conversation, so recipients are known
-    		numbers = getRecipients().getNumbers();
-    	}
+    	String[] numbers = getRecipientNumbers();
     	
     	for(String number : numbers){
     		if(MessageEncryptionFactory.hasPublicKey(this, number)){
@@ -3320,4 +3374,21 @@ public class ComposeMessageActivity extends Activity
     	return false;
     	
     }
+    
+    private boolean hasRecipientsWithoutPublicKey() {
+    	String[] numbers = getRecipientNumbers();
+    	
+    	for(String number : numbers){
+    		if(!MessageEncryptionFactory.hasPublicKey(this, number)){
+    			return true;
+    		} 
+    	}
+    	
+    	return false;
+    }
+    
+    public static void setRecipients(ContactList recipients) {
+    	specifiedRecipiets = recipients;
+    }
+    
 }

@@ -702,6 +702,7 @@
     <string name="menu_generate_new_keypair">Generate new keypair</string>
     <string name="menu_manage_public_keys">Manage public keys</string>
     <string name="menu_change_password">Change password</string>
+    <string name="specify_recipients">Specify recipients</string>
     
     <string name="generate_new_keypair_dialog">Are you sure you want to generate a new keypair? You\'ll have to resend
     	your public key to the contacts you want to securely communicate with.</string>
@@ -720,6 +721,10 @@
     <string name="passwords_dont_match">Passwords don\'t match, try again</string>
     <string name="passwords_too_short">Password too short, minimal length is:</string>
     <string name="wrong_password">Wrong password, try again</string>
+    
+    <string name="send_encrypted_to">Send encrypted to:</string>
+    <string name="send_plain_to">Send plain to:</string>
+    <string name="specify_recipients_none_checked">Message not sent. You removed all recipients. Click send to specify recipients again.</string>
     
     <string name="send_public_key_success">Successfully sent public key to</string>
     <string name="failed_opening_public_key">Failed opening public key</string>

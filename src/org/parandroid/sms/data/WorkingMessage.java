@@ -799,6 +799,10 @@ public class WorkingMessage {
         // Convert to MMS if there are any email addresses in the recipient list.
         setHasEmail(conv.getRecipients().containsEmail(), false);
     }
+    
+    public Conversation getConversation() {
+    	return mConversation;
+    }
 
     /**
      * Hint whether or not this message will be delivered to an
