@@ -768,6 +768,7 @@
     <string name="parandroid_authenticate_title">Parandroid authenticate</string>
     <string name="parandroid_set_password">Please enter your new password to encrypt your private key.</string>
     <string name="parandroid_set_password_title">Set Parandroid password</string>
+    <string name="parandroid_specify_recipients">Message could not be sent encrypted to all recipients. Uncheck recipients if you don\'t want them to receive the message.</string>
         
     <string name="pref_parandroid">Parandroid settings</string>
     <string name="forget_on_sleep">Forget password when the phone enters sleep-mode</string>
