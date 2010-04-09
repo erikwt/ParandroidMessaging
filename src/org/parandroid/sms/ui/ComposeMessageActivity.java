@@ -2399,6 +2399,8 @@ public class ComposeMessageActivity extends Activity
             	break;
             	
 			case REQUEST_CODE_SPECIFY_RECIPIENTS:
+				if(resultCode != RESULT_OK) return;
+				
 				if (specifiedRecipiets.size() == 0) {
 					Toast.makeText(this, R.string.specify_recipients_none_checked,
 							Toast.LENGTH_LONG).show();
@@ -2422,6 +2424,7 @@ public class ComposeMessageActivity extends Activity
 	
 				sendMessage(true);
 				break;
+
             default:
                 // TODO
                 break;
