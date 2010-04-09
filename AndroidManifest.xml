@@ -273,6 +273,9 @@
         <activity android:name=".ui.PublicKeyManagerActivity">
         </activity>
         
+        <activity android:name=".ui.AboutActivity">
+        </activity>
+        
         <activity android:name=".ui.PublicKeyReceived">
         </activity>
         

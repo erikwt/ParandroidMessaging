@@ -106,6 +106,7 @@ public class ConversationList extends ListActivity
     public static final int MENU_SEND_PUBLIC_KEY	  = 6;
     public static final int MENU_MANAGE_PUBLIC_KEYS	  = 7;
     public static final int MENU_CHANGE_PASSWORD	  = 8;
+    public static final int MENU_ABOUT				  = 9;
 
     // IDs of the context menu items for the list of conversations.
     public static final int MENU_DELETE                = 0;
@@ -344,12 +345,15 @@ public class ConversationList extends ListActivity
         
         menu.add(0, MENU_CHANGE_PASSWORD, 0, R.string.menu_change_password).setIcon(
         		R.drawable.ic_generate_keypair);
+        
+        menu.add(0, MENU_ABOUT, 0, R.string.menu_about).setIcon(
+        		R.drawable.ic_generate_keypair);
                        
         // Removed search as part of b/1205708
         //menu.add(0, MENU_SEARCH, 0, R.string.menu_search).setIcon(
         //        R.drawable.ic_menu_search).setAlphabeticShortcut(SearchManager.MENU_KEY);
         if (mListAdapter.getCount() > 0 && !mSearchFlag) {
-            menu.add(0, MENU_DELETE_ALL, 0, R.string.menu_delete_all).setIcon(
+        	menu.add(0, MENU_DELETE_ALL, 0, R.string.menu_delete_all).setIcon(
                     android.R.drawable.ic_menu_delete);
         }
 
@@ -376,6 +380,10 @@ public class ConversationList extends ListActivity
 	            break;
 	        case MENU_CHANGE_PASSWORD:
 	        	changePassword();
+	        	break;
+	        case MENU_ABOUT:
+	        	Intent aboutIntent = new Intent(this, AboutActivity.class);
+	        	startActivity(aboutIntent);
 	        	break;
             case MENU_SEARCH:
                 onSearchRequested();
