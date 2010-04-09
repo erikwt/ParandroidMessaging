@@ -177,6 +177,7 @@ public class ComposeMessageActivity extends Activity
     public static final int REQUEST_CODE_CREATE_SLIDESHOW = 16;
     public static final int REQUEST_CODE_ECM_EXIT_DIALOG  = 17;
     public static final int REQUEST_CODE_AUTHENTICATE	  = 18;
+    public static final int REQUEST_CODE_SPECIFY_RECIPIENTS = 19;
 
     private static final String TAG = "Parandroid ComposeMessageActivity";
 
@@ -308,6 +309,8 @@ public class ComposeMessageActivity extends Activity
     private AttachmentEditor mAttachmentEditor;
     private PduPersister mPersister;
 
+    private static RecipientList specifiedRecipiets;
+    
     private AlertDialog mSmileyDialog;
     
     // Everything needed to deal with presence
@@ -844,6 +847,7 @@ public class ComposeMessageActivity extends Activity
             // If we have gone to zero recipients, disable send button.
             updateSendButtonState();
             
+            // If we added a recipient for which we have a public key, show tryToEncrypt button
             updateTryToEncryptCheckboxState();
 
             // If a recipient has been added or deleted (or an invalid one has become valid),
@@ -1576,7 +1580,8 @@ public class ComposeMessageActivity extends Activity
                 }
             }
         });
-                
+           
+        updateTryToEncryptCheckboxState();
         mTopPanel.setVisibility(View.VISIBLE);
     }
 
@@ -1642,8 +1647,6 @@ public class ComposeMessageActivity extends Activity
 
         // Mark the current thread as read.
         markAsRead(mThreadId);
-        
-        updateTryToEncryptCheckboxState();
 
         // Load the draft for this thread, if we aren't already handling
         // existing data, such as a shared picture or forwarded message.
@@ -1676,6 +1679,7 @@ public class ComposeMessageActivity extends Activity
         onKeyboardStateChanged(mIsKeyboardOpen);
 
         ComposeMessageActivity.encryptIfNeeded = true;
+        updateTryToEncryptCheckboxState();
         
         if (TRACE) {
             android.os.Debug.startMethodTracing("compose");
@@ -1685,6 +1689,8 @@ public class ComposeMessageActivity extends Activity
     private void showSubjectEditor() {
         mSubjectTextEditor.setVisibility(View.VISIBLE);
         mTopPanel.setVisibility(View.VISIBLE);
+        
+        updateTryToEncryptCheckboxState();
     }
     
     private void hideTopPanelIfNecessary() {
@@ -1724,6 +1730,8 @@ public class ComposeMessageActivity extends Activity
     @Override
     protected void onResume() {
         super.onResume();
+        
+        updateTryToEncryptCheckboxState();
         
         ComposeMessageActivity.onForeground = true;
         
@@ -2268,13 +2276,15 @@ public class ComposeMessageActivity extends Activity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (LOCAL_LOGV) {
+    	updateTryToEncryptCheckboxState();
+    	
+    	if (LOCAL_LOGV) {
             Log.v(TAG, "onActivityResult: requestCode=" + requestCode
                     + ", resultCode=" + resultCode + ", data=" + data);
         }
         mWaitingForSubActivity = false;     // We're back!
 
-        if(requestCode != REQUEST_CODE_AUTHENTICATE){
+        if(requestCode != REQUEST_CODE_AUTHENTICATE && requestCode != REQUEST_CODE_SPECIFY_RECIPIENTS){
 	        // If there's no data (because the user didn't select a picture and
 	        // just hit BACK, for example), there's nothing to do.
 	        if (requestCode != REQUEST_CODE_TAKE_PICTURE) {
@@ -2387,7 +2397,31 @@ public class ComposeMessageActivity extends Activity
             case REQUEST_CODE_AUTHENTICATE:
             	if(resultCode == RESULT_OK) sendMessage();
             	break;
-
+            	
+			case REQUEST_CODE_SPECIFY_RECIPIENTS:
+				if (specifiedRecipiets.size() == 0) {
+					Toast.makeText(this, R.string.specify_recipients_none_checked,
+							Toast.LENGTH_LONG).show();
+					break;
+				}
+	
+				if (mRecipientsEditor.getRecipientList().getNumbers().length!= specifiedRecipiets.size()) {
+					// only change recipients if we actually removed some (it's only
+					// possible to uncheck recipients in the
+					// specifyRecipientsActivity)
+	
+					if (isRecipientsEditorVisible()) {
+						// compose message, update recipients and window title
+						mRecipientsEditor.populate(specifiedRecipiets);
+						updateWindowTitle();
+					} else {
+						// existing conversation, update recipients
+						mRecipientList = specifiedRecipiets;
+					}
+				}
+	
+				sendMessage(true);
+				break;
             default:
                 // TODO
                 break;
@@ -3124,9 +3158,17 @@ public class ComposeMessageActivity extends Activity
         return Threads.getOrCreateThreadId(this, recipients);
     }
     
-    private void sendMessage() {
-    	final boolean tryToEncrypt = mTryToEncrypt.isChecked() && (mTryToEncrypt.isShown());
-    	        
+    private void sendMessage(){
+    	sendMessage(false);
+    }
+    
+    private void sendMessage(boolean ignoreMissingPublicKeys) {
+    	final boolean tryToEncrypt = mTryToEncrypt.isChecked() && (mTryToEncrypt.getVisibility() == View.VISIBLE);
+
+    	
+    	// Need this for both SMS and MMS.
+        final String[] dests = mRecipientList.getToNumbers();
+    	
         if(tryToEncrypt){
 	    	if(MessageEncryptionFactory.isAuthenticating()) return;
 	        
@@ -3139,10 +3181,18 @@ public class ComposeMessageActivity extends Activity
 	        	
 	        	return;
 	        }
+	    	
+	    	// When we want to send an encrypted message to multiple recipients, and we have
+	    	// no public key for one or more recipients, we want to display a checklist so the
+	    	// user can specify to who the message should be sent.
+	    	if(!ignoreMissingPublicKeys && hasRecipientsWithoutPublicKey()) {
+		    	Intent intent = new Intent(this, SpecifyRecipientsActivity.class);
+		    	intent.putExtra("recipients", dests);
+		    	startActivityForResult(intent, REQUEST_CODE_SPECIFY_RECIPIENTS);
+	
+		    	return;
+	    	}
         }
-    	
-    	// Need this for both SMS and MMS.
-        final String[] dests = mRecipientList.getToNumbers();
         
         // removeSubjectIfEmpty will convert a message that is solely an MMS
         // message because it has an empty subject back into an SMS message.
@@ -3690,26 +3740,43 @@ public class ComposeMessageActivity extends Activity
 	        setPresenceIcon(0);
 	    }
 	}
+	
+	private String[] getRecipientNumbers() {
+		if (isRecipientsEditorVisible()) {
+			// compose message, so get recipients from recipientsEditor
+			return mRecipientsEditor.getRecipientList().getNumbers();
+		}
+
+		// we are in a conversation, so just fetch those numbers
+		return mRecipientList.getToNumbers();
+	}
     
-    private boolean hasRecipientsWithPublicKey(){    	
-    	if(!MessageEncryptionFactory.hasKeypair(this)) return false;
-    	
-    	String[] numbers;
-    	if (isRecipientsEditorVisible()) {
-    		// compose message: we are able to select recipients
-    		numbers = mRecipientsEditor.getRecipientList().getNumbers();
-    	} else {
-    		// in a conversation, so recipients are known
-    		numbers = mRecipientList.getToNumbers();
-    	}
-    	
-    	for(String number : numbers){
-    		if(MessageEncryptionFactory.hasPublicKey(this, number)){
-    			return true;
-    		} 
-    	}
-    	
-    	return false;
-    	
+	private boolean hasRecipientsWithPublicKey() {
+		if (!MessageEncryptionFactory.hasKeypair(this))
+			return false;
+
+		String[] numbers = getRecipientNumbers();
+		for (String number : numbers) {
+			if (MessageEncryptionFactory.hasPublicKey(this, number))
+				return true;
+		}
+
+		return false;
+	}
+    
+	private boolean hasRecipientsWithoutPublicKey() {
+		String[] numbers = getRecipientNumbers();
+
+		for (String number : numbers) {
+			if (!MessageEncryptionFactory.hasPublicKey(this, number))
+				return true;
+
+		}
+
+		return false;
+	}
+	
+    public static void setRecipients(RecipientList recipients) {
+        specifiedRecipiets = recipients;
     }
 }
