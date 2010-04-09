@@ -18,7 +18,7 @@ public class SetPasswordActivity extends Activity implements OnClickListener {
 	
 	private EditText passwordField;
 	private EditText passwordConfirmField;
-	private Button submitButton;
+	private Button submitButton, cancelButton;
 	
 	public static final int PASSWORD_MIN_LENGTH = 4;
 	
@@ -30,6 +30,9 @@ public class SetPasswordActivity extends Activity implements OnClickListener {
         
         submitButton = (Button) findViewById(R.id.submitbutton);
         submitButton.setOnClickListener(this);
+
+        cancelButton = (Button) findViewById(R.id.cancelbutton);
+        cancelButton.setOnClickListener(this);
         
         passwordField = (EditText) findViewById(R.id.password);  
         passwordField.setHint(getString(R.string.enter_password));
@@ -59,6 +62,9 @@ public class SetPasswordActivity extends Activity implements OnClickListener {
 			MessageEncryptionFactory.setPassword(password);
 			MessageEncryptionFactory.setAuthenticating(false);
 			
+			finish();
+		}else if(v.equals(cancelButton)){
+			MessageEncryptionFactory.setAuthenticating(false);
 			finish();
 		}
 	}
