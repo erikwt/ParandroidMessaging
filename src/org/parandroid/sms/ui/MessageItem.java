@@ -144,7 +144,9 @@ public class MessageItem {
 						Log.e(TAG, "Error decrypting message");
 						e.printStackTrace();
 					}
-	            }else if(!MessageEncryptionFactory.isAuthenticating()){
+	            }else if(ComposeMessageActivity.encryptIfNeeded && !MessageEncryptionFactory.isAuthenticating()){
+	            	ComposeMessageActivity.encryptIfNeeded = false;
+	            	Log.v(TAG, "erikw: starting");
 	            	MessageEncryptionFactory.setAuthenticating(true);
 	            	Intent intent = new Intent(context, AuthenticateActivity.class);
 	            	context.startActivity(intent);

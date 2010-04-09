@@ -273,7 +273,8 @@ public class ComposeMessageActivity extends Activity
     
     
     public static boolean onForeground = false;
-
+    public static boolean encryptIfNeeded = true;
+    
     //==========================================================
     // Inner classes
     //==========================================================
@@ -1641,7 +1642,8 @@ public class ComposeMessageActivity extends Activity
         mBackgroundQueryHandler = new BackgroundQueryHandler(mContentResolver);
 
         initialize(savedInstanceState);
-
+        ComposeMessageActivity.encryptIfNeeded = true;
+        
         if (TRACE) {
             android.os.Debug.startMethodTracing("compose");
         }
@@ -2443,7 +2445,7 @@ public class ComposeMessageActivity extends Activity
                 break;
                 
             case REQUEST_CODE_AUTHENTICATE:
-            	sendMessage(false);
+            	if(resultCode == RESULT_OK) sendMessage(false);
             	break;
 
             default:

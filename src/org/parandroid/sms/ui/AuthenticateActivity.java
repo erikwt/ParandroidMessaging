@@ -43,22 +43,22 @@ public class AuthenticateActivity extends Activity implements OnClickListener {
 			
 			try{
 				MessageEncryptionFactory.setPassword(password);
-				MessageEncryptionFactory.setAuthenticating(false);
 				
-				// If this fails, the password is wrong. Reset all in catch
+				// If this fails, the password is wrong.
 				MessageEncryptionFactory.getPrivateKey(this);
 				
+				MessageEncryptionFactory.setAuthenticating(false);
+				setResult(RESULT_OK);
 				finish();
 			}catch(Exception e){
-				passwordField.setText("");
-				
-				Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_LONG).show();
-				
 				MessageEncryptionFactory.forgetPassword();
-				MessageEncryptionFactory.setAuthenticating(true);
+				
+				passwordField.setText("");
+				Toast.makeText(this, R.string.wrong_password, Toast.LENGTH_LONG).show();
 			}
 		}else if(v.equals(cancelButton)){
 			MessageEncryptionFactory.setAuthenticating(false);
+			setResult(RESULT_CANCELED);
 			finish();
 		}
 	}
@@ -66,6 +66,7 @@ public class AuthenticateActivity extends Activity implements OnClickListener {
 	@Override
     public void onStop(){
     	super.onStop();
+    	
 		MessageEncryptionFactory.setAuthenticating(false);
     }
 }
