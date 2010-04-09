@@ -937,7 +937,12 @@ public class WorkingMessage {
         }
 
         // update the Recipient cache with the new to address, if it's different
-        RecipientIdCache.updateNumbers(conv.getThreadId(), conv.getRecipients());
+        try {
+        	RecipientIdCache.updateNumbers(conv.getThreadId(), conv.getRecipients());
+        } catch (UnsupportedOperationException e){
+        	Log.e(TAG, "Error while updating the recipient cache");
+        }
+        
 
         // Mark the message as discarded because it is "off the market" after being sent.
         mDiscarded = true;
