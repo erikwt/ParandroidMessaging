@@ -27,6 +27,7 @@ public class SetPasswordActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.set_password_activity);
+        setTitle(R.string.parandroid_set_password_title);
         
         submitButton = (Button) findViewById(R.id.submitbutton);
         submitButton.setOnClickListener(this);
