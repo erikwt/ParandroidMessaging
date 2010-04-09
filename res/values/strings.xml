@@ -724,7 +724,7 @@
     
     <string name="send_encrypted_to">Send encrypted to:</string>
     <string name="send_plain_to">Send plain to:</string>
-    <string name="specify_recipients_none_checked">Message not sent. You removed all recipients. Click send to specify recipients again.</string>
+    <string name="specify_recipients_none_checked">Message not sent, no recipients specified.</string>
     
     <string name="send_public_key_success">Successfully sent public key to</string>
     <string name="failed_opening_public_key">Failed opening public key</string>
