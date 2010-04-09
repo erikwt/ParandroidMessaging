@@ -61,10 +61,12 @@ public class SetPasswordActivity extends Activity implements OnClickListener {
 			
 			MessageEncryptionFactory.setPassword(password);
 			MessageEncryptionFactory.setAuthenticating(false);
-			
+
+			setResult(RESULT_OK);
 			finish();
 		}else if(v.equals(cancelButton)){
 			MessageEncryptionFactory.setAuthenticating(false);
+			setResult(RESULT_CANCELED);
 			finish();
 		}
 	}

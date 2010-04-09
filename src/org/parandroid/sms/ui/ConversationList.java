@@ -597,6 +597,8 @@ public class ConversationList extends ListActivity
 	
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	if(resultCode == RESULT_CANCELED) return;
+    	
     	switch(requestCode){
     	case REQUEST_CODE_SET_PASSWORD:
     		generateNewKeypair();
