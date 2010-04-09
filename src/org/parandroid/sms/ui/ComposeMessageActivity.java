@@ -330,7 +330,8 @@ public class ComposeMessageActivity extends Activity
     
     
     public static boolean onForeground = false;
-
+    public static boolean encryptIfNeeded = true;
+    
     //==========================================================
     // Inner classes
     //==========================================================
@@ -1674,6 +1675,8 @@ public class ComposeMessageActivity extends Activity
         mIsLandscape = config.orientation == Configuration.ORIENTATION_LANDSCAPE;
         onKeyboardStateChanged(mIsKeyboardOpen);
 
+        ComposeMessageActivity.encryptIfNeeded = true;
+        
         if (TRACE) {
             android.os.Debug.startMethodTracing("compose");
         }
@@ -2368,7 +2371,7 @@ public class ComposeMessageActivity extends Activity
                 break;
                 
             case REQUEST_CODE_AUTHENTICATE:
-            	sendMessage();
+            	if(resultCode == RESULT_OK) sendMessage();
             	break;
 
             default:
