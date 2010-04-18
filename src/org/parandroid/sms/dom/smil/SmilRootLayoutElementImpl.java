@@ -18,7 +18,7 @@
 package org.parandroid.sms.dom.smil;
 
 import org.w3c.dom.DOMException;
-import org.w3c.dom.smil.SMILRootLayoutElement;
+import org.parandroid.external.w3c.dom.smil.SMILRootLayoutElement;
 
 public class SmilRootLayoutElementImpl extends SmilElementImpl implements
         SMILRootLayoutElement {

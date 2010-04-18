@@ -18,9 +18,9 @@
  *                            int detailArg);
  */
 
-package org.w3c.dom.events;
+package org.parandroid.external.w3c.dom.events;
 
-import org.w3c.dom.views.AbstractView;
+import org.parandroid.external.w3c.dom.views.AbstractView;
 
 /**
  *  The <code>UIEvent</code> interface provides specific contextual

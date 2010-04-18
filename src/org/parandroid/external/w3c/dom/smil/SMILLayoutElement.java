@@ -14,7 +14,7 @@
  *   2) ADD public NodeList getRegions();
  */
 
-package org.w3c.dom.smil;
+package org.parandroid.external.w3c.dom.smil;
 
 import org.w3c.dom.NodeList;
 

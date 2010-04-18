@@ -21,13 +21,13 @@ import java.util.ArrayList;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.events.DocumentEvent;
-import org.w3c.dom.events.Event;
-import org.w3c.dom.smil.ElementParallelTimeContainer;
-import org.w3c.dom.smil.ElementTime;
-import org.w3c.dom.smil.SMILParElement;
-import org.w3c.dom.smil.Time;
-import org.w3c.dom.smil.TimeList;
+import org.parandroid.external.w3c.dom.events.DocumentEvent;
+import org.parandroid.external.w3c.dom.events.Event;
+import org.parandroid.external.w3c.dom.smil.ElementParallelTimeContainer;
+import org.parandroid.external.w3c.dom.smil.ElementTime;
+import org.parandroid.external.w3c.dom.smil.SMILParElement;
+import org.parandroid.external.w3c.dom.smil.Time;
+import org.parandroid.external.w3c.dom.smil.TimeList;
 
 public class SmilParElementImpl extends SmilElementImpl implements SMILParElement {
     public final static String SMIL_SLIDE_START_EVENT = "SmilSlideStart";

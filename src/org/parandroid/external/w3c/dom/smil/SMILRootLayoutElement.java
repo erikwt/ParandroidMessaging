@@ -10,7 +10,7 @@
  * details.
  */
 
-package org.w3c.dom.smil;
+package org.parandroid.external.w3c.dom.smil;
 
 /**
  *  Declares layout properties for the root-layout element. See the  

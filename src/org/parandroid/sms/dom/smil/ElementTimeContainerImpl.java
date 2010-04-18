@@ -17,8 +17,8 @@
 
 package org.parandroid.sms.dom.smil;
 
-import org.w3c.dom.smil.ElementTimeContainer;
-import org.w3c.dom.smil.SMILElement;
+import org.parandroid.external.w3c.dom.smil.ElementTimeContainer;
+import org.parandroid.external.w3c.dom.smil.SMILElement;
 
 public abstract class ElementTimeContainerImpl extends ElementTimeImpl implements
         ElementTimeContainer {

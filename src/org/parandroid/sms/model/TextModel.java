@@ -21,8 +21,8 @@ import org.parandroid.sms.dom.smil.SmilMediaElementImpl;
 import org.parandroid.sms.drm.DrmWrapper;
 import com.google.android.mms.pdu.CharacterSets;
 
-import org.w3c.dom.events.Event;
-import org.w3c.dom.smil.ElementTime;
+import org.parandroid.external.w3c.dom.events.Event;
+import org.parandroid.external.w3c.dom.smil.ElementTime;
 
 import android.content.Context;
 import android.drm.mobile1.DrmException;

@@ -25,7 +25,7 @@
  *   6) ADD    public int getSeekTo();
  */
 
-package org.w3c.dom.events;
+package org.parandroid.external.w3c.dom.events;
 
 /**
  *  The <code>Event</code> interface is used to provide contextual information

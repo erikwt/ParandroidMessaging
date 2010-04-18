@@ -25,10 +25,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventException;
-import org.w3c.dom.events.EventListener;
-import org.w3c.dom.events.EventTarget;
+import org.parandroid.external.w3c.dom.events.Event;
+import org.parandroid.external.w3c.dom.events.EventException;
+import org.parandroid.external.w3c.dom.events.EventListener;
+import org.parandroid.external.w3c.dom.events.EventTarget;
 
 import org.parandroid.sms.dom.events.EventTargetImpl;
 

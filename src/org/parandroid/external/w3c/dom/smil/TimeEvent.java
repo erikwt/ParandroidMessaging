@@ -10,10 +10,10 @@
  * details.
  */
 
-package org.w3c.dom.smil;
+package org.parandroid.external.w3c.dom.smil;
 
-import org.w3c.dom.events.Event;
-import org.w3c.dom.views.AbstractView;
+import org.parandroid.external.w3c.dom.events.Event;
+import org.parandroid.external.w3c.dom.views.AbstractView;
 
 /**
  *  The <code>TimeEvent</code> interface provides specific contextual 

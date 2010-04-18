@@ -23,8 +23,8 @@ import org.parandroid.sms.drm.DrmWrapper;
 import org.parandroid.sms.ui.UriImage;
 import com.google.android.mms.MmsException;
 
-import org.w3c.dom.events.Event;
-import org.w3c.dom.smil.ElementTime;
+import org.parandroid.external.w3c.dom.events.Event;
+import org.parandroid.external.w3c.dom.smil.ElementTime;
 
 import android.content.Context;
 import android.drm.mobile1.DrmException;

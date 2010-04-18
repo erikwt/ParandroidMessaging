@@ -10,7 +10,7 @@
  * details.
  */
 
-package org.w3c.dom.smil;
+package org.parandroid.external.w3c.dom.smil;
 
 /**
  *  A <code>seq</code> container defines a sequence of elements in which 

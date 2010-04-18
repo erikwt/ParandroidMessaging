@@ -23,7 +23,7 @@ import org.parandroid.sms.drm.DrmWrapper;
 import com.google.android.mms.MmsException;
 import com.google.android.mms.util.SqliteWrapper;
 
-import org.w3c.dom.events.Event;
+import org.parandroid.external.w3c.dom.events.Event;
 
 import android.content.ContentResolver;
 import android.content.Context;

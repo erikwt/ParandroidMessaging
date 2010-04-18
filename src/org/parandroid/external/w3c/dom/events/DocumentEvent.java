@@ -14,7 +14,7 @@
  *                             String type);
  */
 
-package org.w3c.dom.events;
+package org.parandroid.external.w3c.dom.events;
 
 import org.w3c.dom.DOMException;
 

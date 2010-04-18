@@ -21,7 +21,7 @@
  *                                    boolean useCapture);
  */
 
-package org.w3c.dom.events;
+package org.parandroid.external.w3c.dom.events;
 
 /**
  *  The <code>EventTarget</code> interface is implemented by all the objects

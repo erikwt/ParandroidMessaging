@@ -19,10 +19,10 @@ package org.parandroid.sms.dom.events;
 
 import java.util.ArrayList;
 
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventException;
-import org.w3c.dom.events.EventListener;
-import org.w3c.dom.events.EventTarget;
+import org.parandroid.external.w3c.dom.events.Event;
+import org.parandroid.external.w3c.dom.events.EventException;
+import org.parandroid.external.w3c.dom.events.EventListener;
+import org.parandroid.external.w3c.dom.events.EventTarget;
 
 import android.util.Log;
 

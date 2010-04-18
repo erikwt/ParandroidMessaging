@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.w3c.dom.smil;
+package org.parandroid.external.w3c.dom.smil;
 
 public interface SMILRegionMediaElement extends SMILMediaElement,
         SMILRegionInterface {

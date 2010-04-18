@@ -14,7 +14,7 @@
  *   2) REMOVE public static final short DISPATCH_REQUEST_ERR      = 1;
  */
 
-package org.w3c.dom.events;
+package org.parandroid.external.w3c.dom.events;
 
 /**
  *  Event operations may throw an <code>EventException</code> as specified in
