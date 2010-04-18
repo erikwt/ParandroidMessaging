@@ -19,6 +19,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="org.parandroid.sms">
+        
+    <uses-sdk android:minSdkVersion="3" />
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
