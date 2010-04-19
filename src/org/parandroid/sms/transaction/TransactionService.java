@@ -82,7 +82,7 @@ import java.util.ArrayList;
  * </ul>
  */
 public class TransactionService extends Service implements Observer {
-    private static final String TAG = "Parandroid TransactionService";
+    private static final String TAG = "PD TrServ";
 
     /**
      * Used to identify notification intents broadcasted by the

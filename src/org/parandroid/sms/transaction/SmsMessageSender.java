@@ -17,23 +17,18 @@
 
 package org.parandroid.sms.transaction;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+
 import org.parandroid.encoding.Base64Coder;
 import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
-import org.parandroid.sms.MmsConfig;
-import org.parandroid.sms.ParandroidSmsApp;
-import org.parandroid.sms.R;
 import org.parandroid.sms.ui.MessageItem;
-import org.parandroid.sms.ui.MessageUtils;
 import org.parandroid.sms.ui.MessagingPreferenceActivity;
-import com.google.android.mms.MmsException;
-import com.google.android.mms.util.SqliteWrapper;
 
 import android.app.PendingIntent;
-import android.content.ContentUris;
-import android.content.ContentResolver;
 import android.content.ContentValues;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,20 +42,11 @@ import android.provider.Telephony.Threads;
 import android.provider.Telephony.Sms.Conversations;
 import android.telephony.SmsManager;
 import android.provider.Telephony;
-import android.provider.Telephony.Mms;
-import android.provider.Telephony.Sms;
-import android.provider.Telephony.Mms.Outbox;
 import android.provider.Telephony.Sms.Inbox;
-
 import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import com.google.android.mms.MmsException;
+import com.google.android.mms.util.SqliteWrapper;
 
 public class SmsMessageSender implements MessageSender {
     private final Context mContext;
@@ -73,7 +59,7 @@ public class SmsMessageSender implements MessageSender {
     private boolean mTryToEncrypt;
 
 
-    private static final String TAG = "ParandroidSmsMessageSender";
+    private static final String TAG = "PDMessageSender";
     
     // Default preference values
     private static final boolean DEFAULT_DELIVERY_REPORT_MODE  = false;

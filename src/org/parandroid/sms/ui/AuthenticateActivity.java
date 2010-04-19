@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 public class AuthenticateActivity extends Activity implements OnClickListener {
 
-	private static final String TAG = "Parandroid AuthenticateActivity";
+	private static final String TAG = "PD AuthAct";
 		
 	private EditText passwordField;
 	private Button submitButton, cancelButton;

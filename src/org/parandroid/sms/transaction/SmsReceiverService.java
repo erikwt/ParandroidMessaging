@@ -68,7 +68,7 @@ import com.google.android.mms.util.SqliteWrapper;
  * main thread that SmsReceiver runs on.
  */
 public class SmsReceiverService extends Service {
-    private static final String TAG = "Parandroid SmsReceiverService";
+    private static final String TAG = "PD SmsRec";
 
     private ServiceHandler mServiceHandler;
     private Looper mServiceLooper;
@@ -256,7 +256,7 @@ public class SmsReceiverService extends Service {
     }
 
     private void handleSmsReceived(Intent intent) {
-        SmsMessage[] msgs = Intents.getMessagesFromIntent(intent);
+    	SmsMessage[] msgs = Intents.getMessagesFromIntent(intent);
         //Uri messageUri = insertMessage(this, msgs);
 
 

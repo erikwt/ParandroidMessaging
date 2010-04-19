@@ -42,7 +42,7 @@ import org.parandroid.sms.ParandroidSmsApp;
  * </ul>
  */
 public class MmsSystemEventReceiver extends BroadcastReceiver {
-    private static final String TAG = "Parandroid MmsSystemEventReceiver";
+    private static final String TAG = "PD MmsSy";
 
     private static void wakeUpService(Context context) {
         if (Log.isLoggable(TAG, Log.VERBOSE)) {

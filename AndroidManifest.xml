@@ -211,15 +211,6 @@
             </intent-filter>
         </receiver>
         
-
-        <!-- Require sender permissions to prevent SMS spoofing -->
-        <receiver android:name=".transaction.PrivilegedSmsReceiver"
-            android:permission="android.permission.BROADCAST_SMS">
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
-
         <!-- Catch-all receiver for broadcasts that don't have associated security -->
         <receiver android:name=".transaction.SmsReceiver">
             <intent-filter>
