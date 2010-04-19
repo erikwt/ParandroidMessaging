@@ -27,7 +27,7 @@ import android.widget.LinearLayout.LayoutParams;
 
 public class SpecifyRecipientsActivity extends Activity implements OnClickListener {
 
-	private static final String TAG = "Parandroid SpecifyRecipientsActivity";
+	private static final String TAG = "PD SpecRecAct";
 	
 	private String[] recipientNumbers;
 	private RecipientList recipients;

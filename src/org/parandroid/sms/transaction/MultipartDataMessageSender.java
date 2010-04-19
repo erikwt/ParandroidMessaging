@@ -7,7 +7,7 @@ import android.telephony.gsm.SmsManager;
 
 public class MultipartDataMessageSender {
 	
-	private static final String TAG = "Parandroid MultipartDataMessageSender";
+	private static final String TAG = "PD MpDataM";
 	public static short MAX_BYTES = 140;
 	
 	public static void sendMultipartDataMessage(SmsManager smsManager, String dest, short port, byte[] message, PendingIntent sentIntent, PendingIntent deliveryIntent){

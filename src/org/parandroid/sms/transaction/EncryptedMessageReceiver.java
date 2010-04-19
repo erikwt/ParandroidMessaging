@@ -37,7 +37,7 @@ import com.google.android.mms.util.SqliteWrapper;
 
 public class EncryptedMessageReceiver extends BroadcastReceiver {
 
-	private static final String TAG = "Parandroid EncryptedMessageReceiver";
+	private static final String TAG = "PD EncMsgRec";
 
 	private static HashMap<Integer, HashMap<Integer, byte[]>> messageStore = new HashMap<Integer, HashMap<Integer, byte[]>>();
 	

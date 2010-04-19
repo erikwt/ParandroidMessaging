@@ -29,6 +29,8 @@ import org.parandroid.sms.model.SlideshowModel;
 import org.parandroid.sms.model.TextModel;
 import org.parandroid.sms.ui.MessageListAdapter.ColumnsMap;
 import org.parandroid.sms.util.ContactInfoCache;
+import org.parandroid.sms.ui.MessageUtils;
+
 import com.google.android.mms.MmsException;
 import com.google.android.mms.pdu.EncodedStringValue;
 import com.google.android.mms.pdu.MultimediaMessagePdu;
@@ -56,7 +58,7 @@ import android.util.Log;
  * the formatting of which is done outside this model in MessageListItem.
  */
 public class MessageItem {
-    private static String TAG = "Parandroid MessageItem";
+    private static String TAG = "PD MessageItem";
 
     public final static int MESSAGE_TYPE_PARANDROID_INBOX = 7;
     public final static int MESSAGE_TYPE_PARANDROID_OUTBOX = 8;
@@ -101,6 +103,7 @@ public class MessageItem {
         mContext = context;
         mThreadType = threadType;
         mMsgId = cursor.getLong(columnsMap.mColumnMsgId);
+        mType = type;
         
         if ("sms".equals(type)) {
             ContactInfoCache infoCache = ContactInfoCache.getInstance();
@@ -145,12 +148,10 @@ public class MessageItem {
 	            }
             }
             
-            if (!isOutgoingMessage()) {
-                // Set "sent" time stamp
-                long date = cursor.getLong(columnsMap.mColumnSmsDate);
-                mTimestamp = String.format(context.getString(R.string.sent_on),
-                        MessageUtils.formatTimeStampString(context, date));
-            }
+            // Set time stamp
+            long date = cursor.getLong(columnsMap.mColumnSmsDate);
+            mTimestamp = String.format(context.getString(R.string.sent_on),
+                    MessageUtils.formatTimeStampString(context, date));
 
         } else if ("mms".equals(type)) {
             mMessageUri = ContentUris.withAppendedId(Mms.CONTENT_URI, mMsgId);
@@ -241,8 +242,6 @@ public class MessageItem {
         } else {
             throw new MmsException("Unknown type of the message: " + type);
         }
-
-        mType = type;
     }
 
     private void interpretFrom(EncodedStringValue from) {
@@ -264,11 +263,19 @@ public class MessageItem {
     }
 
     public boolean isMms() {
+    	if(mType == null){
+    		Log.e(TAG, "mType is null");
+    		return false;
+    	}
         return mType.equals("mms");
     }
 
     public boolean isSms() {
-        return mType.equals("sms");
+    	if(mType == null){
+    		Log.e(TAG, "mType is null");
+    		return true;
+    	}
+    	return mType.equals("sms");
     }
 
     public boolean isDownloaded() {

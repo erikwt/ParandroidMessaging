@@ -41,7 +41,7 @@ public abstract class MessageEncryptionFactory {
 	public static final short PUBLIC_KEY_PORT = 31337;
 	public static final short ENCRYPTED_MESSAGE_PORT = 31338;
 
-	private static final String TAG = "Parandroid MessageEncryptionFactory";
+	private static final String TAG = "PD MsgEnc";
 
 	protected static final String PUBLIC_KEY_FILENAME = "self.pub";
 	protected static final String PRIVATE_KEY_FILENAME = "self.priv";

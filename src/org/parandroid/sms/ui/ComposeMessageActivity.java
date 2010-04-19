@@ -179,7 +179,7 @@ public class ComposeMessageActivity extends Activity
     public static final int REQUEST_CODE_AUTHENTICATE	  = 18;
     public static final int REQUEST_CODE_SPECIFY_RECIPIENTS = 19;
 
-    private static final String TAG = "Parandroid ComposeMessageActivity";
+    private static final String TAG = "PD ComposeMsgAct";
 
     private static final boolean DEBUG = false;
     private static final boolean TRACE = false;

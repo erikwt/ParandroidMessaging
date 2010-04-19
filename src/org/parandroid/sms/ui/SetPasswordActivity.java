@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 public class SetPasswordActivity extends Activity implements OnClickListener {
 
-	private static final String TAG = "Parandroid SetPasswordActivity";
+	private static final String TAG = "PD SetPwdAct";
 	
 	private EditText passwordField;
 	private EditText passwordConfirmField;

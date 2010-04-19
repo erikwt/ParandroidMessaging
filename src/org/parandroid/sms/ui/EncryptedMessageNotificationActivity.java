@@ -8,7 +8,7 @@ import android.os.Bundle;
 
 public class EncryptedMessageNotificationActivity extends Activity {
 	
-	private static final String TAG = "Parandroid EncryptedMessageNotificationActivity";
+	private static final String TAG = "PD EncMsgNotifyAct";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

@@ -29,7 +29,7 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
 
 	
     private static final String PHONE_NUMBER_SEPARATORS = " ()-./";
-	private static final String TAG = "Parandroid SendPublicKeyActivity";
+	private static final String TAG = "PD SendPKActivity";
 	
 	private MultiAutoCompleteTextView receipients;
 	private Button sendButton;
