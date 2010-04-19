@@ -37,12 +37,12 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
+import android.provider.Telephony;
 import android.provider.Telephony.Sms;
 import android.provider.Telephony.Threads;
-import android.provider.Telephony.Sms.Conversations;
-import android.telephony.SmsManager;
-import android.provider.Telephony;
 import android.provider.Telephony.Sms.Inbox;
+import android.telephony.SmsManager;
+
 import android.util.Log;
 
 import com.google.android.mms.MmsException;
