@@ -18,7 +18,7 @@
  */
 -->
 
-<com.android.mms.ui.MessageListItem
+<org.parandroid.sms.ui.MessageListItem
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/msg_list_item"
     android:layout_width="fill_parent"
@@ -61,4 +61,4 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-</com.android.mms.ui.MessageListItem>
+</org.parandroid.sms.ui.MessageListItem>

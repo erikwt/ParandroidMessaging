@@ -18,7 +18,7 @@
  */
 -->
 
-<com.android.mms.ui.RecipientsEditor
+<org.parandroid.sms.ui.RecipientsEditor
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/recipients_editor"
     android:hint="@string/to_hint"

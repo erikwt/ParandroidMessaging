@@ -23,7 +23,7 @@
                       android:key="pref_key_sms_delivery_reports"
                       android:summary="@string/pref_summary_sms_delivery_reports"
                       android:title="@string/pref_title_sms_delivery_reports" />
-    <com.android.mms.ui.ManageSimPreference
+    <org.parandroid.sms.ui.ManageSimPreference
        android:key="pref_key_manage_sim_messages"
        android:summary="@string/pref_summary_manage_sim_messages"
        android:title="@string/pref_title_manage_sim_messages" />

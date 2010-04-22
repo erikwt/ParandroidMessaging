@@ -18,7 +18,7 @@
  */
 -->
 
-<com.android.mms.ui.BasicSlideEditorView
+<org.parandroid.sms.ui.BasicSlideEditorView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/slide_editor_view"
     android:layout_width="fill_parent"
@@ -144,4 +144,4 @@
             android:text="@string/done"
         />
     </LinearLayout>
-</com.android.mms.ui.BasicSlideEditorView>
+</org.parandroid.sms.ui.BasicSlideEditorView>
