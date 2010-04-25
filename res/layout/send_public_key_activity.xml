@@ -2,21 +2,68 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    >
+    android:layout_height="fill_parent">
 
-	<MultiAutoCompleteTextView
-    	android:id="@+id/receipients"   
-        android:textSize="18sp"  
-        android:layout_margin="8px"  
-        android:layout_width="fill_parent"  
-        android:layout_height="fill_parent"  
-        android:layout_weight="1">
-    </MultiAutoCompleteTextView>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">    
+        
+        <ImageView
+          android:src="@drawable/stat_notify_encrypted_msg"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+            android:padding="10px"
+            />
 
-	<Button android:text="@string/send"
-		android:id="@+id/sendbutton"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content">
-	</Button>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/parandroid_send_public_key"
+            android:padding="10px"
+        />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">   
+	    
+	    <Button android:text="@string/add_recipient"
+	        android:id="@+id/addrecipientbutton"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1">
+	    </Button>
+	    
+	    <Button android:text="@string/send"
+	        android:id="@+id/sendbutton"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:clickable="false"
+            android:layout_weight="1">
+	    </Button>
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/notify_no_recipient"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:text="@string/no_recipient"
+         android:textSize="8pt"
+         android:textStyle="italic"/>
+    
+    <TextView
+        android:id="@+id/notify_tap_to_remove"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:text="@string/notify_tap_to_remove"
+         android:textSize="8pt"
+         android:textStyle="italic"/>
+    
+    <ListView 
+        android:id="@+id/recipients"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
+
 </LinearLayout>

@@ -3,213 +3,159 @@ package org.parandroid.sms.ui;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.database.Cursor;
-import android.os.Bundle;
-import android.provider.Contacts;
-import android.telephony.SmsManager;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.CursorAdapter;
-import android.widget.Filterable;
-import android.widget.MultiAutoCompleteTextView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 
-public class SendPublicKeyActivity extends Activity implements OnClickListener{
+import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.telephony.SmsManager;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
-	
-    private static final String PHONE_NUMBER_SEPARATORS = " ()-./";
+public class SendPublicKeyActivity extends Activity implements OnClickListener, OnItemClickListener{
+
 	private static final String TAG = "Parandroid SendPublicKeyActivity";
+	private static final int REQUEST_SELECTED_CONTACT = 0;
 	
-	private MultiAutoCompleteTextView receipients;
-	private Button sendButton;
+	private static final String[] NUMBER_PROJECTION = { ContactsContract.CommonDataKinds.Phone.NUMBER };
+	
+	private Button sendButton, addRecipientButton;
+	private TextView noRecipient, tapToRemove;
+	private ArrayList<String> recipientLabels;
+	private ArrayList<String> recipientNumbers;
+	private ArrayAdapter<String> recipientAdapter;
 
-	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         setTitle(R.string.menu_send_public_key);
-        
         setContentView(R.layout.send_public_key_activity);
+
+        recipientLabels = new ArrayList<String>(); 
+        recipientNumbers = new ArrayList<String>(); 
+        
+        addRecipientButton = (Button) findViewById(R.id.addrecipientbutton);
+        addRecipientButton.setOnClickListener(this);
         
         sendButton = (Button) findViewById(R.id.sendbutton);
         sendButton.setOnClickListener(this);
+
+        noRecipient = (TextView) findViewById(R.id.notify_no_recipient);
+        tapToRemove = (TextView) findViewById(R.id.notify_tap_to_remove);
+        tapToRemove.setVisibility(View.GONE);
         
-        Cursor peopleCursor = getContentResolver().query(Contacts.People.CONTENT_URI, PEOPLE_PROJECTION, null, null, Contacts.People.DEFAULT_SORT_ORDER);  
-        ContactListAdapter contactadapter = new ContactListAdapter(this,peopleCursor);  
-          
-        receipients = (MultiAutoCompleteTextView) findViewById(R.id.receipients);  
-        receipients.setHint(R.string.contact_name);
-        receipients.setAdapter(contactadapter);  
-        receipients.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
-    }
-
-	public void onClick(View v) {		
-		if(v.equals(sendButton)){
-			ArrayList<String> receipientNumbers = new ArrayList<String>();
-			String selection = receipients.getText().toString();
-
-			for(String s : selection.split(", ")){
-				// TODO: Safe query
-				Cursor contactCursor = getContentResolver().query(Contacts.People.CONTENT_URI, PEOPLE_PROJECTION, "NAME LIKE '" + s + "'", null, Contacts.People.DEFAULT_SORT_ORDER);
-				
-				String number = filterPhoneNumber(s, true);
-				if(number == null || !isNumeric(number)){
-
-					if(contactCursor.getCount() != 1 || !contactCursor.moveToFirst()){
-						// TODO: Good errormessage
-						Toast.makeText(this, "Error for contact " + s + ", found " + new Integer(contactCursor.getCount()).toString() + " records.", Toast.LENGTH_SHORT).show();
-						Log.e(TAG,"Multiple results for contact " + s);
-						continue;
-					}
-					
-					int columnIndex = contactCursor.getColumnIndex(Contacts.People.NUMBER);
-					number = contactCursor.getString(columnIndex);
-
-					while(number == null && contactCursor.moveToNext()){
-						number = contactCursor.getString(columnIndex);
-
-					}
-					
-					s = number;
-				}
-
-
-				receipientNumbers.add(s);
-			}
-			
-			if(receipientNumbers.size() == 0){
-				Toast.makeText(this, R.string.no_recipient, Toast.LENGTH_SHORT).show();
-				return;
-			}
-
-			byte[] publicKey;
-			try {
-				publicKey = MessageEncryptionFactory.getOwnPublicKey(SendPublicKeyActivity.this);
-			} catch (IOException e1) {
-				Toast.makeText(this, R.string.failed_opening_public_key, Toast.LENGTH_LONG).show();
-				return;
-			}
-			
-			for(String num : receipientNumbers){
-				num = filterPhoneNumber(num, false);
-				SmsManager sm = SmsManager.getDefault();
-				Log.i(TAG,"Sending public key to " + num);
-				
-				try { 
-					sm.sendDataMessage(num, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKey, null, null);
-					Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  num, Toast.LENGTH_SHORT).show();
-				} catch (Exception e) {
-					receipients.setText("");
-					Log.e(TAG, "Error sending public key: " + e.getMessage());
-					Toast.makeText(this, getText(R.string.send_public_key_failure) + " " +  num, Toast.LENGTH_SHORT).show();
-				}
-			}
-			
-			finish();
-		}
-	}
-    
-    /**
-     * Returns a string with all phone number separator characters removed.
-     * @param phoneNumber A phone number to clean (e.g. "+1 (212) 479-7990")
-     * @return A string without the separators (e.g. "12124797990")
-     */
-    public static String filterPhoneNumber(String phoneNumber, boolean filterPlus) {
-        if (phoneNumber == null) {
-        	Log.e(TAG, "Phonenumber is null!");
-            return null;
-        }
-
-        int length = phoneNumber.length();
-        StringBuilder builder = new StringBuilder(length);
-
-        for (int i = 0; i < length; i++) {
-            char character = phoneNumber.charAt(i);
-
-            if (PHONE_NUMBER_SEPARATORS.concat(filterPlus ? "+" : "").indexOf(character) == -1) {
-                builder.append(character);
-            }
-        }
-        return builder.toString();
+        recipientAdapter = new ArrayAdapter<String>(this, R.layout.public_key_recipient_item, recipientLabels);
+        ListView recipientList = (ListView) findViewById(R.id.recipients);
+        recipientList.setAdapter(recipientAdapter);
+        recipientList.setOnItemClickListener(this);
     }
 	
-	public static class ContactListAdapter extends CursorAdapter implements Filterable {  
-        public ContactListAdapter(Context context, Cursor c) {  
-            super(context, c);  
-            mContent = context.getContentResolver();
-        }  
-  
-        @Override  
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {  
-            final LayoutInflater inflater = LayoutInflater.from(context);  
-            final TextView view = (TextView) inflater.inflate(  
-                    android.R.layout.simple_dropdown_item_1line, parent, false);  
-            view.setText(cursor.getString(5));  
-            return view;  
-        }  
-  
-        @Override  
-        public void bindView(View view, Context context, Cursor cursor) {  
-            ((TextView) view).setText(cursor.getString(5));  
-         }  
-  
-        @Override  
-        public String convertToString(Cursor cursor) {  
-            return cursor.getString(5);  
-        }  
-  
-        @Override  
-        public Cursor runQueryOnBackgroundThread(CharSequence constraint) {  
-            if (getFilterQueryProvider() != null) {  
-                return getFilterQueryProvider().runQuery(constraint);  
-            }  
-  
-            StringBuilder buffer = null;  
-            String[] args = null;  
-            if (constraint != null) {  
-                buffer = new StringBuilder();  
-                buffer.append("UPPER(");  
-                buffer.append(Contacts.ContactMethods.NAME);  
-                buffer.append(") GLOB ?");  
-                args = new String[] { constraint.toString().toUpperCase() + "*" };  
-            }  
-  
-            return mContent.query(Contacts.People.CONTENT_URI, PEOPLE_PROJECTION,  
-                    buffer == null ? null : buffer.toString(), args,  
-                    Contacts.People.DEFAULT_SORT_ORDER);  
-        }  
-  
-        private ContentResolver mContent;          
-    }  
-  
-    private static final String[] PEOPLE_PROJECTION = new String[] {  
-        Contacts.People._ID,  
-        Contacts.People.PRIMARY_PHONE_ID,  
-        Contacts.People.TYPE,  
-        Contacts.People.NUMBER,  
-        Contacts.People.LABEL,  
-        Contacts.People.NAME,  
-    };
-    
-    public boolean isNumeric(String input){
-       try{
-          Long.parseLong(input);
-          return true;
-       }catch( Exception e){
-          return false;
-       }
-    }
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(resultCode != RESULT_OK){
+			Log.i(TAG, "onActivityResult: resultCode not RESULT_OK. requestCode/resultcode: " + requestCode + "/" + resultCode);
+			return;
+		}
+		
+		switch(requestCode){
+		case REQUEST_SELECTED_CONTACT:
+			Uri uri = data.getData();
+			Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+			
+			if(cursor.moveToFirst()){
+				int contactId = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+				String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+				
+				Cursor privateCursor = getContentResolver().query(
+						ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+						NUMBER_PROJECTION,
+						ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=" + contactId,
+						null,
+						null);
+				
+				if(privateCursor.moveToFirst()){
+					do{
+						String number = privateCursor.getString(privateCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+						
+						recipientLabels.add(name + " <" + number + ">");
+						recipientNumbers.add(number);
+					}while(privateCursor.moveToNext());
+					onDataSetChanged();
+				}else{
+					Toast.makeText(this, R.string.no_number_for_contact, Toast.LENGTH_SHORT).show();
+				}
+			}else{
+				Toast.makeText(this, R.string.unsupported_contact, Toast.LENGTH_SHORT).show();
+			}
+			break;
+		}
+	}
+	
+	private void onDataSetChanged(){
+		if(recipientNumbers.size() == 0){
+			sendButton.setClickable(false);
+			sendButton.setText(getString(R.string.send));
+			
+			noRecipient.setVisibility(View.VISIBLE);
+			tapToRemove.setVisibility(View.GONE);
+		}else{
+			sendButton.setClickable(true);
+			sendButton.setText(getString(R.string.send) + " (" + recipientNumbers.size() + ")");
+			
+			noRecipient.setVisibility(View.GONE);
+			tapToRemove.setVisibility(View.VISIBLE);
+		}
+				
+		recipientAdapter.notifyDataSetChanged();
+	}
+	
+	public void onClick(View v) {		
+		if(v.equals(addRecipientButton)){
+			Intent i = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+			startActivityForResult(i, REQUEST_SELECTED_CONTACT);
+		}else if(v.equals(sendButton)){
+			sendButton.setClickable(false);
+			addRecipientButton.setClickable(false);
+			SmsManager sm = SmsManager.getDefault();
+			byte[] publicKey;
+			try {
+				publicKey = MessageEncryptionFactory.getOwnPublicKey(this);
+				
+				for(String number : recipientNumbers){				
+					try{
+						sm.sendDataMessage(number, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKey, null, null);
+						Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  number, Toast.LENGTH_SHORT).show();
+					}catch(Exception e){
+						e.printStackTrace();
+						Toast.makeText(this, getText(R.string.send_public_key_failure) + " " +  number, Toast.LENGTH_LONG).show();
+					}
+				}
+				
+				finish();
+			} catch (IOException e) {
+				e.printStackTrace();
+				Toast.makeText(this, getText(R.string.send_public_key_failure) + " recipients", Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		recipientLabels.remove(position);
+		recipientNumbers.remove(position);
+		onDataSetChanged();
+	}
 }
 
