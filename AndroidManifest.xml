@@ -279,6 +279,10 @@
         <activity android:name=".ui.AuthenticateActivity">
         </activity>
         
+        <!--  TODO: Remove this activity in final version  -->
+        <activity android:name=".ui.BackwardsCompatibleAuthenticateActivity">
+        </activity>
+        
         <activity android:name=".ui.SetPasswordActivity">
         </activity>
         
