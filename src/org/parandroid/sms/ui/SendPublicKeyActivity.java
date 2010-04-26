@@ -52,6 +52,7 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener, 
         
         sendButton = (Button) findViewById(R.id.sendbutton);
         sendButton.setOnClickListener(this);
+		sendButton.setClickable(false);
 
         noRecipient = (TextView) findViewById(R.id.notify_no_recipient);
         tapToRemove = (TextView) findViewById(R.id.notify_tap_to_remove);
