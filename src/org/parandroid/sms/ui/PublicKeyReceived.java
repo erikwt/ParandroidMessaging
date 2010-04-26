@@ -16,6 +16,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Telephony.Sms.Inbox;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -52,6 +53,7 @@ public class PublicKeyReceived extends Activity {
 		   	 	.setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
 		                doOverwrite(name, sender, publicKey);
+		                askSendPublicKey(name, sender);
 		           }
 		       }).setNegativeButton(PublicKeyReceived.this.getText(R.string.no), new DialogInterface.OnClickListener() {
 		           public void onClick(DialogInterface dialog, int id) {
@@ -101,7 +103,6 @@ public class PublicKeyReceived extends Activity {
 			Log.e(TAG, e.getMessage());
 			Toast.makeText(PublicKeyReceived.this, R.string.import_public_key_failure, Toast.LENGTH_SHORT).show();
 		}
-		finish();
 	}
 	
 	private void normalImport(final String name, final String sender, final byte[] publicKey){
@@ -114,6 +115,35 @@ public class PublicKeyReceived extends Activity {
 		                try {
 							MessageEncryptionFactory.savePublicKey(PublicKeyReceived.this, sender, publicKey);
 							Toast.makeText(PublicKeyReceived.this, R.string.import_public_key_success, Toast.LENGTH_SHORT).show();
+						} catch (Exception e) {
+							Log.e(TAG, e.getMessage());
+							Toast.makeText(PublicKeyReceived.this, R.string.import_public_key_failure, Toast.LENGTH_SHORT).show();
+						}
+		                askSendPublicKey(name, sender);
+		           }
+		       }).setNegativeButton(PublicKeyReceived.this.getText(R.string.no), new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		                dialog.cancel();
+						finish();
+		           }
+		       });
+		
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
+	
+	private void askSendPublicKey(final String name, final String sender){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(getText(R.string.send_back_public_key_dialog) + " " + name + " (" + sender + ")")
+				.setTitle(getText(R.string.menu_send_public_key))
+		   	 	.setCancelable(false)
+		   	 	.setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		               SmsManager sm = SmsManager.getDefault(); 
+		        	   try {
+		                	byte[] publicKey = MessageEncryptionFactory.getOwnPublicKey(PublicKeyReceived.this);
+    						sm.sendDataMessage(sender, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKey, null, null);
+    						Toast.makeText(PublicKeyReceived.this, getText(R.string.send_public_key_success) + " " +  sender, Toast.LENGTH_SHORT).show();
 						} catch (Exception e) {
 							Log.e(TAG, e.getMessage());
 							Toast.makeText(PublicKeyReceived.this, R.string.import_public_key_failure, Toast.LENGTH_SHORT).show();
