@@ -217,7 +217,7 @@ public abstract class MessageEncryptionFactory {
     	if(!isAuthenticated()) return null;
     	
 		byte[] keyBytes = getKeyFileBytes(context, PRIVATE_KEY_FILENAME);
-    	byte[] pk = decryptPrivateKey(keyBytes);
+    	byte[] pk = decryptPrivateKey(keyBytes, false);
 		
     	PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(pk);
 		KeyFactory kf = KeyFactory.getInstance(KEY_EXCHANGE_PROTOCOL);
@@ -225,6 +225,28 @@ public abstract class MessageEncryptionFactory {
     	
     	return privateKey;
     }
+    
+    
+    /**
+     * In here to use the old password method with the bug that doesn't use the last character of the password.
+     * Remove this and the extra parameter in child functions for final version!
+     * 
+     * @param context
+     * @return
+     * @throws Exception
+     */
+    public static PrivateKey getPrivateKeyBackwardsCompatible(Context context) throws Exception {
+    	if(!isAuthenticated()) return null;
+    	
+		byte[] keyBytes = getKeyFileBytes(context, PRIVATE_KEY_FILENAME);
+    	byte[] pk = decryptPrivateKey(keyBytes, true);
+		
+    	PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(pk);
+		KeyFactory kf = KeyFactory.getInstance(KEY_EXCHANGE_PROTOCOL);
+		PrivateKey privateKey = kf.generatePrivate(spec);
+    	
+    	return privateKey;
+    }    
     
     
     public static void writePrivateKey(Context context, PrivateKey pk) throws Exception {
@@ -373,11 +395,11 @@ public abstract class MessageEncryptionFactory {
 		return keyBytes;
     }
     
-    private static Cipher getCipher(int mode) throws Exception {
+    private static Cipher getCipher(int mode, boolean oldMethod) throws Exception {
     	if(!isAuthenticated()) return null;
 
     	char[] passwordChars = new char[password.length()];
-    	password.getChars(0, password.length() - 1, passwordChars, 0);
+    	password.getChars(0, password.length() - (oldMethod ? 1 : 0), passwordChars, 0);
     	
     	PBEParameterSpec pbeParamSpec = new PBEParameterSpec(MessageEncryptionFactory.PRIVATE_KEY_ENCRYPTION_SALT, 20);
     	PBEKeySpec pbeKeySpec = new PBEKeySpec(passwordChars);
@@ -392,12 +414,12 @@ public abstract class MessageEncryptionFactory {
     }
     
     private static byte[] encryptPrivateKey(PrivateKey pk) throws Exception {
-    	Cipher cipher = getCipher(Cipher.ENCRYPT_MODE);
+    	Cipher cipher = getCipher(Cipher.ENCRYPT_MODE, false);
         return cipher.doFinal(pk.getEncoded());
     }
     
-    private static byte[] decryptPrivateKey(byte[] cipherText) throws Exception {
-    	Cipher cipher = getCipher(Cipher.DECRYPT_MODE);
+    private static byte[] decryptPrivateKey(byte[] cipherText, boolean oldMethod) throws Exception {
+    	Cipher cipher = getCipher(Cipher.DECRYPT_MODE, oldMethod);
         return cipher.doFinal(cipherText);
     }
 }
