@@ -629,7 +629,7 @@
     <string name="confirm_password">Confirm password</string>
     <string name="passwords_dont_match">Passwords don\'t match, try again</string>
     <string name="passwords_too_short">Password too short, minimal length is:</string>
-    <string name="wrong_password">Wrong password, try again</string>
+    <string name="wrong_password">Wrong password, try again. You have to change your password if you have updated from 0.9.1 or earlier.</string>
     
     <string name="send_encrypted_to">Send encrypted to:</string>
     <string name="send_plain_to">Send plain to:</string>
