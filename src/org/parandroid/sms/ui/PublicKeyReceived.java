@@ -30,7 +30,7 @@ public class PublicKeyReceived extends Activity {
 		
 		Intent i = getIntent();
 		final String sender = i.getStringExtra("sender");
-		final byte[] publicKey = i.getByteArrayExtra("publickey");
+		final byte[] publicKey = Base64Coder.decode(new String(i.getByteArrayExtra("publickey")));
 
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancel(i.getIntExtra("notificationId", MessageUtils.DEFAULT_NOTIFICATION_ID));

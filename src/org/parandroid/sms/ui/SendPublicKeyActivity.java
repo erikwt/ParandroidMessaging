@@ -3,6 +3,7 @@ package org.parandroid.sms.ui;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.parandroid.encoding.Base64Coder;
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 
@@ -131,13 +132,13 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener, 
 			sendButton.setClickable(false);
 			addRecipientButton.setClickable(false);
 			SmsManager sm = SmsManager.getDefault();
-			byte[] publicKey;
+			String publicKey;
 			try {
-				publicKey = MessageEncryptionFactory.getOwnPublicKey(this);
+				publicKey = new String(Base64Coder.encode(MessageEncryptionFactory.getOwnPublicKey(this)));
 				
 				for(String number : recipientNumbers){				
 					try{
-						sm.sendDataMessage(number, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKey, null, null);
+						sm.sendDataMessage(number, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKey.getBytes(), null, null);
 						Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  number, Toast.LENGTH_SHORT).show();
 					}catch(Exception e){
 						e.printStackTrace();
