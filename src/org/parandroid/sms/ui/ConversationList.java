@@ -96,6 +96,7 @@ public class ConversationList extends ListActivity
     public static final int MENU_MANAGE_PUBLIC_KEYS	  = 7;
     public static final int MENU_CHANGE_PASSWORD	  = 8;
     public static final int MENU_ABOUT				  = 9;
+    public static final int MENU_HELP				  = 10;
 
     // IDs of the context menu items for the list of conversations.
     public static final int MENU_DELETE               = 0;
@@ -151,41 +152,46 @@ public class ConversationList extends ListActivity
             runOneTimeStorageLimitCheckForLegacyMessages();
         }
         
-        AlertDialog.Builder generateKeypairSuccessDialogBuilder = new AlertDialog.Builder(this);
-    	generateKeypairSuccessDialogBuilder.setMessage(getText(R.string.generated_keypair_success))
-    			.setTitle(getText(R.string.generate_keypair_title))
-    			.setCancelable(false)
-    	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-    	                sendPublicKey();
-    	           }
-    	       })
-    	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-    	                dialog.cancel();
-    	           }
-    	       });
-    	
-        generateKeypairSuccessDialog = generateKeypairSuccessDialogBuilder.create();
+//        AlertDialog.Builder generateKeypairSuccessDialogBuilder = new AlertDialog.Builder(this);
+//    	generateKeypairSuccessDialogBuilder.setMessage(getText(R.string.generated_keypair_success))
+//    			.setTitle(getText(R.string.generate_keypair_title))
+//    			.setCancelable(false)
+//    	        .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+//    	           public void onClick(DialogInterface dialog, int id) {
+//    	                sendPublicKey();
+//    	           }
+//    	       })
+//    	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+//    	           public void onClick(DialogInterface dialog, int id) {
+//    	                dialog.cancel();
+//    	           }
+//    	       });
+//    	
+//        generateKeypairSuccessDialog = generateKeypairSuccessDialogBuilder.create();
+//        
+//        if(!MessageEncryptionFactory.hasKeypair(this)){
+//        	AlertDialog.Builder generateKeypairDialogBuilder = new AlertDialog.Builder(this);
+//        	generateKeypairDialogBuilder.setMessage(getText(R.string.no_keypair_dialog))
+//        		   .setTitle(getText(R.string.generate_keypair_title))
+//        		   .setCancelable(false)
+//        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+//        	           public void onClick(DialogInterface dialog, int id) {
+//        	                generateFirstKeypair();
+//        	           }
+//        	       })
+//        	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+//        	           public void onClick(DialogInterface dialog, int id) {
+//        	                dialog.cancel();
+//        	           }
+//        	       });
+//        	
+//        	AlertDialog alert = generateKeypairDialogBuilder.create();
+//        	alert.show();
+//        }
         
-        if(!MessageEncryptionFactory.hasKeypair(this)){
-        	AlertDialog.Builder generateKeypairDialogBuilder = new AlertDialog.Builder(this);
-        	generateKeypairDialogBuilder.setMessage(getText(R.string.no_keypair_dialog))
-        		   .setTitle(getText(R.string.generate_keypair_title))
-        		   .setCancelable(false)
-        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
-        	           public void onClick(DialogInterface dialog, int id) {
-        	                generateFirstKeypair();
-        	           }
-        	       })
-        	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
-        	           public void onClick(DialogInterface dialog, int id) {
-        	                dialog.cancel();
-        	           }
-        	       });
-        	
-        	AlertDialog alert = generateKeypairDialogBuilder.create();
-        	alert.show();
+        if(!MessageEncryptionFactory.hasKeypair(this)) {
+        	Intent helpIntent = new Intent(this, HelpActivity.class);
+        	startActivity(helpIntent);
         }
     }
 
@@ -362,6 +368,9 @@ public class ConversationList extends ListActivity
         
         menu.add(0, MENU_ABOUT, 0, R.string.menu_about).setIcon(
         		R.drawable.ic_generate_keypair);
+        
+        menu.add(0, MENU_HELP, 0, R.string.menu_help).setIcon(
+        		R.drawable.ic_gallery_video_overlay);
 
         if (mListAdapter.getCount() > 0) {
             menu.add(0, MENU_DELETE_ALL, 0, R.string.menu_delete_all).setIcon(
@@ -405,6 +414,10 @@ public class ConversationList extends ListActivity
 	        case MENU_ABOUT:
 	        	Intent aboutIntent = new Intent(this, AboutActivity.class);
 	        	startActivity(aboutIntent);
+	        	break;
+	        case MENU_HELP:
+	        	Intent helpIntent = new Intent(this, HelpActivity.class);
+	        	startActivity(helpIntent);
 	        	break;
             case MENU_SEARCH:
                 onSearchRequested();
