@@ -17,7 +17,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Telephony.Sms.Inbox;
-import android.telephony.SmsManager;
+import android.telephony.gsm.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
