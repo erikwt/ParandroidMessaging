@@ -2,7 +2,6 @@ package org.parandroid.sms.ui;
 
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
-import org.parandroid.sms.data.ContactList;
 
 import android.app.Activity;
 import android.app.AlertDialog;
