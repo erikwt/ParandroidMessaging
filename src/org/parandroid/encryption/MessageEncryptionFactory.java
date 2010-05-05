@@ -18,6 +18,7 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.crypto.BadPaddingException;
@@ -34,6 +35,7 @@ import javax.crypto.spec.PBEParameterSpec;
 import org.parandroid.sms.data.Contact;
 
 import android.content.Context;
+import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 
 public abstract class MessageEncryptionFactory {
@@ -157,6 +159,19 @@ public abstract class MessageEncryptionFactory {
     	return publicKeys;
     }
     
+    
+    public static ArrayList<String> getPublicKeys(Context context){
+    	ArrayList<String> publicKeys = new ArrayList<String>();
+    	
+    	for(String f : context.getFilesDir().list()){
+    		if(f.endsWith(PUBLIC_KEY_SUFFIX) && !PUBLIC_KEY_FILENAME.equals(f)){
+    			publicKeys.add(f);
+    		}
+    	}
+    	
+    	return publicKeys;
+    }
+    
 
     /**
      * Delete a public key
@@ -166,7 +181,7 @@ public abstract class MessageEncryptionFactory {
      * @return Boolean successful
      */
     public static boolean deletePublicKey(Context context, String number){
-        File pk = new File(context.getFilesDir(), MessageEncryptionFactory.getPublicKeyFilename(number));
+        File pk = new File(context.getFilesDir(), MessageEncryptionFactory.getPublicKeyFilename(context, number));
         if(!pk.exists()){
             Log.e(TAG, "Delete: File does not exist: " + pk.getAbsoluteFile());
             return false;
@@ -182,15 +197,16 @@ public abstract class MessageEncryptionFactory {
      * @param number
      * @return filename
      */
-    public static String getPublicKeyFilename(String number){
-    	try{
-	    	if(number.startsWith("00")) 	number = number.substring(4);
-	    	else if(number.startsWith("0"))	number = number.substring(1);
-	    	else if(number.startsWith("+")) number = number.substring(3);
-    	}catch(Exception e){
-    		Log.e(TAG, "Unknown number format detected. Number: " + number);
+    public static String getPublicKeyFilename(Context context, String number){
+    	ArrayList<String> publicKeys = getPublicKeys(context);
+    	for(String publicKey : publicKeys){
+    		if(PhoneNumberUtils.compare(number, publicKey.substring(0, publicKey.length() - PUBLIC_KEY_SUFFIX.length()))){
+    			Log.v(TAG, "Public key exists for number '" + number + "'; '" + publicKey + "'");
+    			return publicKey;
+    		}
     	}
-    	
+
+		Log.v(TAG, "No public key for '" + number + "'");
     	return number.concat(PUBLIC_KEY_SUFFIX);
     }
     
@@ -270,7 +286,7 @@ public abstract class MessageEncryptionFactory {
      * @throws InvalidKeySpecException
      */
     public static PublicKey getPublicKey(Context context, String number) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{
-    	byte[] keyBytes = getKeyFileBytes(context, getPublicKeyFilename(number));
+    	byte[] keyBytes = getKeyFileBytes(context, getPublicKeyFilename(context, number));
     	
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
         KeyFactory keyFact = KeyFactory.getInstance(KEY_EXCHANGE_PROTOCOL);
@@ -289,7 +305,7 @@ public abstract class MessageEncryptionFactory {
      * @throws Exception
      */
     public static void savePublicKey(Context context, String sender, byte[] key) throws Exception{
-    	String publicKeyFilename = getPublicKeyFilename(sender);
+    	String publicKeyFilename = getPublicKeyFilename(context, sender);
     	
 		FileOutputStream out = context.openFileOutput(publicKeyFilename, Context.MODE_PRIVATE);
 		out.write(key);
@@ -317,13 +333,16 @@ public abstract class MessageEncryptionFactory {
      * @return boolean
      */
     public static boolean hasPublicKey(Context context, String number){
-    	try{
-			context.openFileInput(getPublicKeyFilename(number));
-		}catch(Exception e){
-			Log.e(TAG,e.getMessage());
-			return false;
-		}
-		return true;
+    	ArrayList<String> publicKeys = getPublicKeys(context);
+    	for(String publicKey : publicKeys){
+    		if(PhoneNumberUtils.compare(number, publicKey.substring(0, publicKey.length() - PUBLIC_KEY_SUFFIX.length()))){
+    			Log.v(TAG, "Public key exists for number '" + number + "'; '" + publicKey + "'");
+    			return true;
+    		}
+    	}
+
+		Log.v(TAG, "No public key for number '" + number + "'");
+    	return false;
     }
     
     
