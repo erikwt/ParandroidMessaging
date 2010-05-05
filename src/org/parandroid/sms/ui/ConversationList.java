@@ -575,42 +575,62 @@ public class ConversationList extends ListActivity
 		}
 	}
 	
+//	public Cursor backwardCursor;
+//	public ProgressDialog progressDialog;
 	private String[] BACKWARD_PROJECTION = new String[] { Inbox._ID, Inbox.ADDRESS, Inbox.BODY };
 	private void encryptBackward() throws Exception{		
 		Uri uriSms = Uri.parse("content://sms");
 		String selection = Inbox.TYPE + "='" + MessageItem.MESSAGE_TYPE_PARANDROID_INBOX + 
 			"' OR " + Inbox.TYPE + "='" + MessageItem.MESSAGE_TYPE_PARANDROID_OUTBOX + "'";
 		
-		Cursor c = getContentResolver().query(uriSms, BACKWARD_PROJECTION, selection, null, null);
-		if(!c.moveToFirst()){
+		final Cursor backwardCursor = getContentResolver().query(uriSms, BACKWARD_PROJECTION, selection, null, null);
+		if(!backwardCursor.moveToFirst()){
 			Log.i(TAG, "backward: No messages");
 			return;
 		}
 		
-		do{
-			try{
-				String address = c.getString(c.getColumnIndex(Inbox.ADDRESS));
-
-				Log.i(TAG, "backward: oldpriv: " + oldPrivateKey);
-				Log.i(TAG, "backward: address: " + address);
-				
-				String body = c.getString(c.getColumnIndex(Inbox.BODY));
-				Log.i(TAG, "backward: oldbody: " + body);
-				
-				String clearBody = MessageEncryption.decrypt(this, oldPrivateKey, address, Base64Coder.decode(body));
-				Log.i(TAG, "backward: clear: " + clearBody);
-				
-				String newBody = new String(Base64Coder.encode(MessageEncryption.encrypt(this, address, clearBody)));
-				Log.i(TAG, "backward: newbody: " + newBody);
-				
-				c.updateString(c.getColumnIndex(Inbox.BODY), newBody);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
-		}while(c.moveToNext());
+		int numMessages = backwardCursor.getCount();
+		Log.i(TAG, "Re-encrypting " + numMessages + " messages");
 		
-		c.commitUpdates();
-		oldPrivateKey = null;
+		final ProgressDialog progressDialog = new ProgressDialog(ConversationList.this);
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		progressDialog.setMessage(getString(R.string.reencrypting_messages));
+		progressDialog.setCancelable(false);
+		progressDialog.setMax(numMessages);
+		progressDialog.show();
+		
+		new Thread(new Runnable() {
+			public void run(){
+				do{
+					try{
+						String address = backwardCursor.getString(backwardCursor.getColumnIndex(Inbox.ADDRESS));
+		
+						Log.i(TAG, "backward: oldpriv: " + oldPrivateKey);
+						Log.i(TAG, "backward: address: " + address);
+						
+						String body = backwardCursor.getString(backwardCursor.getColumnIndex(Inbox.BODY));
+						Log.i(TAG, "backward: oldbody: " + body);
+						
+						String clearBody = MessageEncryption.decrypt(ConversationList.this, oldPrivateKey, address, Base64Coder.decode(body));
+						Log.i(TAG, "backward: clear: " + clearBody);
+						
+						String newBody = new String(Base64Coder.encode(MessageEncryption.encrypt(ConversationList.this, address, clearBody)));
+						Log.i(TAG, "backward: newbody: " + newBody);
+						
+						backwardCursor.updateString(backwardCursor.getColumnIndex(Inbox.BODY), newBody);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+					progressDialog.incrementProgressBy(1);
+				}while(backwardCursor.moveToNext());
+
+				progressDialog.dismiss();
+				
+				backwardCursor.commitUpdates();
+				backwardCursor.close();
+				oldPrivateKey = null;
+			}
+		}).start();
 	}
 	
 	

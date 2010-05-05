@@ -9,6 +9,7 @@ import org.parandroid.sms.util.ContactInfoCache;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -65,43 +66,64 @@ public class PublicKeyReceived extends Activity {
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
-
+	
+	//public ProgressDialog progressDialog;
 	private String[] BACKWARD_PROJECTION = new String[] { Inbox._ID, Inbox.ADDRESS, Inbox.BODY };
 	private void doOverwrite(final String name, final String sender, final byte[] publicKey){
 		Uri uriSms = Uri.parse("content://sms");
 		String selection = Inbox.TYPE + "='" + MessageItem.MESSAGE_TYPE_PARANDROID_INBOX + 
 			"' OR " + Inbox.TYPE + "='" + MessageItem.MESSAGE_TYPE_PARANDROID_OUTBOX + "'";
 		
-		Cursor c = getContentResolver().query(uriSms, BACKWARD_PROJECTION, selection, null, null);
-		if(!c.moveToFirst()){
+		final Cursor backwardCursor = getContentResolver().query(uriSms, BACKWARD_PROJECTION, selection, null, null);
+		if(!backwardCursor.moveToFirst()){
 			Log.i(TAG, "backward: No messages");
 		}else{
-			do{
-				try{
-					String address = c.getString(c.getColumnIndex(Inbox.ADDRESS));
-					
-					// TODO: Fix this in SQL
-					if(address.equals(sender)){
-						String body = c.getString(c.getColumnIndex(Inbox.BODY));
-						String clearBody = MessageEncryption.decrypt(this, address, Base64Coder.decode(body));
-						String newBody = new String(Base64Coder.encode(MessageEncryption.encrypt(this, publicKey, clearBody)));
-						
-						c.updateString(c.getColumnIndex(Inbox.BODY), newBody);
-					}
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			}while(c.moveToNext());
+			int numMessages = backwardCursor.getCount();
+			Log.i(TAG, "Re-encrypting " + numMessages + " messages");
 			
-			c.commitUpdates();
+			final ProgressDialog progressDialog = new ProgressDialog(this);
+			progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			progressDialog.setMessage(getString(R.string.reencrypting_messages));
+			progressDialog.setCancelable(false);
+			progressDialog.setMax(numMessages);
+			progressDialog.show();
+			
+			new Thread(new Runnable() {
+				public void run(){
+					do{
+						try{
+							String address = backwardCursor.getString(backwardCursor.getColumnIndex(Inbox.ADDRESS));
+							
+							// TODO: Fix this in SQL
+							if(address.equals(sender)){
+								String body = backwardCursor.getString(backwardCursor.getColumnIndex(Inbox.BODY));
+								String clearBody = MessageEncryption.decrypt(PublicKeyReceived.this, address, Base64Coder.decode(body));
+								String newBody = new String(Base64Coder.encode(MessageEncryption.encrypt(PublicKeyReceived.this, publicKey, clearBody)));
+								
+								backwardCursor.updateString(backwardCursor.getColumnIndex(Inbox.BODY), newBody);
+							}
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+						progressDialog.incrementProgressBy(1);
+					}while(backwardCursor.moveToNext());
+					
+					backwardCursor.commitUpdates();
+					progressDialog.dismiss();
+
+					savePublicKey(sender, publicKey);
+				}
+			}).start();
 		}
-		
+	}
+	
+	private void savePublicKey(String sender, byte[] publicKey){
 		try {
-			MessageEncryptionFactory.savePublicKey(PublicKeyReceived.this, sender, publicKey);
-			Toast.makeText(PublicKeyReceived.this, R.string.import_public_key_success, Toast.LENGTH_SHORT).show();
+			MessageEncryptionFactory.savePublicKey(this, sender, publicKey);
+			//Toast.makeText(PublicKeyReceived.this, R.string.import_public_key_success, Toast.LENGTH_SHORT).show();
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
-			Toast.makeText(PublicKeyReceived.this, R.string.import_public_key_failure, Toast.LENGTH_SHORT).show();
+			//Toast.makeText(PublicKeyReceived.this, R.string.import_public_key_failure, Toast.LENGTH_SHORT).show();
 		}
 	}
 	
