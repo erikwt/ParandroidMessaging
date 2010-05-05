@@ -293,6 +293,9 @@
         <activity android:name=".ui.SetPasswordActivity">
         </activity>
         
+        <activity android:name=".ui.HelpActivity">
+        </activity>
+        
         <activity android:name=".ui.SpecifyRecipientsActivity">
         </activity>
         
