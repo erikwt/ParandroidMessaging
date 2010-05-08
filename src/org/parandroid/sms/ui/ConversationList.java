@@ -349,8 +349,8 @@ public class ConversationList extends ListActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
 
-        menu.add(0, MENU_COMPOSE_NEW, 0, R.string.menu_compose_new).setIcon(
-                com.android.internal.R.drawable.ic_menu_compose);
+//        menu.add(0, MENU_COMPOSE_NEW, 0, R.string.menu_compose_new).setIcon(
+//                com.android.internal.R.drawable.ic_menu_compose);
         
         if(MessageEncryptionFactory.hasKeypair(this))
         	menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_new_keypair).setIcon(R.drawable.ic_generate_keypair);
@@ -366,11 +366,11 @@ public class ConversationList extends ListActivity
         menu.add(0, MENU_CHANGE_PASSWORD, 0, R.string.menu_change_password).setIcon(
         		R.drawable.ic_generate_keypair);
         
-        menu.add(0, MENU_ABOUT, 0, R.string.menu_about).setIcon(
-        		R.drawable.ic_generate_keypair);
-        
         menu.add(0, MENU_HELP, 0, R.string.menu_help).setIcon(
-        		R.drawable.ic_gallery_video_overlay);
+                R.drawable.ic_gallery_video_overlay);
+        
+        menu.add(0, MENU_ABOUT, 0, R.string.menu_about).setIcon(
+                R.drawable.ic_generate_keypair);
 
         if (mListAdapter.getCount() > 0) {
             menu.add(0, MENU_DELETE_ALL, 0, R.string.menu_delete_all).setIcon(
