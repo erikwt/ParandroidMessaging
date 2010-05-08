@@ -183,7 +183,15 @@
                     android:src="@drawable/parandroid_encrypt_msg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="10px"/>
+                    android:paddingRight="10px"
+                    android:paddingLeft="10px"/>
+                    
+            <ImageView
+                    android:src="@drawable/parandroid_plain_msg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="10px"
+                    android:paddingLeft="10px"/>
                     
         </LinearLayout>
         

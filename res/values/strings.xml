@@ -752,7 +752,7 @@
     <string name="help_keypair_title">Public-key cryptography</string>
     <string name="help_keypair_text">
         Parandroid uses public-key cryptography to encrypt messages.
-        \n\nIt involves a public an private key, which are mathematically related to each other.
+        \n\nIt involves a public and private key, which are mathematically related to each other, but cannot be derived from each other.
         \n\nIt is assymetric: messages encrypted with a public key, can only be decrypted with the corresponding private key, and vice versa.
     </string>
     
@@ -760,7 +760,7 @@
     <string name="help_password_text">
         The private key is kept secret at all times.
         \n\nIn parandroid, the private key is stored encrypted on the phone\'s internal memory.
-        \n\nThe private key can be unlocked by providing the correct password. If you do not provide the correct password, encrypted messages will be unreadable.
+        \n\nThe private key can be unlocked by providing the correct password. If you provide a wrong password, encrypted messages will be unreadable.
         \n\nIn \'Menu > Settings\' you can specify what to do when the phone enters sleep mode (like forget the password, or leave a conversation with encrypted messages).
     </string>
     
@@ -768,13 +768,16 @@
     <string name="help_exchange_text">
         Before you are able to send encrypted messages you need to exchange public keys.
         \n\nParandroid encrypts messages both with the senders private key, and the receivers public key.
-        \n\nThis results in a message that can only be decrypted by the intended receiver. Also, the receiver is 100% sure that nobody has altered (or read) the message along the way. \n\n\
+        \n\nThe result:
+        \n- Only the intended receiver can decrypt the message.
+        \n- Nobody else can read or alter the message.
+        \n- Receiver is 100% sure who sent the message.
     </string>
     
     <string name="help_send_title">Sending encrypted messages</string>
     <string name="help_send_text">
-        When you own the public key of someone, and that person also owns your public key, you are able to send encrypted messages.
-        \n\nYou will see the parandroid icon when composing a message if you\'re able to encrypt your message.
+        When you and your contact own each others public keys, you can send encrypted messages.
+        \n\nIf encryption to a receiver is possible, you\'ll see the parandroid icon when composing a message.
     </string>
     
     <string name="help_generate_title">Lets get started!</string>
