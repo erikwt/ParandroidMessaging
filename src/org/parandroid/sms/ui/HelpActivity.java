@@ -33,7 +33,7 @@ public class HelpActivity extends Activity implements OnClickListener {
     private ViewFlipper viewFlipper;  
     private Button nextButton;
     private Button previousButton;
-    private Button generateNewKeypairButton;
+    private Button sendPublicKeyButton;
     private ProgressBar progressBar;
     private float oldTouchValue;
     
@@ -55,9 +55,6 @@ public class HelpActivity extends Activity implements OnClickListener {
         if(MessageEncryptionFactory.hasKeypair(this)){
         	View generateNewKeypair = viewFlipper.findViewById(R.id.generate_new_keypair);
         	viewFlipper.removeView(generateNewKeypair);
-        } else {
-        	generateNewKeypairButton = (Button) findViewById(R.id.button_generate_new_keypair);
-        	generateNewKeypairButton.setOnClickListener(this);
         }
 
         nextButton = (Button) findViewById(R.id.button_next);
@@ -65,9 +62,13 @@ public class HelpActivity extends Activity implements OnClickListener {
         
         previousButton = (Button) findViewById(R.id.button_previous);
         previousButton.setOnClickListener(this);
-        previousButton.setVisibility(View.INVISIBLE);
+        previousButton.setText(R.string.skip);  // on the first page, the previous button results in skipping
+        
+        sendPublicKeyButton = (Button) findViewById(R.id.button_send_public_key);
+        sendPublicKeyButton.setOnClickListener(this);
         
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setMax(viewFlipper.getChildCount()-1);
         onViewChanged();
     }
 	
@@ -85,7 +86,6 @@ public class HelpActivity extends Activity implements OnClickListener {
     		break;
     	}
     }
-    
 
 	
 	@Override
@@ -111,23 +111,45 @@ public class HelpActivity extends Activity implements OnClickListener {
     }
 	
     public void onClick(View v) {
-		if(v.equals(nextButton)) {
+		if(v.equals(nextButton) && viewFlipper.getDisplayedChild() == viewFlipper.getChildCount()-1) {
+		    // last page: the next button results in closing the help page
+		    finish();
+		} else if(v.equals(previousButton) && viewFlipper.getDisplayedChild() == 0) {
+		    // first page: the previous button results in closing the help page
+		    finish();
+		} else if(v.equals(nextButton)){
 			showNext();
 		} else if(v.equals(previousButton)) {
 			showPrevious();
-		} else if(v.equals(generateNewKeypairButton)) {
-			generateFirstKeypair();
+		} else if(v.equals(sendPublicKeyButton)) {
+		    Intent intent = new Intent(this, SendPublicKeyActivity.class);
+            startActivity(intent);
 		}
 		
 	}
     
     private void onViewChanged(){
     	updateProgressBar();
-    	
     }
 	
     private void showNext(){
-		int childIndex = viewFlipper.getDisplayedChild();
+    	// on the generateNewKeypair view, the next action should first generate  
+    	// the keypair, and then show the next view
+    	View generateNewKeypair = viewFlipper.findViewById(R.id.generate_new_keypair);
+    	View currentView = viewFlipper.getCurrentView();
+    	
+        if (currentView.getId() != View.NO_ID 
+                && currentView.getId() == generateNewKeypair.getId()
+                && !MessageEncryptionFactory.hasKeypair(this)) {
+            generateFirstKeypair();
+
+            // when generating a first keypair, wait for it to finish before
+            // showing the next page. At the end of the doGenerateKeypair()
+            // function, the next page will be shown.
+            return;
+        }
+    	
+    	int childIndex = viewFlipper.getDisplayedChild();
 
 		// show next, only if this is not the last child
 		if(childIndex < viewFlipper.getChildCount()-1){
@@ -137,14 +159,14 @@ public class HelpActivity extends Activity implements OnClickListener {
 	        
 	        int newChildIndex = viewFlipper.getDisplayedChild();
 	        
-	        // remove the next button if we are in the last child 
+	        // if we are in the last child, the next button results in done 
 	        if(newChildIndex == viewFlipper.getChildCount()-1){
-	        	nextButton.setVisibility(View.INVISIBLE);
+	        	nextButton.setText(R.string.done);
 	        }
 	        
-	        // add the next button if we came from the first child
+	        // if we came from the first child, set the text to 'next'
 	        if(childIndex == 0){
-	        	previousButton.setVisibility(View.VISIBLE);
+	        	previousButton.setText(R.string.previous);
 	        }
 	        
 	        onViewChanged();
@@ -162,14 +184,14 @@ public class HelpActivity extends Activity implements OnClickListener {
 	        
 	        int newChildIndex = viewFlipper.getDisplayedChild();
 	        
-	        // remove the previous button if we are in the first child 
+	        // if we are in the first child, set previous button to 'skip' 
 	        if(newChildIndex == 0){
-	        	previousButton.setVisibility(View.INVISIBLE);
+	        	previousButton.setText(R.string.skip);
 	        }
 	        
-	        // add the next button if we came from the last child
+	        // if we came from the last child, set next button text to 'next'
 	        if(childIndex == viewFlipper.getChildCount()-1){
-	        	nextButton.setVisibility(View.VISIBLE);
+	        	nextButton.setText(R.string.next);
 	        }
 	        
 	        onViewChanged();
@@ -226,8 +248,7 @@ public class HelpActivity extends Activity implements OnClickListener {
 	}
 	
 	private void updateProgressBar(){
-		float percentage = (float) viewFlipper.getDisplayedChild() / (viewFlipper.getChildCount()-1) * 100;
-		progressBar.setProgress(Math.round(percentage));
+		progressBar.setProgress(viewFlipper.getDisplayedChild());
 	}
 	
 	private void generateFirstKeypair(){
@@ -247,28 +268,29 @@ public class HelpActivity extends Activity implements OnClickListener {
 		ProgressDialog generateKeypairProgressDialog = ProgressDialog.show(this, "", getString(R.string.generating_keypair), true);
 		Toast generateKeypairErrorToast = Toast.makeText(this, R.string.generated_keypair_failure, Toast.LENGTH_SHORT);
 		
-        AlertDialog.Builder generateKeypairSuccessDialogBuilder = new AlertDialog.Builder(this);
-    	generateKeypairSuccessDialogBuilder.setMessage(getText(R.string.generated_keypair_success))
-    			.setTitle(getText(R.string.generate_keypair_title))
-    			.setCancelable(false)
-    	        .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-	        	    	Intent intent = new Intent(HelpActivity.this, SendPublicKeyActivity.class);
-	        	        startActivity(intent);
-    	           }
-    	       })
-    	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
-    	           public void onClick(DialogInterface dialog, int id) {
-    	                dialog.cancel();
-    	           }
-    	       });
-    	
-    	AlertDialog generateKeypairSuccessDialog = generateKeypairSuccessDialogBuilder.create();
+//        AlertDialog.Builder generateKeypairSuccessDialogBuilder = new AlertDialog.Builder(this);
+//    	generateKeypairSuccessDialogBuilder.setMessage(getText(R.string.generated_keypair_success))
+//    			.setTitle(getText(R.string.generate_keypair_title))
+//    			.setCancelable(false)
+//    	        .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
+//    	           public void onClick(DialogInterface dialog, int id) {
+//	        	    	Intent intent = new Intent(HelpActivity.this, SendPublicKeyActivity.class);
+//	        	        startActivity(intent);
+//    	           }
+//    	       })
+//    	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
+//    	           public void onClick(DialogInterface dialog, int id) {
+//    	                dialog.cancel();
+//    	           }
+//    	       });
+//    	
+//    	AlertDialog generateKeypairSuccessDialog = generateKeypairSuccessDialogBuilder.create();
 		
-		try{
+		try {
 			MessageEncryptionFactory.generateKeyPair(this);
 			generateKeypairProgressDialog.dismiss();
-			generateKeypairSuccessDialog.show();
+//			generateKeypairSuccessDialog.show();
+			
 			showNext();
 		} catch (Exception e) {
 			String message = "Error generating keypair: " + e.getMessage();
@@ -276,8 +298,9 @@ public class HelpActivity extends Activity implements OnClickListener {
 			e.printStackTrace();
 			
 			generateKeypairProgressDialog.dismiss();
-			generateKeypairErrorToast.show();             	 
+			generateKeypairErrorToast.show();
 		}
+		
 	}
 
 }

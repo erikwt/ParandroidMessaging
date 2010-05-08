@@ -826,17 +826,20 @@
     <string name="help_generate_text">
         It seems that you don\'t have a public key yet, so lets start to generate one.
         \n\nFirst you will have to enter the password you want to use. After that, a keypair will be generated.
-        \n\nWhen the keys are generated, you will immediately be able to send the public one to your contacts.
+        \n\nClick next to generate your keypair!
     </string>
     
     <string name="help_more_title">Done! Now what?</string>
-    <string name="help_more_text">
-        Exchange public keys and start sending encrypted messages!
-        \n\n\n\nAlso, visit http://www.parandroid.org!
+    <string name="help_more_1_text">
+        First, send your public key to some contacts (you can also do this later via the menu): 
+    </string>
+    <string name="help_more_2_text">
+        \n\nAlso, visit http://www.parandroid.org!
         \n\nReport bugs, request features, and help us improve your privacy!
     </string>
 
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="skip">Skip this</string>
 </resources>
 
