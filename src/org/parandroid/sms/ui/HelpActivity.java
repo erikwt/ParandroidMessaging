@@ -10,6 +10,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,6 +39,10 @@ public class HelpActivity extends Activity implements OnClickListener {
     private float oldTouchValue;
     
     private static final String TAG = "ParandroidHelp";
+
+    // IDs of the main menu items.
+    public static final int MENU_CONVERSATION_LIST   = 0;
+    public static final int MENU_ABOUT               = 1;
     
     public static final int REQUEST_CODE_SET_FIRST_PASSWORD	= 0;
 
@@ -69,6 +75,36 @@ public class HelpActivity extends Activity implements OnClickListener {
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBar.setMax(viewFlipper.getChildCount()-1);
         onViewChanged();
+    }
+	
+	@Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.clear();
+
+        menu.add(0, MENU_CONVERSATION_LIST, 0, R.string.all_threads).setIcon(
+                com.android.internal.R.drawable.ic_menu_friendslist);
+        
+        menu.add(0, MENU_ABOUT, 0, R.string.menu_about).setIcon(
+                R.drawable.ic_generate_keypair);
+        
+        return true;
+	}
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case MENU_CONVERSATION_LIST:
+                finish();
+                Intent conversationListIntent = new Intent(this, ConversationList.class);
+                startActivity(conversationListIntent);
+                break;
+            case MENU_ABOUT:
+                Intent aboutIntent = new Intent(this, AboutActivity.class);
+                startActivity(aboutIntent);
+                break;
+            default:
+                return true;
+        }
+        return false;
     }
 	
     @Override
