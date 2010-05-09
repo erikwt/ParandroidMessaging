@@ -468,7 +468,7 @@ public class ConversationList extends ListActivity
     }
     
     private void managePublicKeys(){
-    	Intent intent = new Intent(this, PublicKeyManagerActivity.class);
+    	Intent intent = new Intent(this, ManagePublicKeysActivity.class);
         startActivity(intent);
     }
     

@@ -58,7 +58,7 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
 
 	public void onClick(View v) {		
 		if(v.equals(sendButton)){
-			ArrayList<String> receipientNumbers = new ArrayList<String>();
+			ArrayList<String> recipientNumbers = new ArrayList<String>();
 			String selection = receipients.getText().toString();
 
 			for(String s : selection.split(", ")){
@@ -86,37 +86,23 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener{
 					s = number;
 				}
 
-
-				receipientNumbers.add(s);
+				recipientNumbers.add(s);
 			}
 			
-			if(receipientNumbers.size() == 0){
+			if(recipientNumbers.size() == 0){
 				Toast.makeText(this, R.string.no_recipient, Toast.LENGTH_SHORT).show();
 				return;
 			}
-
-			String publicKey;
-			try {
-				publicKey = new String(Base64Coder.encode(MessageEncryptionFactory.getOwnPublicKey(this)));
-			} catch (IOException e1) {
-				Toast.makeText(this, R.string.failed_opening_public_key, Toast.LENGTH_LONG).show();
-				return;
-			}
 			
-			for(String num : receipientNumbers){
-				num = filterPhoneNumber(num, false);
-				SmsManager sm = SmsManager.getDefault();
-				Log.i(TAG,"Sending public key to " + num);
-				
-				try { 
-					sm.sendDataMessage(num, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKey.getBytes(), null, null);
-					Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  num, Toast.LENGTH_SHORT).show();
-				} catch (Exception e) {
-					receipients.setText("");
-					Log.e(TAG, "Error sending public key: " + e.getMessage());
-					Toast.makeText(this, getText(R.string.send_public_key_failure) + " " +  num, Toast.LENGTH_SHORT).show();
-				}
-			}
+			for(String number : recipientNumbers){
+			    try{
+    			     MessageEncryptionFactory.sendPublicKey(this, number);
+    			     Toast.makeText(this, getText(R.string.send_public_key_success) + " " + number, Toast.LENGTH_SHORT).show();
+			     } catch(Exception e){
+    			     e.printStackTrace();
+    			     Toast.makeText(this, getText(R.string.send_public_key_failure) + " " + number, Toast.LENGTH_LONG).show();
+			     }
+			 }
 			
 			finish();
 		}

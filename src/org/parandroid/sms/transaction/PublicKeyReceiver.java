@@ -4,16 +4,18 @@ import java.util.ArrayList;
 
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
+import org.parandroid.sms.ui.ManagePublicKeysActivity;
 import org.parandroid.sms.ui.MessageUtils;
 import org.parandroid.sms.ui.MessagingPreferenceActivity;
-import org.parandroid.sms.ui.PublicKeyReceived;
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.Telephony.Sms.Intents;
@@ -39,9 +41,6 @@ public class PublicKeyReceiver extends BroadcastReceiver {
 		if(messages.length == 0) return;
 		
 		SmsMessage msg = messages[0];
-
-		Intent targetIntent = new Intent(context, PublicKeyReceived.class);
-		targetIntent.putExtra("sender", msg.getDisplayOriginatingAddress());
 		
 		int len = 0, offset = 0;
 		ArrayList<byte[]> publicKey = new ArrayList<byte[]>();
@@ -56,10 +55,23 @@ public class PublicKeyReceiver extends BroadcastReceiver {
 			offset += part.length;
 		}
 
-		int notificationId = MessageUtils.getNotificationId(msg.getOriginatingAddress()); 
+		String sender = msg.getOriginatingAddress();
+				
+		SQLiteDatabase keyRing = MessageEncryptionFactory.openKeyring(context);
 		
-		targetIntent.putExtra("publickey", pubKeyData);
-		targetIntent.putExtra("notificationId", notificationId);
+		ContentValues cv = new ContentValues();
+		cv.put("number", sender);
+		cv.put("publickey", new String(pubKeyData));
+		cv.put("accepted", false);
+		
+		long id = keyRing.insert(MessageEncryptionFactory.PUBLIC_KEY_TABLE, "", cv);
+		keyRing.close();
+		
+		Log.i(TAG, "Inserted public key at id: " + id);
+		
+		Intent targetIntent = new Intent(context, ManagePublicKeysActivity.class);
+		targetIntent.putExtra("id", id);
+		
 		Notification n = new Notification(context, R.drawable.stat_notify_public_key_recieved, message, System.currentTimeMillis(), message, message, targetIntent);
 		
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
@@ -76,7 +88,7 @@ public class PublicKeyReceiver extends BroadcastReceiver {
 	        n.ledOffMS = 2000;
         }
 		
-		mNotificationManager.notify(notificationId, n);
+		mNotificationManager.notify((int) id, n);
 	}
 		
 }
