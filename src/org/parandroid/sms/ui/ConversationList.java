@@ -88,7 +88,6 @@ public class ConversationList extends ListActivity
             implements DraftCache.OnDraftChangedListener {
     private static final String TAG = "ConversationList";
     private static final boolean DEBUG = false;
-
     private static final boolean LOCAL_LOGV = Config.LOGV && DEBUG;
     
     private static final String FIRST_LAUNCH_FILE = "firstParandroidLaunch"; 
@@ -188,10 +187,9 @@ public class ConversationList extends ListActivity
             mFilter = savedInstanceState.getString("filter");
             mQueryToken = savedInstanceState.getInt("query_token");
         }
-
-        handleCreationIntent(getIntent());
+       
     }
-    
+
     private boolean firstParandroidLaunch(){
         try{
             openFileInput(FIRST_LAUNCH_FILE);
@@ -339,7 +337,7 @@ public class ConversationList extends ListActivity
         
         menu.add(0, MENU_HELP, 0, R.string.menu_help).setIcon(
                 R.drawable.ic_gallery_video_overlay);
-
+       
         menu.add(0, MENU_ABOUT, 0, R.string.menu_about).setIcon(
                 R.drawable.ic_generate_keypair);
         
