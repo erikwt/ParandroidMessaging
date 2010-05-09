@@ -263,7 +263,13 @@
         <activity android:name=".ui.SendPublicKeyActivity">
         </activity>
         
-        <activity android:name=".ui.PublicKeyManagerActivity">
+        <activity android:name=".ui.ManagePublicKeysActivity">
+        </activity>
+        
+        <activity android:name=".ui.AcceptedKeysActivity">
+        </activity>
+        
+        <activity android:name=".ui.PendingKeysActivity">
         </activity>
         
         <activity android:name=".ui.AboutActivity">

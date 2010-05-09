@@ -2154,14 +2154,11 @@ public class ComposeMessageActivity extends Activity
 	        			.setTitle(getText(R.string.menu_send_public_key))
         		   	 	.setCancelable(false)
 	        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
-	        	           public void onClick(DialogInterface dialog, int id) {
-	        	        	   SmsManager sm = SmsManager.getDefault();
-	        					
+	        	           public void onClick(DialogInterface dialog, int id) {	        					
 	        					for(String num : numbers){
 		        					Log.i(TAG,"Sending public key to " + num);
 		        					try { 
-		        						byte[] publicKey = MessageEncryptionFactory.getOwnPublicKey(ComposeMessageActivity.this);
-		        						sm.sendDataMessage(num, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKey, null, null);
+		        						MessageEncryptionFactory.sendPublicKey(ComposeMessageActivity.this, num);
 		        						Toast.makeText(ComposeMessageActivity.this, getText(R.string.send_public_key_success) + " " +  num, Toast.LENGTH_SHORT).show();
 		        					} catch (IOException e) {
 		        						Log.e(TAG, e.getMessage());
