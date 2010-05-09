@@ -131,26 +131,17 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener, 
 		}else if(v.equals(sendButton)){
 			sendButton.setClickable(false);
 			addRecipientButton.setClickable(false);
-			SmsManager sm = SmsManager.getDefault();
-			String publicKey;
-			try {
-				publicKey = new String(Base64Coder.encode(MessageEncryptionFactory.getOwnPublicKey(this)));
-				
-				for(String number : recipientNumbers){				
-					try{
-						sm.sendDataMessage(number, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKey.getBytes(), null, null);
-						Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  number, Toast.LENGTH_SHORT).show();
-					}catch(Exception e){
-						e.printStackTrace();
-						Toast.makeText(this, getText(R.string.send_public_key_failure) + " " +  number, Toast.LENGTH_LONG).show();
-					}
+			for(String number : recipientNumbers){				
+				try{
+					MessageEncryptionFactory.sendPublicKey(this, number);
+					Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  number, Toast.LENGTH_SHORT).show();
+				}catch(Exception e){
+					e.printStackTrace();
+					Toast.makeText(this, getText(R.string.send_public_key_failure) + " " +  number, Toast.LENGTH_LONG).show();
 				}
-				
-				finish();
-			} catch (IOException e) {
-				e.printStackTrace();
-				Toast.makeText(this, getText(R.string.send_public_key_failure) + " recipients", Toast.LENGTH_LONG).show();
 			}
+			
+			finish();
 		}
 	}
 

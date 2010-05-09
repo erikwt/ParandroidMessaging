@@ -769,6 +769,9 @@
     <string name="no_public_keys">No public keys</string>
     <string name="delete_public_key">Delete public key</string>
     <string name="delete_public_key_dialog">Are you sure you want to delete this public key? You won\'t be able to have a encrypted conversation with this contact anymore.</string>
+    <string name="accept_public_key">Accept this public key</string>
+    <string name="decline_public_key">Decline this public key</string>
+    <string name="decline_public_key_dialog">Are you sure you want to decline this public key?</string>
     
     <string name="failed_changing_password">Failed changing password</string>
     <string name="successfully_changed_password">Successfully changed password</string>
