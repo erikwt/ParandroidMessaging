@@ -24,6 +24,7 @@ import java.util.HashSet;
 import org.parandroid.encoding.Base64Coder;
 import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
+
 import org.parandroid.sms.ui.MessageItem;
 import org.parandroid.sms.ui.MessagingPreferenceActivity;
 
@@ -55,7 +56,6 @@ public class SmsMessageSender implements MessageSender {
     private final long mThreadId;
     private long mTimestamp;
     private boolean mTryToEncrypt;
-    private boolean mSendingConfirmed = false;
 
 
     private static final String TAG = "PDMessageSender";
@@ -199,6 +199,7 @@ public class SmsMessageSender implements MessageSender {
         return false;
     }
     
+
     private int getFirstEncryptedDestIndex() {
         for (int i = 0; i < mNumberOfDests; i++) {
             if (mTryToEncrypt && MessageEncryptionFactory.hasPublicKey(mContext, mDests[i])) {
@@ -209,6 +210,7 @@ public class SmsMessageSender implements MessageSender {
         return -1;
     }
     
+
     private Uri addToParandroidOutbox(int destIndex, String outboxText){
     	ContentValues values = new ContentValues(7);
 
