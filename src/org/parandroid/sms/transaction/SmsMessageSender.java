@@ -55,6 +55,7 @@ public class SmsMessageSender implements MessageSender {
     private final long mThreadId;
     private long mTimestamp;
     private boolean mTryToEncrypt;
+    private boolean mSendingConfirmed = false;
 
 
     private static final String TAG = "PDMessageSender";
@@ -196,6 +197,16 @@ public class SmsMessageSender implements MessageSender {
         }
 
         return false;
+    }
+    
+    private int getFirstEncryptedDestIndex() {
+        for (int i = 0; i < mNumberOfDests; i++) {
+            if (mTryToEncrypt && MessageEncryptionFactory.hasPublicKey(mContext, mDests[i])) {
+                return i;
+            }
+        }
+        
+        return -1;
     }
     
     private Uri addToParandroidOutbox(int destIndex, String outboxText){
