@@ -134,8 +134,8 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 	private void insertEncryptedMessage(Context context, SmsMessage[] messages, byte[] body, long threadId){
 		SmsMessage msg = messages[0];
 		ContentValues values = extractContentValues(msg);
-        		
-        values.put(Inbox.BODY, new String(Base64Coder.encode(body)));
+        
+        values.put(Inbox.BODY, new String(body));
         values.put(Sms.THREAD_ID, threadId);
         values.put(Inbox.TYPE, MessageItem.MESSAGE_TYPE_PARANDROID_INBOX);
         

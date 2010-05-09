@@ -32,10 +32,14 @@ import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
+import org.parandroid.encoding.Base64Coder;
 import org.parandroid.sms.data.Contact;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.telephony.PhoneNumberUtils;
+import android.telephony.SmsManager;
 import android.util.Log;
 
 public abstract class MessageEncryptionFactory {
@@ -47,11 +51,13 @@ public abstract class MessageEncryptionFactory {
 
 	protected static final String PUBLIC_KEY_FILENAME = "self.pub";
 	protected static final String PRIVATE_KEY_FILENAME = "self.priv";
-	protected static final String PUBLIC_KEY_SUFFIX = ".pub";
 	
 	protected static final String KEY_EXCHANGE_PROTOCOL = "DH";
 	protected static final String ENCRYPTION_ALGORITHM = "AES";
 	protected static final String PRIVATE_KEY_ENCRYPTION_ALGORITHM = "PBEWithMD5AndDES";
+
+	public static final String PUBLIC_KEY_DATABASE = "keyring";
+	public static final String PUBLIC_KEY_TABLE = "publickeys";
 	
 	protected static final byte[] PRIVATE_KEY_ENCRYPTION_SALT = {
         (byte)0xc7, (byte)0x73, (byte)0x21, (byte)0x8c,
@@ -144,30 +150,43 @@ public abstract class MessageEncryptionFactory {
      * @param context
      * @return Public key list
      */
-    public static HashMap<String, String> getPublicKeyList(Context context){
-    	HashMap<String, String> publicKeys = new HashMap<String, String>();
+    public static HashMap<Integer, String> getPublicKeyList(Context context, boolean accepted){
+    	HashMap<Integer, String> publicKeys = new HashMap<Integer, String>();
     	
-    	for(String f : context.getFilesDir().list()){
-    		if(f.endsWith(PUBLIC_KEY_SUFFIX) && !PUBLIC_KEY_FILENAME.equals(f)){
-    			String number = f.substring(0, f.length() - PUBLIC_KEY_SUFFIX.length());
-    			String name = Contact.get(number, false).getName();
-    			if(name == null) publicKeys.put(number, number);
-    			else publicKeys.put(number, name + " <" + number + ">");
-    		}
+    	SQLiteDatabase keyRing = openKeyring(context);
+    	Cursor c = keyRing.query(PUBLIC_KEY_TABLE, null, "accepted=" + (accepted ? "1" : "0"), null, null, null, "_ID DESC");
+    	
+    	while(c.moveToNext()){
+    		int id = c.getInt(c.getColumnIndex("_ID"));
+    		String number = c.getString(c.getColumnIndex("number"));
+    		
+    		publicKeys.put(id, number);
     	}
     	
+    	c.close();
+    	keyRing.close();
+    	
     	return publicKeys;
+    }
+    
+    public static HashMap<Integer, String> getPublicKeyList(Context context){
+    	return getPublicKeyList(context, true);
     }
     
     
     public static ArrayList<String> getPublicKeys(Context context){
     	ArrayList<String> publicKeys = new ArrayList<String>();
     	
-    	for(String f : context.getFilesDir().list()){
-    		if(f.endsWith(PUBLIC_KEY_SUFFIX) && !PUBLIC_KEY_FILENAME.equals(f)){
-    			publicKeys.add(f);
-    		}
+    	SQLiteDatabase keyRing = openKeyring(context);
+    	Cursor c = keyRing.query(PUBLIC_KEY_TABLE, null, "accepted=1", null, null, null, null);
+    	
+    	while(c.moveToNext()){
+    		String number = c.getString(c.getColumnIndex("number"));
+    		publicKeys.add(number);
     	}
+    	
+    	c.close();
+    	keyRing.close();
     	
     	return publicKeys;
     }
@@ -180,13 +199,12 @@ public abstract class MessageEncryptionFactory {
      * @param number
      * @return Boolean successful
      */
-    public static boolean deletePublicKey(Context context, String number){
-        File pk = new File(context.getFilesDir(), MessageEncryptionFactory.getPublicKeyFilename(context, number));
-        if(!pk.exists()){
-            Log.e(TAG, "Delete: File does not exist: " + pk.getAbsoluteFile());
-            return false;
-        }
-        return pk.delete();
+    public static boolean deletePublicKey(Context context, int id){
+        SQLiteDatabase keyRing = openKeyring(context);
+        int num = keyRing.delete(PUBLIC_KEY_TABLE, "_ID=" + id, null);
+        
+        keyRing.close();
+        return num > 0;
     }
     
     
@@ -200,14 +218,14 @@ public abstract class MessageEncryptionFactory {
     public static String getPublicKeyFilename(Context context, String number){
     	ArrayList<String> publicKeys = getPublicKeys(context);
     	for(String publicKey : publicKeys){
-    		if(PhoneNumberUtils.compare(number, publicKey.substring(0, publicKey.length() - PUBLIC_KEY_SUFFIX.length()))){
+    		if(PhoneNumberUtils.compare(number, publicKey)){
     			Log.v(TAG, "Public key exists for number '" + number + "'; '" + publicKey + "'");
     			return publicKey;
     		}
     	}
 
 		Log.v(TAG, "No public key for '" + number + "'");
-    	return number.concat(PUBLIC_KEY_SUFFIX);
+    	return number;
     }
     
     
@@ -286,7 +304,24 @@ public abstract class MessageEncryptionFactory {
      * @throws InvalidKeySpecException
      */
     public static PublicKey getPublicKey(Context context, String number) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{
-    	byte[] keyBytes = getKeyFileBytes(context, getPublicKeyFilename(context, number));
+    	byte[] keyBytes = null;
+    	
+    	SQLiteDatabase keyRing = openKeyring(context);
+    	Cursor c = keyRing.query(PUBLIC_KEY_TABLE, null, "accepted=1", null, null, null, null);
+    	
+    	while(c.moveToNext()){
+    		String n = c.getString(c.getColumnIndex("number"));
+    		if(PhoneNumberUtils.compare(number, n)){
+    			String publicKey = c.getString(c.getColumnIndex("publicKey"));
+    			keyBytes = Base64Coder.decode(publicKey);
+    			break;
+    		}
+    	}
+    	
+    	c.close();
+    	keyRing.close();
+    	
+    	if(keyBytes == null) return null;
     	
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
         KeyFactory keyFact = KeyFactory.getInstance(KEY_EXCHANGE_PROTOCOL);
@@ -304,14 +339,14 @@ public abstract class MessageEncryptionFactory {
      * @param key
      * @throws Exception
      */
-    public static void savePublicKey(Context context, String sender, byte[] key) throws Exception{
-    	String publicKeyFilename = getPublicKeyFilename(context, sender);
-    	
-		FileOutputStream out = context.openFileOutput(publicKeyFilename, Context.MODE_PRIVATE);
-		out.write(key);
-		out.flush();
-		out.close();
-    }
+//    public static void savePublicKey(Context context, String sender, byte[] key) throws Exception{
+//    	String publicKeyFilename = getPublicKeyFilename(context, sender);
+//    	
+//		FileOutputStream out = context.openFileOutput(publicKeyFilename, Context.MODE_PRIVATE);
+//		out.write(key);
+//		out.flush();
+//		out.close();
+//    }
     
     
     /**
@@ -335,7 +370,7 @@ public abstract class MessageEncryptionFactory {
     public static boolean hasPublicKey(Context context, String number){
     	ArrayList<String> publicKeys = getPublicKeys(context);
     	for(String publicKey : publicKeys){
-    		if(PhoneNumberUtils.compare(number, publicKey.substring(0, publicKey.length() - PUBLIC_KEY_SUFFIX.length()))){
+    		if(PhoneNumberUtils.compare(number, publicKey)){
     			Log.v(TAG, "Public key exists for number '" + number + "'; '" + publicKey + "'");
     			return true;
     		}
@@ -362,6 +397,16 @@ public abstract class MessageEncryptionFactory {
 		}
 		return true;
 	}
+	
+	
+	public static void sendPublicKey(Context context, String number) throws IOException{
+		SmsManager sm = SmsManager.getDefault();
+		byte[] publicKey = getOwnPublicKey(context);
+		String publicKeyEncoded = new String(Base64Coder.encode(publicKey));
+		Log.i(TAG, "Sending public key base64-encoded '" + publicKeyEncoded + "' to " + number);
+		sm.sendDataMessage(number, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKeyEncoded.getBytes(), null, null);
+	}
+	
     
     /**
      * Disables the password, forcing the user to insert it again when trying
@@ -439,5 +484,17 @@ public abstract class MessageEncryptionFactory {
     private static byte[] decryptPrivateKey(byte[] cipherText, boolean oldMethod) throws Exception {
     	Cipher cipher = getCipher(Cipher.DECRYPT_MODE, oldMethod);
         return cipher.doFinal(cipherText);
+    }
+    
+    public static SQLiteDatabase openKeyring(Context context){
+    	SQLiteDatabase keyRing = context.openOrCreateDatabase(PUBLIC_KEY_DATABASE, Context.MODE_PRIVATE, null);
+    	keyRing.execSQL("CREATE TABLE IF NOT EXISTS " + PUBLIC_KEY_TABLE + 
+    			" (_ID INTEGER PRIMARY KEY, " +
+    			"number VARCHAR, " +
+    			"publicKey VARCHAR, " +
+    			"accepted BOOLEAN, " +
+    			"received TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+    	
+    	return keyRing;
     }
 }
