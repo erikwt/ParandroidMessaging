@@ -703,8 +703,8 @@
         \n\nSee http://www.parandroid.org for more info.\nReleased under the Apache 2.0 open source license.
     </string>
     <string name="parandroid_developers">
-        Erik Wallentinsen\n
-        Jeffrey Klardie
+        Erik Wallentinsen
+        \nJeffrey Klardie
     </string>
     <string name="parandroid_send_public_key">
         Please specify recipients to send your public key to.
@@ -716,6 +716,7 @@
     <string name="menu_manage_public_keys">Manage public keys</string>
     <string name="menu_change_password">Change password</string>
     <string name="menu_about">About</string>
+    <string name="menu_help">Help</string>
     
     <string name="specify_recipients">Specify recipients</string>
     <string name="about_title">About Parandroid</string>
@@ -769,6 +770,7 @@
     <string name="no_public_keys">No public keys</string>
     <string name="delete_public_key">Delete public key</string>
     <string name="delete_public_key_dialog">Are you sure you want to delete this public key? You won\'t be able to have a encrypted conversation with this contact anymore.</string>
+    <string name="confirm_send_msg">Confirm send message</string>
     
     <string name="failed_changing_password">Failed changing password</string>
     <string name="successfully_changed_password">Successfully changed password</string>
@@ -784,5 +786,65 @@
     <string name="forget_on_sleep_title">Forget on sleep</string>
     <string name="close_on_sleep">Close a authenticated conversation when the phone enters sleep-mode</string>
     <string name="close_on_sleep_title">Close on sleep</string>
+    
+    <string name="help_title">Help</string>
+    
+    <string name="help_intro_title">Parandroid help: \nwhat is this?</string>
+    <string name="help_intro_text">
+        This is the parandroid help page. It provides some info about how parandroid works.
+        \n\nYou got here either because its the first time you lauch parandroid, or you clicked the help menu item.
+        \n\nClick next, or drag the screen to the left, to continue to the next section. 
+    </string>
+    
+    <string name="help_keypair_title">Public-key cryptography</string>
+    <string name="help_keypair_text">
+        Parandroid uses public-key cryptography to encrypt messages.
+        \n\nIt involves a public and private key, which are mathematically related to each other, but cannot be derived from each other.
+        \n\nIt is assymetric: messages encrypted with a public key, can only be decrypted with the corresponding private key, and vice versa.
+    </string>
+    
+    <string name="help_password_title">The private key</string>
+    <string name="help_password_text">
+        The private key is kept secret at all times.
+        \n\nIn parandroid, the private key is stored encrypted on the phone\'s internal memory.
+        \n\nThe private key can be unlocked by providing the correct password. If you provide a wrong password, encrypted messages will be unreadable.
+        \n\nIn \'Menu > Settings\' you can specify what to do when the phone enters sleep mode (like forget the password, or leave a conversation with encrypted messages).
+    </string>
+    
+    <string name="help_exchange_title">Exchanging public keys</string>
+    <string name="help_exchange_text">
+        Before you are able to send encrypted messages you need to exchange public keys.
+        \n\nParandroid encrypts messages both with the senders private key, and the receivers public key.
+        \n\nThe result:
+        \n- Only the intended receiver can decrypt the message.
+        \n- Nobody else can read or alter the message.
+        \n- Receiver is 100% sure who sent the message.
+    </string>
+    
+    <string name="help_send_title">Sending encrypted messages</string>
+    <string name="help_send_text">
+        When you and your contact own each others public keys, you can send encrypted messages.
+        \n\nIf encryption to a receiver is possible, you\'ll see the parandroid icon when composing a message.
+    </string>
+    
+    <string name="help_generate_title">Lets get started!</string>
+    <string name="help_generate_text">
+        It seems that you don\'t have a public key yet, so lets start to generate one.
+        \n\nFirst you will have to enter the password you want to use. After that, a keypair will be generated.
+        \n\nClick next to generate your keypair!
+    </string>
+    
+    <string name="help_more_title">Done! Now what?</string>
+    <string name="help_more_1_text">
+        First, send your public key to some contacts (you can also do this later via the menu): 
+    </string>
+    <string name="help_more_2_text">
+        \n\nAlso, visit http://www.parandroid.org!
+        \n\nReport bugs, request features, and help us improve your privacy!
+    </string>
+
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="skip">Skip this</string>
 </resources>
 

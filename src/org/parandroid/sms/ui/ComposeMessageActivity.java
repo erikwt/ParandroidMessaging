@@ -31,6 +31,7 @@ import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyProperties;
 import com.android.internal.widget.ContactHeaderWidget;
 
+import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.LogTag;
 import org.parandroid.sms.MmsConfig;
@@ -42,6 +43,7 @@ import org.parandroid.sms.data.WorkingMessage;
 import org.parandroid.sms.data.WorkingMessage.MessageStatusListener;
 import org.parandroid.sms.model.SlideshowModel;
 import org.parandroid.sms.transaction.MessagingNotification;
+import org.parandroid.sms.transaction.MultipartDataMessageSender;
 import org.parandroid.sms.ui.MessageUtils.ResizeImageResultCallback;
 import org.parandroid.sms.ui.RecipientsEditor.RecipientContextMenuInfo;
 import org.parandroid.sms.util.SendingProgressTokenManager;
@@ -2905,8 +2907,8 @@ public class ComposeMessageActivity extends Activity
         return recipientCount;
     }
     
-    private void sendMessage(boolean bCheckEcmMode, boolean ignoreMissingPublicKeys) {
-    	boolean tryToEncrypt = mTryToEncrypt.isChecked() && (mTryToEncrypt.getVisibility() == View.VISIBLE);
+    private void sendMessage(final boolean bCheckEcmMode, boolean ignoreMissingPublicKeys) {
+    	final boolean tryToEncrypt = mTryToEncrypt.isChecked() && (mTryToEncrypt.getVisibility() == View.VISIBLE);
         
         if(tryToEncrypt){
 	    	if(MessageEncryptionFactory.isAuthenticating()) return;
@@ -2931,8 +2933,62 @@ public class ComposeMessageActivity extends Activity
 	        	
 	        	return;
 	    	}
+	    	
+	    	// show dialog for confirmation
+	    	String sendEncryptedDest = "";
+	    	for(String number : getRecipientNumbers()){
+	    	    if(MessageEncryptionFactory.hasPublicKey(this, number)){
+	    	        sendEncryptedDest = number;
+	    	        continue;
+	    	    }
+	    	}
+	    	
+	    	try {
+	    	    byte[] encryptedMessage = MessageEncryption.encrypt(this, sendEncryptedDest, mWorkingMessage.getText().toString());
+    	        int numEncryptedMessages = (int) Math.ceil(encryptedMessage.length / MultipartDataMessageSender.MAX_BYTES) + 1;
+    	        
+    	        
+    	        // only show the dialog if the number of messages is larger than one
+    	        if(numEncryptedMessages == 1){
+    	            doSendMessage(bCheckEcmMode, tryToEncrypt);
+    	            return;
+    	        }
+    	        
+    	        String dialogText = String.format(
+    	                "The encrypted message will take up %d message(s). Still send?", numEncryptedMessages);
+
+    	        AlertDialog.Builder confirmDialogBuilder = new AlertDialog.Builder(this);
+    	        confirmDialogBuilder.setMessage(dialogText)
+    	            .setTitle(getText(R.string.confirm_send_msg))
+    	            .setCancelable(false)
+    	            .setPositiveButton(
+    	                    getText(R.string.yes), new DialogInterface.OnClickListener() {
+    	                    public void onClick(DialogInterface dialog, int id) {
+    	                        // when clicking yes, simply dismiss the dialog, and continue to send
+    	                        doSendMessage(bCheckEcmMode, tryToEncrypt);
+    	                    }
+    	            }).setNegativeButton(
+    	                    getText(R.string.no), new DialogInterface.OnClickListener() {
+    	                    public void onClick(DialogInterface dialog, int id) {
+    	                        // when clicking no, stop and return to the compose message activity.
+    	                        dialog.cancel();    
+    	                        return;
+    	                    }
+    	                });
+    	
+    	        AlertDialog confirmDialog = confirmDialogBuilder.create();
+    	        confirmDialog.show();
+	    	} catch (Exception e){
+	    	    // oops
+	    	}
+        } else {
+            doSendMessage(bCheckEcmMode, tryToEncrypt);
         }
         
+        
+    }
+    
+    public void doSendMessage(boolean bCheckEcmMode, boolean tryToEncrypt){
     	if (bCheckEcmMode) {
             String inEcm = SystemProperties.get(TelephonyProperties.PROPERTY_INECM_MODE);
             if (Boolean.parseBoolean(inEcm)) {
