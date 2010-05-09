@@ -17,6 +17,7 @@
 
 package org.parandroid.sms.ui;
 
+import java.io.FileOutputStream;
 import java.security.PrivateKey;
 
 import org.parandroid.sms.R;
@@ -87,7 +88,10 @@ public class ConversationList extends ListActivity
             implements DraftCache.OnDraftChangedListener {
     private static final String TAG = "ConversationList";
     private static final boolean DEBUG = false;
+
     private static final boolean LOCAL_LOGV = Config.LOGV && DEBUG;
+    
+    private static final String FIRST_LAUNCH_FILE = "firstParandroidLaunch"; 
 
     private static final int THREAD_LIST_QUERY_TOKEN = 1701;
     private static final int SEARCH_TOKEN            = 1702;
@@ -153,6 +157,11 @@ public class ConversationList extends ListActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if(firstParandroidLaunch()) {
+            Intent helpIntent = new Intent(this, HelpActivity.class);
+            startActivity(helpIntent);
+        }
+        
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.conversation_list_screen);
 
@@ -181,50 +190,29 @@ public class ConversationList extends ListActivity
         }
 
         handleCreationIntent(getIntent());
-
-//        AlertDialog.Builder generateKeypairSuccessDialogBuilder = new AlertDialog.Builder(this);
-//    	generateKeypairSuccessDialogBuilder.setMessage(getText(R.string.generated_keypair_success))
-//    			.setTitle(getText(R.string.generate_keypair_title))
-//    			.setCancelable(false)
-//    	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
-//    	           public void onClick(DialogInterface dialog, int id) {
-//    	                sendPublicKey();
-//    	           }
-//    	       })
-//    	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
-//    	           public void onClick(DialogInterface dialog, int id) {
-//    	                dialog.cancel();
-//    	           }
-//    	       });
-//    	
-//        generateKeypairSuccessDialog = generateKeypairSuccessDialogBuilder.create();
-//        
-//        if(!MessageEncryptionFactory.hasKeypair(this)){
-//        	AlertDialog.Builder generateKeypairDialogBuilder = new AlertDialog.Builder(this);
-//        	generateKeypairDialogBuilder.setMessage(getText(R.string.no_keypair_dialog))
-//        		   .setTitle(getText(R.string.generate_keypair_title))
-//        		   .setCancelable(false)
-//        	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
-//        	           public void onClick(DialogInterface dialog, int id) {
-//        	                generateFirstKeypair();
-//        	           }
-//        	       })
-//        	       .setNegativeButton(getText(R.string.no), new DialogInterface.OnClickListener() {
-//        	           public void onClick(DialogInterface dialog, int id) {
-//        	                dialog.cancel();
-//        	           }
-//        	       });
-//        	
-//        	AlertDialog alert = generateKeypairDialogBuilder.create();
-//        	alert.show();
-//        }
-        
-        if(!MessageEncryptionFactory.hasKeypair(this)) {
-            Intent helpIntent = new Intent(this, HelpActivity.class);
-            startActivity(helpIntent);
-        }
-
     }
+    
+    private boolean firstParandroidLaunch(){
+        try{
+            openFileInput(FIRST_LAUNCH_FILE);
+        }catch(Exception e){
+            Log.e(TAG,e.getMessage());
+            
+            // if this is the first launch, we touch the file
+            try {
+                FileOutputStream out = openFileOutput(FIRST_LAUNCH_FILE, MODE_PRIVATE);
+                out.write("".getBytes());
+                out.flush();
+                out.close();
+            } catch (Exception fileError){
+                // don't report exception
+            }
+            
+            return true;
+        }
+        return false;
+    }
+
 
     private void initListAdapter() {
         mListAdapter = new ConversationListAdapter(this, null, true, mCachingNameStore);
