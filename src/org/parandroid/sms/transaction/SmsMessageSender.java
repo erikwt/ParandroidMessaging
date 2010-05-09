@@ -24,16 +24,19 @@ import org.parandroid.sms.MmsConfig;
 import org.parandroid.sms.LogTag;
 import org.parandroid.sms.ParandroidSmsApp;
 import org.parandroid.sms.R;
+import org.parandroid.sms.ui.ComposeMessageActivity;
 import org.parandroid.sms.ui.MessageItem;
 import org.parandroid.sms.ui.MessagingPreferenceActivity;
 import org.parandroid.sms.ui.MessageUtils;
 import com.google.android.mms.MmsException;
 import com.google.android.mms.util.SqliteWrapper;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -63,6 +66,7 @@ public class SmsMessageSender implements MessageSender {
     private final long mThreadId;
     private long mTimestamp;
     private boolean mTryToEncrypt;
+    private boolean mSendingConfirmed = false;
 
     private static final String TAG = "ParandroidSmsMessageSender";
     
@@ -98,7 +102,7 @@ public class SmsMessageSender implements MessageSender {
         SmsManager smsManager = SmsManager.getDefault();
 
         for (int i = 0; i < mNumberOfDests; i++) {
-        	boolean isEncrypted = false;
+            boolean isEncrypted = false;
         	
         	byte[] encryptedMessage = null;
         	if(mTryToEncrypt && MessageEncryptionFactory.hasPublicKey(mContext, mDests[i])){
@@ -214,6 +218,16 @@ public class SmsMessageSender implements MessageSender {
         }
 
         return false;
+    }
+    
+    private int getFirstEncryptedDestIndex(){
+        for (int i = 0; i < mNumberOfDests; i++) {
+            if(mTryToEncrypt && MessageEncryptionFactory.hasPublicKey(mContext, mDests[i])){
+                return i;
+            }
+        }
+        
+        return -1;        
     }
     
     private Uri addToParandroidOutbox(int destIndex, String outboxText){
