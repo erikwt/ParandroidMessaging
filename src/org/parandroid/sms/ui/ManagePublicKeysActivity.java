@@ -1,5 +1,6 @@
 package org.parandroid.sms.ui;
 
+import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 
 import android.app.NotificationManager;
@@ -16,11 +17,32 @@ import android.widget.TextView;
 
 public class ManagePublicKeysActivity extends TabActivity {
 	
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(resultCode == RESULT_OK){
+			init();
+		}else{
+			finish();
+		}
+	}
+	
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
+	    
 	    setContentView(R.layout.public_key_manager_activity);
 	    setTitle(R.string.menu_manage_public_keys);
-
+	    
+	    init();
+	}
+	
+	private void init(){
+		if(!MessageEncryptionFactory.isAuthenticated()){
+	    	Intent i = new Intent(this, AuthenticateActivity.class);
+	    	startActivityForResult(i, 0);
+	    	return;
+	    }
+	 
 	    Resources res = getResources();
 	    TabHost tabHost = getTabHost();
 	    TabHost.TabSpec spec;
