@@ -3,7 +3,6 @@ package org.parandroid.sms.transaction;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.parandroid.encoding.Base64Coder;
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ui.EncryptedMessageNotificationActivity;
@@ -36,7 +35,7 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 
 	private static final String TAG = "Parandroid EncryptedMessageReceiver";
 
-	private static HashMap<Integer, HashMap<Integer, byte[]>> messageStore = new HashMap<Integer, HashMap<Integer, byte[]>>();
+	private static HashMap<String, HashMap<Integer, HashMap<Integer, byte[]>>> messageMap = new HashMap<String, HashMap<Integer, HashMap<Integer, byte[]>>>();
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -47,35 +46,53 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 
         SmsMessage[] messages = Intents.getMessagesFromIntent(intent);        
         SmsMessage message = messages[0];
+        String sender = message.getOriginatingAddress();
                 
         byte[] data = message.getUserData();
-        
-        int count = data[0];
-        int totalMessages = data[1];
-        int msgId = data[2];
-                
-        if(!messageStore.containsKey(msgId)){
-        	HashMap<Integer, byte[]> messageParts = new HashMap<Integer, byte[]>();
-        	messageStore.put(msgId, messageParts);
+        if(data.length < 3){
+        	Log.e(TAG, "Encrypted message too short: '" + data + "'");
+        	return;
         }
         
-        HashMap<Integer, byte[]> messageParts = messageStore.get(msgId);
+        int protocolVersion = data[0];
+        int currentMessage = data[1] >> 4;
+        int totalMessages = data[1] & 15;
+        int messageId = data[2];
+        
+        Log.i(TAG, "Message header:\nProtocol version: " + protocolVersion + " (" + (Integer.toBinaryString(protocolVersion)) + ")");
+        Log.i(TAG, "Message count: " + currentMessage + " (" + (Integer.toBinaryString(currentMessage)) + ")");
+        Log.i(TAG, "Total messages: " + totalMessages + " (" + (Integer.toBinaryString(totalMessages)) + ")");
+        Log.i(TAG, "Message ID: " + messageId + " (" + (Integer.toBinaryString(messageId)) + ")");
+
+        HashMap<Integer, HashMap<Integer, byte[]>> messageStore;
+        if(messageMap.containsKey(sender)) messageStore = messageMap.get(sender);
+        else{
+            messageStore = new HashMap<Integer, HashMap<Integer, byte[]>>();
+            messageMap.put(sender, messageStore);
+        }
+
+        if(!messageStore.containsKey(messageId)){
+        	HashMap<Integer, byte[]> messageParts = new HashMap<Integer, byte[]>();
+        	messageStore.put(messageId, messageParts);
+        }
+        
+        HashMap<Integer, byte[]> messageParts = messageStore.get(messageId);
         
         byte[] part = new byte[data.length - 3];
         System.arraycopy(data, 3, part, 0, part.length);
         
-        messageParts.put(count, part);
+        messageParts.put(currentMessage, part);
         
         if(messageParts.size() == totalMessages){
-            Log.v(TAG, "Received all parts of message: " + msgId);
-        	handleMultipartDataMessage(context, messages, msgId);
-        	messageStore.remove(msgId);
+            Log.v(TAG, "Received all parts of message: " + messageId);
+        	handleMultipartDataMessage(context, sender, messages, messageId);
+        	messageStore.remove(messageId);
         }
 	}
 	
 	
-	private void handleMultipartDataMessage(Context context, SmsMessage[] messages, int msgId){
-		HashMap<Integer, byte[]> messageParts = messageStore.get(msgId);
+	private void handleMultipartDataMessage(Context context, String sender, SmsMessage[] messages, int messageId){
+		HashMap<Integer, byte[]> messageParts = messageMap.get(sender).get(messageId);
 		
 		int len = 0, offset = 0;
 		ArrayList<byte[]> dataParts = new ArrayList<byte[]>();
@@ -96,10 +113,10 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		String notificationString = context.getString(R.string.received_encrypted_message);
 		
-		long threadId = Threads.getOrCreateThreadId(context, messages[0].getOriginatingAddress());
+		long threadId = Threads.getOrCreateThreadId(context, sender);
 		insertEncryptedMessage(context, messages, body, threadId);
 		
-		int notificationId = MessageUtils.getNotificationId(messages[0].getOriginatingAddress());
+		int notificationId = MessageUtils.getNotificationId(sender);
 
 		Intent targetIntent = new Intent(context, EncryptedMessageNotificationActivity.class);
 		targetIntent.putExtra("notificationId", notificationId);

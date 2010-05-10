@@ -43,7 +43,7 @@ import org.parandroid.sms.data.WorkingMessage;
 import org.parandroid.sms.data.WorkingMessage.MessageStatusListener;
 import org.parandroid.sms.model.SlideshowModel;
 import org.parandroid.sms.transaction.MessagingNotification;
-import org.parandroid.sms.transaction.MultipartDataMessageSender;
+import org.parandroid.sms.transaction.MultipartDataMessage;
 import org.parandroid.sms.ui.MessageUtils.ResizeImageResultCallback;
 import org.parandroid.sms.ui.RecipientsEditor.RecipientContextMenuInfo;
 import org.parandroid.sms.util.SendingProgressTokenManager;
@@ -2942,7 +2942,7 @@ public class ComposeMessageActivity extends Activity
 	    	
 	    	try {
 	    	    byte[] encryptedMessage = MessageEncryption.encrypt(this, sendEncryptedDest, mWorkingMessage.getText().toString());
-    	        int numEncryptedMessages = (int) Math.ceil(encryptedMessage.length / MultipartDataMessageSender.MAX_BYTES) + 1;
+    	        int numEncryptedMessages = (int) Math.ceil(encryptedMessage.length / MultipartDataMessage.MAX_BYTES) + 1;
     	        
     	        
     	        // only show the dialog if the number of messages is larger than one
