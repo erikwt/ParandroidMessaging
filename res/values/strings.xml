@@ -789,6 +789,8 @@
     <string name="forget_on_sleep_title">Forget on sleep</string>
     <string name="close_on_sleep">Close a authenticated conversation when the phone enters sleep-mode</string>
     <string name="close_on_sleep_title">Close on sleep</string>
+    <string name="show_confirm_dialog">Ask for confirmation when encryption leads to more messages</string>
+    <string name="show_confirm_dialog_title">Ask for confirmation</string>
     
     <string name="help_title">Help</string>
     

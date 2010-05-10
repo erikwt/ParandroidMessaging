@@ -70,6 +70,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -86,6 +87,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 import android.os.SystemProperties;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract.Contacts;
 import android.provider.DrmStore;
 import android.provider.MediaStore;
@@ -2931,7 +2933,16 @@ public class ComposeMessageActivity extends Activity
 	        	return;
 	    	}
 	    	
-	    	// show dialog for confirmation
+	    	// check preferences if the user wants to see the dialog
+	    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean showConfirmDialog = prefs.getBoolean("pref_key_show_confirm_dialog", true);
+
+            if(!showConfirmDialog){
+                doSendMessage(bCheckEcmMode, tryToEncrypt);
+                return;
+            }
+	    	
+	    	// maybe show dialog for confirmation
 	    	String sendEncryptedDest = "";
 	    	for(String number : getRecipientNumbers()){
 	    	    if(MessageEncryptionFactory.hasPublicKey(this, number)){
@@ -2945,8 +2956,17 @@ public class ComposeMessageActivity extends Activity
     	        int numEncryptedMessages = (int) Math.ceil(encryptedMessage.length / MultipartDataMessage.MAX_BYTES) + 1;
     	        
     	        
-    	        // only show the dialog if the number of messages is larger than one
-    	        if(numEncryptedMessages == 1){
+    	        int[] textLengthParams = SmsMessage.calculateLength(mWorkingMessage.getText().toString(), false);
+                /* SmsMessage.calculateLength returns an int[4] with:
+                 *   int[0] being the number of SMS's required,
+                 *   int[1] the number of code units used,
+                 *   int[2] is the number of code units remaining until the next message.
+                 *   int[3] is the encoding type that should be used for the message.
+                 */
+
+    	        // we dont need to show the dialog if the encrypted messages takes
+    	        // up the same amount of messages as the plain text
+    	        if(numEncryptedMessages == textLengthParams[0]){
     	            doSendMessage(bCheckEcmMode, tryToEncrypt);
     	            return;
     	        }
@@ -2956,6 +2976,7 @@ public class ComposeMessageActivity extends Activity
 
     	        AlertDialog.Builder confirmDialogBuilder = new AlertDialog.Builder(this);
     	        confirmDialogBuilder.setMessage(dialogText)
+    	            .setIcon(android.R.drawable.ic_dialog_alert)
     	            .setTitle(getText(R.string.confirm_send_msg))
     	            .setCancelable(false)
     	            .setPositiveButton(
