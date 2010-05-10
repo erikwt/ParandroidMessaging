@@ -3192,8 +3192,17 @@ public class ComposeMessageActivity extends Activity
                 byte[] encryptedMessage = MessageEncryption.encrypt(this, sendEncryptedDest, mMsgText.toString());
                 int numEncryptedMessages = (int) Math.ceil(encryptedMessage.length / MultipartDataMessageSender.MAX_BYTES) + 1;
 
-                // only show the dialog if the number of messages is larger than one
-                if (numEncryptedMessages == 1) {
+                int[] textLengthParams = SmsMessage.calculateLength(mMsgText.toString(), false);
+                /* SmsMessage.calculateLength returns an int[4] with:
+                 *   int[0] being the number of SMS's 
+                 *   int[1] the number of code units used,
+                 *   int[2] is the number of code units remaining until the next message.
+                 *   int[3] is the encoding type that should be used for the message.
+                 */
+                
+                // we dont need to show the dialog if the encrypted messages takes
+                // up the same amount of messages as the plain text
+                if(numEncryptedMessages == textLengthParams[0]){
                     doSendMessage(tryToEncrypt, dests);
                     return;
                 }
@@ -3203,8 +3212,11 @@ public class ComposeMessageActivity extends Activity
                         numEncryptedMessages);
 
                 AlertDialog.Builder confirmDialogBuilder = new AlertDialog.Builder(this);
-                confirmDialogBuilder.setMessage(dialogText).setTitle(
-                        getText(R.string.confirm_send_msg)).setCancelable(false).setPositiveButton(
+                confirmDialogBuilder.setMessage(dialogText)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle(getText(R.string.confirm_send_msg))
+                        .setCancelable(false)
+                        .setPositiveButton(
                         getText(R.string.yes), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // when clicking yes, simply dismiss the dialog,
