@@ -332,6 +332,24 @@ public abstract class MessageEncryptionFactory {
     }
     
     
+    public static int getPublicKeyId(Context context, String number) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException{    	
+    	SQLiteDatabase keyRing = openKeyring(context);
+    	Cursor c = keyRing.query(PUBLIC_KEY_TABLE, null, "accepted=1", null, null, null, null);
+    	
+    	while(c.moveToNext()){
+    		String n = c.getString(c.getColumnIndex("number"));
+    		if(PhoneNumberUtils.compare(number, n)){
+    	    	int id = c.getInt(c.getColumnIndex("_ID"));
+    			c.close();
+    	    	keyRing.close();
+    			return id;
+    		}
+    	}
+    	
+    	return -1;
+    }
+    
+    
     /**
      * Save a public key
      * 
