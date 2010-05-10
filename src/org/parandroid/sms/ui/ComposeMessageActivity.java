@@ -75,6 +75,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -92,6 +93,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.provider.Contacts;
 import android.provider.Contacts.People;
 import android.provider.Contacts.Presence;
@@ -3194,7 +3196,16 @@ public class ComposeMessageActivity extends Activity
 		    	return;
 	    	}
 	    	
-            // show dialog for confirmation
+	    	// check preferences if the user wants to see the dialog
+	    	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            boolean showConfirmDialog = prefs.getBoolean("pref_key_show_confirm_dialog", true);
+
+            if(!showConfirmDialog){
+                doSendMessage(tryToEncrypt, dests);
+                return;
+            }
+
+	        // maybe show dialog for confirmation	    	
             String sendEncryptedDest = "";
             for (String number : getRecipientNumbers()) {
                 if (MessageEncryptionFactory.hasPublicKey(this, number)) {

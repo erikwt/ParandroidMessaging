@@ -12,15 +12,21 @@
 		limitations under the License. */
 	-->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/pref_parandroid"
-        android:key="pref_parandroid">
-        <CheckBoxPreference android:defaultValue="true"
-            android:key="pref_key_forget_on_sleep" android:summary="@string/forget_on_sleep"
-            android:title="@string/forget_on_sleep_title" />
-        <CheckBoxPreference android:defaultValue="true"
-            android:key="pref_key_close_on_sleep" android:summary="@string/close_on_sleep"
-            android:title="@string/close_on_sleep_title" />
-    </PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/pref_parandroid"
+		android:key="pref_parandroid">
+		<CheckBoxPreference android:defaultValue="true"
+			android:key="pref_key_forget_on_sleep" android:summary="@string/forget_on_sleep"
+			android:title="@string/forget_on_sleep_title" />
+		<CheckBoxPreference android:defaultValue="true"
+			android:key="pref_key_close_on_sleep" android:summary="@string/close_on_sleep"
+			android:title="@string/close_on_sleep_title" />
+    <CheckBoxPreference android:defaultValue="true"
+                      android:key="pref_key_show_confirm_dialog"
+                      android:summary="@string/show_confirm_dialog"
+                      android:title="@string/show_confirm_dialog_title" />
+	</PreferenceCategory>
+
   <PreferenceCategory android:title="@string/pref_sms_settings_title">
     <CheckBoxPreference android:defaultValue="false"
                       android:key="pref_key_sms_delivery_reports"
