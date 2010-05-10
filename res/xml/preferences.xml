@@ -28,6 +28,10 @@
                       android:key="pref_key_close_on_sleep"
                       android:summary="@string/close_on_sleep"
                       android:title="@string/close_on_sleep_title" />
+    <CheckBoxPreference android:defaultValue="true"
+                      android:key="pref_key_show_confirm_dialog"
+                      android:summary="@string/show_confirm_dialog"
+                      android:title="@string/show_confirm_dialog_title" />
    </PreferenceCategory>
   <PreferenceCategory android:title="@string/pref_sms_storage_title"
                       android:key="pref_key_storage_settings">
