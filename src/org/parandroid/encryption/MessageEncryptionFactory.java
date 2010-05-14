@@ -34,6 +34,7 @@ import javax.crypto.spec.PBEParameterSpec;
 
 import org.parandroid.encoding.Base64Coder;
 import org.parandroid.sms.util.ContactInfoCache;
+import org.parandroid.sms.transaction.MultipartDataMessage;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -417,11 +418,9 @@ public abstract class MessageEncryptionFactory {
 	}
 	
 	public static void sendPublicKey(Context context, String number) throws IOException{
-	    SmsManager sm = SmsManager.getDefault();
-	    byte[] publicKey = getOwnPublicKey(context);
-	    String publicKeyEncoded = new String(Base64Coder.encode(publicKey));
-	    Log.i(TAG, "Sending public key base64-encoded '" + publicKeyEncoded + "' to " + number);
-	    sm.sendDataMessage(number, null, MessageEncryptionFactory.PUBLIC_KEY_PORT, publicKeyEncoded.getBytes(), null, null);
+		SmsManager sm = SmsManager.getDefault();
+		byte[] publicKey = getOwnPublicKey(context);
+		MultipartDataMessage.send(sm, number, PUBLIC_KEY_PORT, publicKey, null, null);
 	}
     
     /**

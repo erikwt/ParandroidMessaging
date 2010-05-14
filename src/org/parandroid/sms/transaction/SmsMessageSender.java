@@ -179,18 +179,18 @@ public class SmsMessageSender implements MessageSender {
                             " from SmsManager.sendMultipartTextMessage()");
                 }
         	} else {
-        		MultipartDataMessageSender.MAX_BYTES = 130;
+        		MultipartDataMessage.MAX_BYTES = 130;
         		boolean sent = false;
-        		while(!sent && MultipartDataMessageSender.MAX_BYTES > 100){
+        		while(!sent && MultipartDataMessage.MAX_BYTES > 100){
 	        		try {
 	            		PendingIntent sentIntent = sentIntents.isEmpty() ? null : sentIntents.get(0);
 	            		PendingIntent deliveryIntent = deliveryIntents.isEmpty() ? null : deliveryIntents.get(0);
 	
-	            		MultipartDataMessageSender.sendMultipartDataMessage(smsManager, mDests[i], MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT, encryptedMessage, sentIntent, deliveryIntent);
+	            		MultipartDataMessage.send(smsManager, mDests[i], MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT, encryptedMessage, sentIntent, deliveryIntent);
 	            		sent = true;
 	        		} catch (NullPointerException ex) {
-	        			MultipartDataMessageSender.MAX_BYTES--;
-	        			Log.e(TAG, "Failed sending message, going for lower maxbytes: " + MultipartDataMessageSender.MAX_BYTES);
+	        			MultipartDataMessage.MAX_BYTES--;
+	        			Log.e(TAG, "Failed sending message, going for lower maxbytes: " + MultipartDataMessage.MAX_BYTES);
 	        		}
         		}
         	}
