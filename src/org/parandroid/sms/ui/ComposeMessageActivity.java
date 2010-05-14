@@ -44,7 +44,7 @@ import org.parandroid.sms.model.TextModel;
 import org.parandroid.sms.transaction.MessageSender;
 import org.parandroid.sms.transaction.MessagingNotification;
 import org.parandroid.sms.transaction.MmsMessageSender;
-import org.parandroid.sms.transaction.MultipartDataMessageSender;
+import org.parandroid.sms.transaction.MultipartDataMessage;
 import org.parandroid.sms.transaction.SmsMessageSender;
 import org.parandroid.sms.ui.AttachmentEditor.OnAttachmentChangedListener;
 import org.parandroid.sms.ui.MessageUtils.ResizeImageResultCallback;
@@ -3216,7 +3216,7 @@ public class ComposeMessageActivity extends Activity
 
             try {
                 byte[] encryptedMessage = MessageEncryption.encrypt(this, sendEncryptedDest, mMsgText.toString());
-                int numEncryptedMessages = (int) Math.ceil(encryptedMessage.length / MultipartDataMessageSender.MAX_BYTES) + 1;
+                int numEncryptedMessages = (int) Math.ceil(encryptedMessage.length / MultipartDataMessage.MAX_BYTES) + 1;
 
                 int[] textLengthParams = SmsMessage.calculateLength(mMsgText.toString(), false);
                 /* SmsMessage.calculateLength returns an int[4] with:

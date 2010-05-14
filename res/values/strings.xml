@@ -598,9 +598,14 @@
         
         \n\nSee http://www.parandroid.org for more info.\nReleased under the Apache 2.0 open source license.
     </string>
+    
     <string name="parandroid_developers">
         Erik Wallentinsen
         \nJeffrey Klardie
+    </string>
+    
+    <string name="parandroid_send_public_key">
+        Please specify recipients to send your public key to.
     </string>
     
     <string name="menu_send_public_key">Send public key</string>

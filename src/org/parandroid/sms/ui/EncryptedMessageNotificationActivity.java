@@ -1,9 +1,12 @@
 package org.parandroid.sms.ui;
 
+import org.parandroid.sms.transaction.MessagingNotification;
+
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 public class EncryptedMessageNotificationActivity extends Activity {
@@ -18,9 +21,11 @@ public class EncryptedMessageNotificationActivity extends Activity {
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancel(i.getIntExtra("notificationId", MessageUtils.DEFAULT_NOTIFICATION_ID));
 
-		Intent targetIntent = new Intent(getApplicationContext(), ComposeMessageActivity.class);
-		targetIntent.putExtra("threadId", -1);
-		startActivity(targetIntent);
+		Intent clickIntent = MessagingNotification.getAppIntent();
+        clickIntent.setData(Uri.withAppendedPath(clickIntent.getData(), Long.toString(i.getLongExtra("threadId", -1))));
+        clickIntent.setAction(Intent.ACTION_VIEW);
+		
+		startActivity(clickIntent);
 		
 		finish();
 	}
