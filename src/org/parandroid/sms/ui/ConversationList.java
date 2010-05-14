@@ -187,6 +187,8 @@ public class ConversationList extends ListActivity
             mFilter = savedInstanceState.getString("filter");
             mQueryToken = savedInstanceState.getInt("query_token");
         }
+        
+        handleCreationIntent(getIntent());
        
     }
 
