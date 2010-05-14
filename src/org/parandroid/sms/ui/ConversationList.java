@@ -152,8 +152,6 @@ public class ConversationList extends ListActivity
 
     private Toast successToast, errorToast;
     private ProgressDialog dialog;
-    
-    private AlertDialog generateKeypairSuccessDialog;
 
 
     @Override
@@ -566,7 +564,6 @@ public class ConversationList extends ListActivity
 		try{
 			MessageEncryptionFactory.generateKeyPair(ConversationList.this);
 			generateKeypairProgressDialog.dismiss();
-			generateKeypairSuccessDialog.show();
 		} catch (Exception e) {
 			String message = "Error generating keypair: " + e.getMessage();
 			Log.e(TAG, message);

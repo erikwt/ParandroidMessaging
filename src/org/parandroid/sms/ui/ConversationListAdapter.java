@@ -63,7 +63,7 @@ public class ConversationListAdapter extends CursorAdapter {
         Threads.SNIPPET,                  // 5
         Threads.SNIPPET_CHARSET,          // 6
         Threads.ERROR,                    // 7
-        Threads.HAS_ATTACHMENT            // 8
+        //Threads.HAS_ATTACHMENT            // 8
     };
 
     static final int COLUMN_ID             = 0;
@@ -74,7 +74,7 @@ public class ConversationListAdapter extends CursorAdapter {
     static final int COLUMN_SNIPPET        = 5;
     static final int COLUMN_SNIPPET_CHARSET = 6;
     static final int COLUMN_ERROR          = 7;
-    static final int COLUMN_HAS_ATTACHMENT = 8;
+    //static final int COLUMN_HAS_ATTACHMENT = 8;
 
     static final String[] DRAFT_PROJECTION = new String[] {
         Threads._ID,                      // 0
@@ -220,7 +220,7 @@ public class ConversationListAdapter extends CursorAdapter {
                 read = cursor.getInt(COLUMN_READ) != 0;
                 error = cursor.getInt(COLUMN_ERROR) != 0;
                 messageCount = cursor.getInt(COLUMN_MESSAGE_COUNT);
-                hasAttachment = cursor.getInt(COLUMN_HAS_ATTACHMENT) != 0;
+                hasAttachment = false; //cursor.getInt(COLUMN_HAS_ATTACHMENT) != 0;
                 
                 cacheEntryInvalid = true;
 
