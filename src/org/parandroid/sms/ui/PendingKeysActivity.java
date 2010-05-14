@@ -130,6 +130,7 @@ public class PendingKeysActivity extends Activity {
             		 	.setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
             		 		public void onClick(DialogInterface dialog, int id) {
             		 			doOverwrite(ids[info.position]);
+             	        	   Toast.makeText(PendingKeysActivity.this, R.string.import_public_key_success, Toast.LENGTH_LONG).show();
             		 		}
             		 	}).setNegativeButton(PendingKeysActivity.this.getText(R.string.no), new DialogInterface.OnClickListener() {
             		 		public void onClick(DialogInterface dialog, int id) {
@@ -142,7 +143,7 @@ public class PendingKeysActivity extends Activity {
             		 overwriteAlert.show();
             	}else{
             		AlertDialog.Builder acceptPublicKeyDialogBuilder = new AlertDialog.Builder(this);
-            	    acceptPublicKeyDialogBuilder.setMessage(getText(R.string.accept_public_key))
+            	    acceptPublicKeyDialogBuilder.setMessage(getText(R.string.import_public_key_dialog))
             		   .setTitle(descriptions[info.position])
             		   .setCancelable(false)
             	       .setPositiveButton(getText(R.string.yes), new DialogInterface.OnClickListener() {
@@ -152,6 +153,7 @@ public class PendingKeysActivity extends Activity {
             	        	   cv.put("accepted", true);
             	        	   keyRing.update(MessageEncryptionFactory.PUBLIC_KEY_TABLE, cv, "_ID=" + ids[info.position], null);
             	        	   keyRing.close();
+            	        	   Toast.makeText(PendingKeysActivity.this, R.string.import_public_key_success, Toast.LENGTH_LONG).show();
             	        	   init();
             	           }
             	       })
