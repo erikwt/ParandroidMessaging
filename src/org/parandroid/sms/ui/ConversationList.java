@@ -333,7 +333,7 @@ public class ConversationList extends ListActivity
         		R.drawable.ic_manage_public_keys);
         
         menu.add(0, MENU_CHANGE_PASSWORD, 0, R.string.menu_change_password).setIcon(
-        		R.drawable.ic_generate_keypair);
+        		R.drawable.ic_change_password);
         
         menu.add(0, MENU_HELP, 0, R.string.menu_help).setIcon(
                 R.drawable.ic_gallery_video_overlay);
