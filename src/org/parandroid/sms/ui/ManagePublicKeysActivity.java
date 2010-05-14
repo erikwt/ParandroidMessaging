@@ -50,7 +50,7 @@ public class ManagePublicKeysActivity extends TabActivity {
 
 	    intent = new Intent().setClass(this, AcceptedKeysActivity.class);
 
-	    spec = tabHost.newTabSpec("accepted").setIndicator("Accepted", res.getDrawable(R.drawable.public_key_manager_tab)).setContent(intent);
+	    spec = tabHost.newTabSpec("accepted").setIndicator("Accepted", res.getDrawable(R.drawable.ic_accepted)).setContent(intent);
 	    tabHost.addTab(spec);
 
 	    intent = new Intent().setClass(this, PendingKeysActivity.class);
@@ -64,7 +64,7 @@ public class ManagePublicKeysActivity extends TabActivity {
 	    	tab = 1;
 	    }
 	    
-	    spec = tabHost.newTabSpec("pending").setIndicator("Pending", res.getDrawable(R.drawable.public_key_manager_tab)).setContent(intent);
+	    spec = tabHost.newTabSpec("pending").setIndicator("Pending", res.getDrawable(R.drawable.ic_pending)).setContent(intent);
 	    tabHost.addTab(spec);
 
 	    TabWidget tw = getTabWidget();
