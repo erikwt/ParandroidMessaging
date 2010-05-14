@@ -7,14 +7,17 @@ import org.parandroid.sms.data.ContactList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.animation.AccelerateInterpolator;
@@ -46,8 +49,7 @@ public class HelpActivity extends Activity implements OnClickListener {
     public static final int MENU_ABOUT               = 1;
     
     public static final int REQUEST_CODE_SET_FIRST_PASSWORD	= 0;
-
-	
+    
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,6 +128,7 @@ public class HelpActivity extends Activity implements OnClickListener {
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay(); 
 		switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 oldTouchValue = event.getX();
@@ -135,10 +138,12 @@ public class HelpActivity extends Activity implements OnClickListener {
                 float currentX = event.getX();
                 
                 if(oldTouchValue > currentX) {
-                	showNext();
+                	if(oldTouchValue - currentX > display.getWidth() / 4)
+                		showNext();
                     return true;
                 } else if(oldTouchValue < currentX){
-                	showPrevious();
+                	if(currentX - oldTouchValue > display.getWidth() / 4)
+                		showPrevious();
                     return true;
                 }
         }
@@ -204,7 +209,7 @@ public class HelpActivity extends Activity implements OnClickListener {
 	        if(childIndex == 0){
 	        	previousButton.setText(R.string.previous);
 	        }
-	        
+
 	        onViewChanged();
 		}
 	}
@@ -229,7 +234,7 @@ public class HelpActivity extends Activity implements OnClickListener {
 	        if(childIndex == viewFlipper.getChildCount()-1){
 	        	nextButton.setText(R.string.next);
 	        }
-	        
+
 	        onViewChanged();
 		}
 		

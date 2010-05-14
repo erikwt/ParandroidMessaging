@@ -723,14 +723,10 @@
     
     <string name="generate_new_keypair_dialog">Are you sure you want to generate a new keypair? You\'ll have to resend
     	your public key to the contacts you want to securely communicate with.</string>
-    <string name="no_keypair_dialog">You don\'t have a keypair yet. You need to have one to securely communicate
-    	with your contacts. Do you want to generate a keypair now?</string>
     <string name="generate_keypair_title">Generate keypair</string>
     <string name="generating_keypair">Generating keypair</string>
-    <string name="generated_keypair_success">Successfully generated keypair. You have to send your public key
-    	to the contacts that are also using Parandroid Messaging. Do you want to send your public key now? You can always
-    	send it later manually.</string>
     <string name="generated_keypair_failure">Failed generating keypair</string>
+    
     <string name="contact_name">Contact name</string>
     <string name="no_recipient">No recipient given</string>
     <string name="notify_tap_to_remove">Tap a recipient to remove</string>
@@ -738,7 +734,7 @@
     <string name="confirm_password">Confirm password</string>
     <string name="passwords_dont_match">Passwords don\'t match, try again</string>
     <string name="passwords_too_short">Password too short, minimal length is:</string>
-    <string name="wrong_password">Wrong password, try again. You have to change your password if you have updated from 0.9.1 or earlier.</string>
+    <string name="wrong_password">Wrong password, try again.</string>
     
     <string name="send_encrypted_to">Send encrypted to:</string>
     <string name="send_plain_to">Send plain to:</string>
@@ -752,9 +748,15 @@
     <string name="public_key">Parandroid public key</string>
     <string name="tap_to_accept">Tap the import icon to accept this public key.</string>
     <string name="import_public_key">Import public key</string>
-    <string name="import_public_key_dialog">Do you want to accept this public key from</string>
+    <string name="import_public_key_dialog">
+        Don\'t accept this public key if you were not expecting to receive one from this sender.
+        Are you sure you want to accept this public key from
+    </string>
     <string name="import_public_key_overwrite">Overwrite public key</string>
-    <string name="import_public_key_dialog_overwrite">Do you want to overwrite the current public key of</string>
+    <string name="import_public_key_dialog_overwrite">
+        Don\'t accept this public key if you were not expecting to receive one from this sender.
+        Are you sure you want to overwrite the current public key of
+    </string>
     <string name="import_public_key_success">Successfully imported public key.</string>
     <string name="import_public_key_failure">Error importing public key!</string>
     <string name="reencrypting_messages">Re-encrypting messages</string>
@@ -794,32 +796,35 @@
     
     <string name="help_title">Help</string>
     
-    <string name="help_intro_title">Parandroid help: \nwhat is this?</string>
+    <string name="help_intro_title">Parandroid Messaging\nWhat is this?</string>
     <string name="help_intro_text">
-        This is the parandroid help page. It provides some info about how parandroid works.
-        \n\nYou got here either because its the first time you lauch parandroid, or you clicked the help menu item.
-        \n\nClick next, or drag the screen to the left, to continue to the next section. 
+        This is the Parandroid Messaging help page. It provides some info about how Parandroid Messaging works.
+        \n\nYou got here either because its the first time you lauch Parandroid Messaging or you clicked the \'Help\' menu item.
+        \n\nClick next, or drag the screen to the left, to continue to the next section.
     </string>
     
     <string name="help_keypair_title">Public-key cryptography</string>
     <string name="help_keypair_text">
-        Parandroid uses public-key cryptography to encrypt messages.
+        Parandroid Messaging uses public-key cryptography to encrypt messages.
         \n\nIt involves a public and private key, which are mathematically related to each other, but cannot be derived from each other.
-        \n\nIt is assymetric: messages encrypted with a public key, can only be decrypted with the corresponding private key, and vice versa.
+        \n\nThe encryption is assymetric: Messages encrypted with a public key, can only be decrypted with the corresponding private key, and vice versa.
     </string>
     
     <string name="help_password_title">The private key</string>
     <string name="help_password_text">
         The private key is kept secret at all times.
-        \n\nIn parandroid, the private key is stored encrypted on the phone\'s internal memory.
+        \n\nIn Parandroid Messaging, the private key is stored encrypted on the phone\'s internal memory.
         \n\nThe private key can be unlocked by providing the correct password. If you provide a wrong password, encrypted messages will be unreadable.
-        \n\nIn \'Menu > Settings\' you can specify what to do when the phone enters sleep mode (like forget the password, or leave a conversation with encrypted messages).
+        \n\nIn \'Menu > Settings\' you can specify what to do when the phone enters sleep mode (like forget the password, or close a conversation with encrypted messages in it).
     </string>
     
     <string name="help_exchange_title">Exchanging public keys</string>
     <string name="help_exchange_text">
-        Before you are able to send encrypted messages you need to exchange public keys.
-        \n\nParandroid encrypts messages both with the senders private key, and the receivers public key.
+        Before two Parandroid Messaging users are able to send encrypted messages to each other, they need to exchange their public keys. You can send your public key to a contact
+        from \'Menu > Send public key\'.
+        \n\nWhen you receive a public key, you will be notified. You have to accept a certain public key in order to actually use it.
+        Make sure you trust the public key you receive when you choose to accept it.
+        \n\nParandroid Messaging encrypts messages both with the sender\'s private key, and the receivers public key.
         \n\nThe result:
         \n- Only the intended receiver can decrypt the message.
         \n- Nobody else can read or alter the message.
@@ -828,20 +833,20 @@
     
     <string name="help_send_title">Sending encrypted messages</string>
     <string name="help_send_text">
-        When you and your contact own each others public keys, you can send encrypted messages.
-        \n\nIf encryption to a receiver is possible, you\'ll see the parandroid icon when composing a message.
+        When you and your contact accepted each other\'s public keys, you can send encrypted messages.
+        \n\nIf encryption to a receiver is possible, you\'ll see the Parandroid Messaging icon when composing a message.
     </string>
     
-    <string name="help_generate_title">Lets get started!</string>
+    <string name="help_generate_title">Let\'s get started!</string>
     <string name="help_generate_text">
-        It seems that you don\'t have a public key yet, so lets start to generate one.
-        \n\nFirst you will have to enter the password you want to use. After that, a keypair will be generated.
+        It seems that you don\'t have a keypair key yet, so let\'s generate one now.
+        \n\nFirst, you will have to enter the password you want to use. After that, a keypair will be generated.
         \n\nClick next to generate your keypair!
     </string>
     
     <string name="help_more_title">Done! Now what?</string>
     <string name="help_more_1_text">
-        First, send your public key to some contacts (you can also do this later via the menu): 
+        First, send your public key to some contacts (you can always do this later from \'Menu > Send public key\').
     </string>
     <string name="help_more_2_text">
         \n\nAlso, visit http://www.parandroid.org!
@@ -850,6 +855,6 @@
 
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-    <string name="skip">Skip this</string>
+    <string name="skip">Skip</string>
 </resources>
 

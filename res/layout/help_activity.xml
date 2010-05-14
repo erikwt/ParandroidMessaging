@@ -37,11 +37,16 @@
                     android:gravity="center_vertical|center_horizontal"/>
             </LinearLayout>
             
-            <TextView
+            <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                
+                <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/help_intro_text"
                 android:padding="10px"/>
+           </ScrollView>
         </LinearLayout>
 
         <!-- Keypair help page -->
@@ -71,11 +76,16 @@
                     android:gravity="center_vertical|center_horizontal"/>
             </LinearLayout>
             
-            <TextView
+            <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                
+                <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/help_keypair_text"
                 android:padding="10px"/>
+           </ScrollView>
         </LinearLayout>
 
         <!-- Password help page -->
@@ -105,11 +115,17 @@
                     android:gravity="center_vertical|center_horizontal"/>
             </LinearLayout>
             
-            <TextView
+            <ScrollView
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/help_password_text"
-                android:padding="10px"/>
+                android:layout_height="wrap_content">
+	            
+	            <TextView
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content"
+	                android:text="@string/help_password_text"
+	                android:padding="10px"/>
+	                
+            </ScrollView>
         </LinearLayout>
         
         <!-- Exchange keys help page -->
@@ -139,11 +155,16 @@
                     android:gravity="center_vertical|center_horizontal"/>
             </LinearLayout>
             
-            <TextView
+            <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                
+                <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/help_exchange_text"
                 android:padding="10px"/>
+           </ScrollView>
         </LinearLayout>
         
         <!-- Send encrypted messages help page -->
@@ -173,12 +194,17 @@
                     android:gravity="center_vertical|center_horizontal"/>
             </LinearLayout>
             
-            <TextView
+            <ScrollView
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/help_send_text"
-                android:padding="10px"/>
+                android:layout_height="wrap_content">
                 
+                <TextView
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content"
+	                android:text="@string/help_send_text"
+	                android:padding="10px"/>
+            </ScrollView>
+	                
             <ImageView
                     android:src="@drawable/parandroid_encrypt_msg"
                     android:layout_width="wrap_content"
@@ -191,7 +217,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingRight="10px"
-                    android:paddingLeft="10px"/>
+	                    android:paddingLeft="10px"/>
                     
         </LinearLayout>
         
@@ -223,11 +249,16 @@
                     android:gravity="center_vertical|center_horizontal"/>
             </LinearLayout>
             
-            <TextView
+            <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                
+                <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/help_generate_text"
                 android:padding="10px"/>
+           </ScrollView>
                         
         </LinearLayout>
         
@@ -258,13 +289,18 @@
                     android:gravity="center_vertical|center_horizontal"/>
             </LinearLayout>
             
-            <TextView
+            <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                
+                <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/help_more_1_text"
                 android:autoLink="all"
                 android:linksClickable="true"  
                 android:padding="10px"/>
+           </ScrollView>
             
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:orientation="horizontal"
