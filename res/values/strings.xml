@@ -752,6 +752,8 @@
     <string name="show_confirm_dialog">Ask for confirmation when encryption leads to more messages</string>
     <string name="show_confirm_dialog_title">Ask for confirmation</string>
     
+    <string name="notify_tap_to_remove">Tap a recipient to remove</string>
+    
     <string name="help_title">Help</string>
     
     <string name="help_intro_title">Parandroid help: \nwhat is this?</string>
