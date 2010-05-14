@@ -406,9 +406,7 @@ public class ConversationList extends ListActivity
     		MessageEncryptionFactory.setAuthenticating(true);
     		oldPassword = MessageEncryptionFactory.getPassword();
     		
-    		// TODO: Change this to AuthenticateActivity in final version, only allowed in BETA!
-    		Intent intent = new Intent(this, BackwardsCompatibleAuthenticateActivity.class);
-//    		Intent intent = new Intent(this, AuthenticateActivity.class);
+    		Intent intent = new Intent(this, AuthenticateActivity.class);
         	startActivityForResult(intent, REQUEST_CODE_CHANGE_PASSWORD_AUTHENTICATE);
         	
         	return;
@@ -442,18 +440,9 @@ public class ConversationList extends ListActivity
 			MessageEncryptionFactory.writePrivateKey(this, pk);
 			oldPassword = null;
 			Toast.makeText(this, R.string.successfully_changed_password, Toast.LENGTH_LONG).show();
-		} catch (Exception e) {
-			try{
-				// TODO: Remove for final version!
-				PrivateKey pk = MessageEncryptionFactory.getPrivateKeyBackwardsCompatible(this);
-				MessageEncryptionFactory.setPassword(newPassword);
-				MessageEncryptionFactory.writePrivateKey(this, pk);
-				oldPassword = null;
-				Toast.makeText(this, R.string.successfully_changed_password, Toast.LENGTH_LONG).show();
-			}catch(Exception ex){
-				Toast.makeText(this, R.string.failed_changing_password, Toast.LENGTH_LONG).show();
-				e.printStackTrace();
-			}
+    	}catch(Exception e){
+			Toast.makeText(this, R.string.failed_changing_password, Toast.LENGTH_LONG).show();
+			e.printStackTrace();
 		}
     }
     
