@@ -705,12 +705,12 @@
     <string name="import_public_key">Import public key</string>
     <string name="import_public_key_dialog">
         Don\'t accept this public key if you were not expecting to receive one from this sender.
-        Are you sure you want to accept this public key from
+        Are you sure you want to accept this public key?
     </string>
     <string name="import_public_key_overwrite">Overwrite public key</string>
     <string name="import_public_key_dialog_overwrite">
-        Don\'t accept this public key if you were not expecting to receive one from this sender.
-        Are you sure you want to overwrite the current public key of
+        You already have a public key from this sender. Don\'t accept this public key if you were not expecting to receive one from this sender.
+        Are you sure you want to overwrite the current public key?
     </string>
     <string name="import_public_key_success">Successfully imported public key.</string>
     <string name="import_public_key_failure">Error importing public key!</string>
@@ -769,7 +769,7 @@
     <string name="help_keypair_text">
         Parandroid Messaging uses public-key cryptography to encrypt messages.
         \n\nIt involves a public and private key, which are mathematically related to each other, but cannot be derived from each other.
-        \n\nThe encryption is assymetric: Messages encrypted with a public key, can only be decrypted with the corresponding private key, and vice versa.
+        \n\nMessages encrypted with a public key, can only be decrypted with the corresponding private key, and vice versa.
     </string>
     
     <string name="help_password_title">The private key</string>
@@ -796,7 +796,7 @@
     <string name="help_send_title">Sending encrypted messages</string>
     <string name="help_send_text">
         When you and your contact accepted each other\'s public keys, you can send encrypted messages.
-        \n\nIf encryption to a receiver is possible, you\'ll see the Parandroid Messaging icon when composing a message.
+        \n\nIf encryption to a receiver is possible, you\'ll see the Parandroid Messaging icon when composing a message. You can tap on the icon to enable or disable encryption on the message you are composing.
     </string>
     
     <string name="help_generate_title">Let\'s get started!</string>
