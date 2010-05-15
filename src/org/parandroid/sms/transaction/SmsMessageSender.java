@@ -141,8 +141,6 @@ public class SmsMessageSender implements MessageSender {
             try {
             	if(isEncrypted){
             		String outboxText = new String(Base64Coder.encode(encryptedMessage));
-            		//TODO: remove this statement
-            		Log.i(TAG, "Trying to insert encrypted message into db");
             		addToParandroidOutbox(i, outboxText);
             		
             	} else {
@@ -150,8 +148,6 @@ public class SmsMessageSender implements MessageSender {
             			mMessageText, null, mTimestamp, requestDeliveryReport, mThreadId);
             	}
             } catch (SQLiteException e) {
-            	// TODO: remove this statement
-            	Log.e(TAG, "SQLiteException while inserting into outbox");
                 SqliteWrapper.checkSQLiteException(mContext, e);
             }
 
@@ -194,20 +190,13 @@ public class SmsMessageSender implements MessageSender {
                     throw new MmsException("SmsMessageSender.sendMessage: caught " + ex +
                             " from SmsManager.sendMultipartTextMessage()");
                 }
-        	} else {
-        		MultipartDataMessage.MAX_BYTES = 130;
-        		boolean sent = false;
-        		while(!sent && MultipartDataMessage.MAX_BYTES > 100){
-	        		try {
-	            		PendingIntent sentIntent = sentIntents.isEmpty() ? null : sentIntents.get(0);
-	            		PendingIntent deliveryIntent = deliveryIntents.isEmpty() ? null : deliveryIntents.get(0);
-	
-	            		MultipartDataMessage.send(smsManager, mDests[i], MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT, encryptedMessage, sentIntent, deliveryIntent);
-	            		sent = true;
-	        		} catch (NullPointerException ex) {
-	        			MultipartDataMessage.MAX_BYTES--;
-	        			Log.e(TAG, "Failed sending message, going for lower maxbytes: " + MultipartDataMessage.MAX_BYTES);
-	        		}
+        	} else {        		
+        		PendingIntent sentIntent = sentIntents.isEmpty() ? null : sentIntents.get(0);
+        		PendingIntent deliveryIntent = deliveryIntents.isEmpty() ? null : deliveryIntents.get(0);
+
+        		MultipartDataMessage m = new MultipartDataMessage(mDests[i], MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT, encryptedMessage, sentIntent, deliveryIntent);
+        		if(!m.send()){
+        			throw new MmsException("SmsMessageSender.sendMessage: Encrypted message not sent, got false from MultipartDataMessage.send()");
         		}
         	}
             

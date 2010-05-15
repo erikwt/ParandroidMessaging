@@ -133,7 +133,9 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener, 
 			addRecipientButton.setClickable(false);
 			for(String number : recipientNumbers){				
 				try{
-					MessageEncryptionFactory.sendPublicKey(this, number);
+					if(!MessageEncryptionFactory.sendPublicKey(this, number)){
+						throw new Exception("Failed sending public key, got false from MultipartMessage.send()");
+					}
 					Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  number, Toast.LENGTH_SHORT).show();
 				}catch(Exception e){
 					e.printStackTrace();

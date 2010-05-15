@@ -1,5 +1,6 @@
 package org.parandroid.sms.transaction;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.parandroid.encoding.Base64Coder;
@@ -23,30 +24,69 @@ public class MultipartDataMessage {
     private static final int ID_LENGTH = 255;
     private static final int PROTOCOL_VERSION = 0;
 
-	public static short MAX_BYTES = 140;
-	
     private static HashMap<String, Integer> messageIds = new HashMap<String, Integer>();
 
-	public static void send(SmsManager smsManager, String dest, short port, byte[] message, PendingIntent sentIntent, PendingIntent deliveryIntent){
-		message = new String(Base64Coder.encode(message)).getBytes();
-		int rest = message.length % MAX_BYTES;
-		int numMessages = message.length / MAX_BYTES + (rest == 0 ? 0 : 1);
+	public static final short HEADER_LENGTH 	= 3;
+	public static final short MESSAGE_LENGTH 	= 130;
+	
+	private ArrayList<byte[]> parts;
+	private SmsManager smsManager;
+	private String destination;
+	private short port;
+	private PendingIntent sentIntent;
+	private PendingIntent deliveryIntent;
+    
+    public MultipartDataMessage(String destination, short port, byte[] message, PendingIntent sentIntent, PendingIntent deliveryIntent){
+    	smsManager = SmsManager.getDefault();
+    	parts = new ArrayList<byte[]>();
+    	
+    	this.destination = destination;
+    	this.port = port;
+    	this.sentIntent = sentIntent;
+    	this.deliveryIntent = deliveryIntent;
+    	
+    	split(message);
+    }
+    
+    private void split(byte[] message){
+    	message = new String(Base64Coder.encode(message)).getBytes();
+		int rest = message.length % MESSAGE_LENGTH;
+		int numMessages = message.length / MESSAGE_LENGTH + (rest == 0 ? 0 : 1);
         
         int messageId = 0;
-		if(messageIds.containsKey(dest)) messageId = (messageIds.get(dest) + 1) % ID_LENGTH;
-        messageIds.put(dest, messageId);
+		if(messageIds.containsKey(destination)) messageId = (messageIds.get(destination) + 1) % ID_LENGTH;
+        messageIds.put(destination, messageId);
 		
 		for(int i = 0; i < numMessages; i++){
 			boolean last = i == numMessages - 1;
+			byte[] part = new byte[HEADER_LENGTH + ((!last || rest == 0) ? MESSAGE_LENGTH : rest)];
 			
-			byte[] part = new byte[3 + ((!last || rest == 0) ? MAX_BYTES : rest)];
+			// Construct header: see class comments
 			part[0] = new Integer(PROTOCOL_VERSION).byteValue();
 			part[1] = new Integer((numMessages - i - 1) << 4 | numMessages).byteValue();
 			part[2] = new Integer(messageId).byteValue();
 			
-			System.arraycopy(message, i * MAX_BYTES, part, 3, part.length - 3);
+			// Concat header and message part
+			System.arraycopy(message, i * MESSAGE_LENGTH, part, HEADER_LENGTH, part.length - HEADER_LENGTH);
 			
-			smsManager.sendDataMessage(dest, null, port, part, sentIntent, deliveryIntent);
+			parts.add(part);
 		}
+    }
+    
+    public int getPartCount(){
+    	return parts.size();
+    }
+    
+	public boolean send(){
+		for(byte[] part : parts){
+			try{
+				smsManager.sendDataMessage(destination, null, port, part, sentIntent, deliveryIntent);
+			}catch(Exception e){
+				e.printStackTrace();
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }

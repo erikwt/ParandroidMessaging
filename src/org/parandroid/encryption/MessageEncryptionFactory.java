@@ -396,10 +396,10 @@ public abstract class MessageEncryptionFactory {
 	}
 	
 	
-	public static void sendPublicKey(Context context, String number) throws IOException{
-		SmsManager sm = SmsManager.getDefault();
+	public static boolean sendPublicKey(Context context, String number) throws IOException{
 		byte[] publicKey = getOwnPublicKey(context);
-		MultipartDataMessage.send(sm, number, PUBLIC_KEY_PORT, publicKey, null, null);
+		MultipartDataMessage m = new MultipartDataMessage(number, PUBLIC_KEY_PORT, publicKey, null, null);
+		return m.send();
 	}
 	
     

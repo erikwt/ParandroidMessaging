@@ -207,7 +207,7 @@ public class ComposeMessageActivity extends Activity
     private static final int MENU_LOCK_MESSAGE          = 28;
     private static final int MENU_UNLOCK_MESSAGE        = 29;
     private static final int MENU_COPY_TO_DRM_PROVIDER  = 30;
-    private static final int MENU_SEND_PUBLIC_KEY  = 31;
+    private static final int MENU_SEND_PUBLIC_KEY  		= 31;
 
     private static final int RECIPIENTS_MAX_LENGTH = 312;
     private static final int MESSAGE_LIST_QUERY_TOKEN = 9527;
@@ -2953,7 +2953,8 @@ public class ComposeMessageActivity extends Activity
 	    	
 	    	try {
 	    	    byte[] encryptedMessage = MessageEncryption.encrypt(this, sendEncryptedDest, mWorkingMessage.getText().toString());
-    	        int numEncryptedMessages = (int) Math.ceil(encryptedMessage.length / MultipartDataMessage.MAX_BYTES) + 1;
+    	        MultipartDataMessage m = new MultipartDataMessage(null, (short) 0, encryptedMessage, null, null);
+	    	    int numEncryptedMessages = m.getPartCount();
     	        
     	        
     	        int[] textLengthParams = SmsMessage.calculateLength(mWorkingMessage.getText().toString(), false);
