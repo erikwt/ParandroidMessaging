@@ -3204,6 +3204,7 @@ public class ComposeMessageActivity extends Activity
                 doSendMessage(tryToEncrypt, dests);
                 return;
             }
+<<<<<<< HEAD
 
 	        // maybe show dialog for confirmation	    	
             String sendEncryptedDest = "";
@@ -3216,10 +3217,28 @@ public class ComposeMessageActivity extends Activity
 
             try {
                 byte[] encryptedMessage = MessageEncryption.encrypt(this, sendEncryptedDest, mMsgText.toString());
-    	        MultipartDataMessage m = new MultipartDataMessage(null, (short) 0, encryptedMessage, null, null);
-	    	    int numEncryptedMessages = m.getPartCount();
+                int numEncryptedMessages = (int) Math.ceil(encryptedMessage.length / MultipartDataMessage.MAX_BYTES) + 1;
 
                 int[] textLengthParams = SmsMessage.calculateLength(mMsgText.toString(), false);
+=======
+	    	
+	    	// maybe show dialog for confirmation
+	    	String sendEncryptedDest = "";
+	    	for(String number : getRecipientNumbers()){
+	    	    if(MessageEncryptionFactory.hasPublicKey(this, number)){
+	    	        sendEncryptedDest = number;
+	    	        continue;
+	    	    }
+	    	}
+	    	
+	    	try {
+	    	    byte[] encryptedMessage = MessageEncryption.encrypt(this, sendEncryptedDest, mWorkingMessage.getText().toString());
+    	        MultipartDataMessage m = new MultipartDataMessage(null, (short) 0, encryptedMessage, null, null);
+	    	    int numEncryptedMessages = m.getPartCount();
+    	        
+    	        
+    	        int[] textLengthParams = SmsMessage.calculateLength(mWorkingMessage.getText().toString(), false);
+>>>>>>> 5c508df... Added encrypted message sms-count and return if a message is sent or not
                 /* SmsMessage.calculateLength returns an int[4] with:
                  *   int[0] being the number of SMS's 
                  *   int[1] the number of code units used,

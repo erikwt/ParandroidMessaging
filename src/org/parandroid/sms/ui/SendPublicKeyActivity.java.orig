@@ -61,6 +61,7 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener, 
         recipientList.setAdapter(recipientAdapter);
         recipientList.setOnItemClickListener(this);
     }
+<<<<<<< HEAD
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -133,9 +134,7 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener, 
             addRecipientButton.setClickable(false);
             for(String number : recipientNumbers){              
                 try{
-					if(!MessageEncryptionFactory.sendPublicKey(this, number)){
-						throw new Exception("Failed sending public key, got false from MultipartMessage.send()");
-					}
+                    MessageEncryptionFactory.sendPublicKey(this, number);
                     Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  number, Toast.LENGTH_SHORT).show();
                 }catch(Exception e){
                     e.printStackTrace();
@@ -146,6 +145,90 @@ public class SendPublicKeyActivity extends Activity implements OnClickListener, 
             finish();
         }
     }
+=======
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(resultCode != RESULT_OK){
+			Log.i(TAG, "onActivityResult: resultCode not RESULT_OK. requestCode/resultcode: " + requestCode + "/" + resultCode);
+			return;
+		}
+		
+		switch(requestCode){
+		case REQUEST_SELECTED_CONTACT:
+			Uri uri = data.getData();
+			Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+			
+			if(cursor.moveToFirst()){
+				int contactId = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+				String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+				
+				Cursor privateCursor = getContentResolver().query(
+						ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+						NUMBER_PROJECTION,
+						ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=" + contactId,
+						null,
+						null);
+				
+				if(privateCursor.moveToFirst()){
+					do{
+						String number = privateCursor.getString(privateCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+						
+						recipientLabels.add(name + " <" + number + ">");
+						recipientNumbers.add(number);
+					}while(privateCursor.moveToNext());
+					onDataSetChanged();
+				}else{
+					Toast.makeText(this, R.string.no_number_for_contact, Toast.LENGTH_SHORT).show();
+				}
+			}else{
+				Toast.makeText(this, R.string.unsupported_contact, Toast.LENGTH_SHORT).show();
+			}
+			break;
+		}
+	}
+	
+	private void onDataSetChanged(){
+		if(recipientNumbers.size() == 0){
+			sendButton.setClickable(false);
+			sendButton.setText(getString(R.string.send));
+			
+			noRecipient.setVisibility(View.VISIBLE);
+			tapToRemove.setVisibility(View.GONE);
+		}else{
+			sendButton.setClickable(true);
+			sendButton.setText(getString(R.string.send) + " (" + recipientNumbers.size() + ")");
+			
+			noRecipient.setVisibility(View.GONE);
+			tapToRemove.setVisibility(View.VISIBLE);
+		}
+				
+		recipientAdapter.notifyDataSetChanged();
+	}
+	
+	public void onClick(View v) {		
+		if(v.equals(addRecipientButton)){
+			Intent i = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+			startActivityForResult(i, REQUEST_SELECTED_CONTACT);
+		}else if(v.equals(sendButton)){
+			sendButton.setClickable(false);
+			addRecipientButton.setClickable(false);
+			for(String number : recipientNumbers){				
+				try{
+					if(!MessageEncryptionFactory.sendPublicKey(this, number)){
+						throw new Exception("Failed sending public key, got false from MultipartMessage.send()");
+					}
+					Toast.makeText(this, getText(R.string.send_public_key_success) + " " +  number, Toast.LENGTH_SHORT).show();
+				}catch(Exception e){
+					e.printStackTrace();
+					Toast.makeText(this, getText(R.string.send_public_key_failure) + " " +  number, Toast.LENGTH_LONG).show();
+				}
+			}
+			
+			finish();
+		}
+	}
+>>>>>>> 5c508df... Added encrypted message sms-count and return if a message is sent or not
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         recipientLabels.remove(position);

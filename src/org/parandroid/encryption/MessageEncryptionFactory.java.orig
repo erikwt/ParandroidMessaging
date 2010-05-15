@@ -395,7 +395,13 @@ public abstract class MessageEncryptionFactory {
 		return true;
 	}
 	
+<<<<<<< HEAD
+	public static void sendPublicKey(Context context, String number) throws IOException{
+		SmsManager sm = SmsManager.getDefault();
+=======
+	
 	public static boolean sendPublicKey(Context context, String number) throws IOException{
+>>>>>>> 5c508df... Added encrypted message sms-count and return if a message is sent or not
 		byte[] publicKey = getOwnPublicKey(context);
 		MultipartDataMessage m = new MultipartDataMessage(number, PUBLIC_KEY_PORT, publicKey, null, null);
 		return m.send();
