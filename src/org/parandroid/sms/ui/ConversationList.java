@@ -153,7 +153,6 @@ public class ConversationList extends ListActivity
     private Toast successToast, errorToast;
     private ProgressDialog dialog;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
