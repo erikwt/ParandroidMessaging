@@ -56,6 +56,8 @@ public abstract class MessageEncryptionFactory {
 	protected static final String KEY_EXCHANGE_PROTOCOL = "DH";
 	protected static final String ENCRYPTION_ALGORITHM = "AES";
 	protected static final String PRIVATE_KEY_ENCRYPTION_ALGORITHM = "PBEWithMD5AndDES";
+	
+	protected static final int SECRET_KEY_LENGTH = 24;
 
 	public static final String PUBLIC_KEY_DATABASE = "keyring";
 	public static final String PUBLIC_KEY_TABLE = "publickeys";
@@ -76,7 +78,7 @@ public abstract class MessageEncryptionFactory {
 	 * @see http://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange
 	 */
 	private static final BigInteger G = new BigInteger("2");
-	private static final BigInteger P = new BigInteger("23182371893214465678917756685478547584564464564564564561231237867864534675815");
+	private static final BigInteger P = new BigInteger("9289986504414644358097953743225136849757607686008190055292886218364533315560867997658782522702215600927448569831496872430051834791379663335482694978773549");
 	
 	
 	/**
@@ -139,8 +141,12 @@ public abstract class MessageEncryptionFactory {
     	KeyAgreement ka = KeyAgreement.getInstance(KEY_EXCHANGE_PROTOCOL);
         ka.init(privateKey);
         ka.doPhase(publicKey, true);
-        
+                
         SecretKey secretKey = ka.generateSecret(ENCRYPTION_ALGORITHM);
+        byte[] secreyKeyBytes = secretKey.getEncoded();
+        
+        
+        
         return secretKey; 
     }
     

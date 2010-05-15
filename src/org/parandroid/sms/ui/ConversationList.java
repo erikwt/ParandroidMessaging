@@ -118,8 +118,6 @@ public class ConversationList extends ListActivity
     private CharSequence mTitle;
     private SharedPreferences mPrefs;
     private Handler mHandler;
-    
-    private AlertDialog generateKeypairSuccessDialog;
 
     static private final String CHECKED_MESSAGE_LIMITS = "checked_message_limits";
     
@@ -576,7 +574,6 @@ public class ConversationList extends ListActivity
 		try{
 			MessageEncryptionFactory.generateKeyPair(ConversationList.this);
 			generateKeypairProgressDialog.dismiss();
-			generateKeypairSuccessDialog.show();
 		} catch (Exception e) {
 			String message = "Error generating keypair: " + e.getMessage();
 			Log.e(TAG, message);
