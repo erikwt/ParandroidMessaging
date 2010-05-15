@@ -9,8 +9,8 @@ import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
-import org.parandroid.encoding.Base64Coder;
 import org.parandroid.sms.R;
 
 import android.content.Context;
@@ -40,8 +40,9 @@ public abstract class MessageEncryption {
 		SecretKey secretKey = MessageEncryptionFactory.generateSecretKey(privateKey, publicKey);
 		
 		Cipher cipher = Cipher.getInstance(MessageEncryptionFactory.ENCRYPTION_ALGORITHM);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-
+		SecretKeySpec secreyKeySpec = new SecretKeySpec(secretKey.getEncoded(), 0, MessageEncryptionFactory.SECRET_KEY_LENGTH, MessageEncryptionFactory.ENCRYPTION_ALGORITHM);
+		cipher.init(Cipher.ENCRYPT_MODE, secreyKeySpec);
+        
         byte[] cipherText = cipher.doFinal(text.getBytes());
 		
 		return cipherText;
@@ -56,7 +57,8 @@ public abstract class MessageEncryption {
 		SecretKey secretKey = MessageEncryptionFactory.generateSecretKey(privateKey, publicKey);
 		
 		Cipher cipher = Cipher.getInstance(MessageEncryptionFactory.ENCRYPTION_ALGORITHM);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+		SecretKeySpec secreyKeySpec = new SecretKeySpec(secretKey.getEncoded(), 0, MessageEncryptionFactory.SECRET_KEY_LENGTH, MessageEncryptionFactory.ENCRYPTION_ALGORITHM);
+		cipher.init(Cipher.ENCRYPT_MODE, secreyKeySpec);
 
         byte[] cipherText = cipher.doFinal(text.getBytes());
 		
@@ -88,7 +90,8 @@ public abstract class MessageEncryption {
 		
 		SecretKey secretKey = MessageEncryptionFactory.generateSecretKey(privateKey, publicKey);
 		Cipher cipher = Cipher.getInstance(MessageEncryptionFactory.ENCRYPTION_ALGORITHM);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+		SecretKeySpec secreyKeySpec = new SecretKeySpec(secretKey.getEncoded(), 0, MessageEncryptionFactory.SECRET_KEY_LENGTH, MessageEncryptionFactory.ENCRYPTION_ALGORITHM);
+		cipher.init(Cipher.DECRYPT_MODE, secreyKeySpec);
                 
         byte[] text = cipher.doFinal(cipherText);
 
