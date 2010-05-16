@@ -55,7 +55,7 @@ public abstract class MessageEncryptionFactory {
 	
 	protected static final String KEY_EXCHANGE_PROTOCOL = "DH";
 	protected static final String ENCRYPTION_ALGORITHM = "AES";
-	protected static final String PRIVATE_KEY_ENCRYPTION_ALGORITHM = "PBEWithMD5AndDES";
+	protected static final String PRIVATE_KEY_ENCRYPTION_ALGORITHM = "PBEWithSHA256And256BitAES-CBC-BC";
 	
 	protected static final int SECRET_KEY_LENGTH = 24;
 
