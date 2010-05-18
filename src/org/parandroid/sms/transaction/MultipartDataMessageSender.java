@@ -2,7 +2,7 @@ package org.parandroid.sms.transaction;
 
 import java.util.Random;
 
-import org.parandroid.encoding.Base64Coder;
+import org.bouncycastle.util.encoders.Base64;
 
 import android.app.PendingIntent;
 import android.telephony.SmsManager;
@@ -13,7 +13,7 @@ public class MultipartDataMessageSender {
 	public static short MAX_BYTES = 140;
 	
 	public static void sendMultipartDataMessage(SmsManager smsManager, String dest, short port, byte[] message, PendingIntent sentIntent, PendingIntent deliveryIntent){
-		message = new String(Base64Coder.encode(message)).getBytes();
+		message = new String(Base64.encode(message)).getBytes();
 		int rest = message.length % MAX_BYTES;
 		int numMessages = message.length / MAX_BYTES + (rest == 0 ? 0 : 1);
 

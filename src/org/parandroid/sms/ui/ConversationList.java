@@ -79,7 +79,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.parandroid.encoding.Base64Coder;
+import org.bouncycastle.util.encoders.Base64;
 import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
 
@@ -598,10 +598,10 @@ public class ConversationList extends ListActivity
 						String body = backwardCursor.getString(backwardCursor.getColumnIndex(Inbox.BODY));
 						Log.i(TAG, "backward: oldbody: " + body);
 						
-						String clearBody = MessageEncryption.decrypt(ConversationList.this, oldPrivateKey, address, Base64Coder.decode(body));
+						String clearBody = MessageEncryption.decrypt(ConversationList.this, oldPrivateKey, address, Base64.decode(body));
 						Log.i(TAG, "backward: clear: " + clearBody);
 						
-						String newBody = new String(Base64Coder.encode(MessageEncryption.encrypt(ConversationList.this, address, clearBody)));
+						String newBody = new String(Base64.encode(MessageEncryption.encrypt(ConversationList.this, address, clearBody)));
 						Log.i(TAG, "backward: newbody: " + newBody);
 						
 						backwardCursor.updateString(backwardCursor.getColumnIndex(Inbox.BODY), newBody);

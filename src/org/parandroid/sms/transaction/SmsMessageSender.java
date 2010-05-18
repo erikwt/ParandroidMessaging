@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.parandroid.encoding.Base64Coder;
+import org.bouncycastle.util.encoders.Base64;
 import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
 
@@ -126,7 +126,7 @@ public class SmsMessageSender implements MessageSender {
             Uri uri = null;
             try {
             	if(isEncrypted){
-            		String outboxText = new String(Base64Coder.encode(encryptedMessage));
+            		String outboxText = new String(Base64.encode(encryptedMessage));
             		addToParandroidOutbox(i, outboxText);
             		
             	} else {

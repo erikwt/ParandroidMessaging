@@ -17,7 +17,7 @@
 
 package org.parandroid.sms.ui;
 
-import org.parandroid.encoding.Base64Coder;
+import org.bouncycastle.util.encoders.Base64;
 import org.parandroid.sms.R;
 import org.parandroid.sms.util.ContactInfoCache;
 import org.parandroid.sms.util.DraftCache;
@@ -283,7 +283,7 @@ public class ConversationListAdapter extends CursorAdapter {
             }else if(subject.indexOf(" ") == -1){
 				// No space, might be encrypted
 				try{
-					Base64Coder.decode(subject);
+					Base64.decode(subject);
 					// Encrypted message detected, show parandroid snippet
 					subject = context.getString(R.string.parandroid_snippet);
 				}catch(Exception e){
