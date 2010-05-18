@@ -13,15 +13,17 @@ import android.telephony.gsm.SmsManager;
  *
  * The message is base64-encoded and then split in parts with the maximum length of MAX_BYTES.
  * Each part is then sent appended to a 'header', containing:
- * 8 bits: Parandroid Messaging protocol version (for backward compatibility)
+ * 
+ * 6 bits: Parandroid Messaging protocol version (for backward compatibility)
  * 4 bits: Current message count
  * 4 bits: Total message count
- * 8 bits: Message id
+ * 4 bits: Huffman table (0 is none)
+ * 6 bits: Message id
  */
 public class MultipartDataMessage {
 	
 	private static final String TAG = "Parandroid MultipartDataMessageSender";
-    private static final int ID_LENGTH = 255;
+    private static final int ID_LENGTH = 63;
     private static final int PROTOCOL_VERSION = 0;
 
     private static HashMap<String, Integer> messageIds = new HashMap<String, Integer>();
@@ -35,6 +37,8 @@ public class MultipartDataMessage {
 	private short port;
 	private PendingIntent sentIntent;
 	private PendingIntent deliveryIntent;
+	
+	private int huffmanTree = 0;
     
     public MultipartDataMessage(String destination, short port, byte[] message, PendingIntent sentIntent, PendingIntent deliveryIntent){
     	smsManager = SmsManager.getDefault();
@@ -61,11 +65,12 @@ public class MultipartDataMessage {
 		for(int i = 0; i < numMessages; i++){
 			boolean last = i == numMessages - 1;
 			byte[] part = new byte[HEADER_LENGTH + ((!last || rest == 0) ? MESSAGE_LENGTH : rest)];
+			int currentMessage = numMessages - i - 1;
 			
 			// Construct header: see class comments
-			part[0] = new Integer(PROTOCOL_VERSION).byteValue();
-			part[1] = new Integer((numMessages - i - 1) << 4 | numMessages).byteValue();
-			part[2] = new Integer(messageId).byteValue();
+			part[0] = new Integer(PROTOCOL_VERSION << 2	| currentMessage >> 4).byteValue();
+			part[1] = new Integer(currentMessage << 6 | numMessages << 2 | huffmanTree >> 2).byteValue();
+			part[2] = new Integer(huffmanTree << 6 | messageId).byteValue();
 			
 			// Concat header and message part
 			System.arraycopy(message, i * MESSAGE_LENGTH, part, HEADER_LENGTH, part.length - HEADER_LENGTH);
@@ -76,6 +81,17 @@ public class MultipartDataMessage {
     
     public int getPartCount(){
     	return parts.size();
+    }
+    
+    public int getHuffmanTree(){
+    	return huffmanTree;
+    }
+    
+    public void setHuffmanTree(int huffmanTree) throws Exception{
+    	if(huffmanTree > 15)
+    		throw new Exception("Huffman treeId too big, max 15 but was " + huffmanTree);
+    	
+    	this.huffmanTree = huffmanTree;
     }
     
 	public boolean send(){
