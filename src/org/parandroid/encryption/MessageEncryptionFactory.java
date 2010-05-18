@@ -43,8 +43,8 @@ import android.util.Log;
 
 public abstract class MessageEncryptionFactory {
 
-	public static final short PUBLIC_KEY_PORT = 31337;
-	public static final short ENCRYPTED_MESSAGE_PORT = 31338;
+	public static final short PUBLIC_KEY_PORT = 206;
+	public static final short ENCRYPTED_MESSAGE_PORT = 207;
 
 	private static final String TAG = "Parandroid MessageEncryptionFactory";
 
