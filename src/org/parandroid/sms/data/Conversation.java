@@ -16,12 +16,13 @@ import android.provider.Telephony.Sms.Conversations;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.parandroid.encoding.Base64Coder;
 import org.parandroid.sms.R;
 import org.parandroid.sms.LogTag;
 import org.parandroid.sms.transaction.MessagingNotification;
 import org.parandroid.sms.ui.MessageUtils;
 import org.parandroid.sms.util.DraftCache;
+
+import org.bouncycastle.util.encoders.Base64;
 
 /**
  * An interface for finding information about conversations and/or creating new ones.
@@ -511,7 +512,7 @@ public class Conversation {
             }else if(snippet.indexOf(" ") == -1){
             	// No space, might be encrypted
             	try{
-            		Base64Coder.decode(snippet);
+            		Base64.decode(snippet);
             		// Encrypted message detected, show parandroid snippet
             		snippet = context.getString(R.string.parandroid_snippet);
             	}catch(Exception e){

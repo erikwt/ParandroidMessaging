@@ -32,15 +32,13 @@ import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
-import org.parandroid.encoding.Base64Coder;
-import org.parandroid.sms.data.Contact;
+import org.bouncycastle.util.encoders.Base64;
 import org.parandroid.sms.transaction.MultipartDataMessage;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.telephony.PhoneNumberUtils;
-import android.telephony.SmsManager;
 import android.util.Log;
 
 public abstract class MessageEncryptionFactory {
@@ -142,10 +140,7 @@ public abstract class MessageEncryptionFactory {
         ka.init(privateKey);
         ka.doPhase(publicKey, true);
                 
-        SecretKey secretKey = ka.generateSecret(ENCRYPTION_ALGORITHM);
-        byte[] secreyKeyBytes = secretKey.getEncoded();
-        
-        
+        SecretKey secretKey = ka.generateSecret(ENCRYPTION_ALGORITHM);        
         
         return secretKey; 
     }
@@ -298,7 +293,7 @@ public abstract class MessageEncryptionFactory {
     		String n = c.getString(c.getColumnIndex("number"));
     		if(PhoneNumberUtils.compare(number, n)){
     			String publicKey = c.getString(c.getColumnIndex("publicKey"));
-    			keyBytes = Base64Coder.decode(publicKey);
+    			keyBytes = Base64.decode(publicKey);
     			break;
     		}
     	}

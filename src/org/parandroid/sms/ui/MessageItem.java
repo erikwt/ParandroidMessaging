@@ -20,7 +20,7 @@ package org.parandroid.sms.ui;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import org.parandroid.encoding.Base64Coder;
+import org.bouncycastle.util.encoders.Base64;
 import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
@@ -139,7 +139,7 @@ public class MessageItem {
             if(isEncryptedIncomingMessage() || isEncryptedOutgoingMessage()){
 	            if(MessageEncryptionFactory.isAuthenticated()){
 	            	try {
-						mBody = MessageEncryption.decrypt(context, mAddress, Base64Coder.decode(mBody));
+						mBody = MessageEncryption.decrypt(context, mAddress, Base64.decode(mBody));
 					} catch (Exception e) {
 						Log.e(TAG, "Error decrypting message");
 						e.printStackTrace();

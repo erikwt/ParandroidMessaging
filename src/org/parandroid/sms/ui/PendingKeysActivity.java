@@ -2,7 +2,7 @@ package org.parandroid.sms.ui;
 
 import java.util.HashMap;
 
-import org.parandroid.encoding.Base64Coder;
+import org.bouncycastle.util.encoders.Base64;
 import org.parandroid.encryption.MessageEncryption;
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
@@ -205,8 +205,8 @@ public class PendingKeysActivity extends Activity {
 	    				String body = c.getString(c.getColumnIndex(Inbox.BODY));
 	    				Log.i(TAG, "address: " + address);
 	    				Log.i(TAG, "body: " + body);
-	    				String clearBody = MessageEncryption.decrypt(this, address, Base64Coder.decode(body));
-	    				String newBody = new String(Base64Coder.encode(MessageEncryption.encrypt(this, Base64Coder.decode(publicKey), clearBody)));
+	    				String clearBody = MessageEncryption.decrypt(this, address, Base64.decode(body));
+	    				String newBody = new String(Base64.encode(MessageEncryption.encrypt(this, Base64.decode(publicKey), clearBody)));
 	    				
 	    				c.updateString(c.getColumnIndex(Inbox.BODY), newBody);
 	    			}
