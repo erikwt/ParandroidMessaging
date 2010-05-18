@@ -1,9 +1,9 @@
 package org.parandroid.sms.transaction;
 
+import org.bouncycastle.util.encoders.Base64;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.parandroid.encoding.Base64Coder;
 
 import android.app.PendingIntent;
 import android.telephony.gsm.SmsManager;
@@ -49,7 +49,8 @@ public class MultipartDataMessage {
     }
     
     private void split(byte[] message){
-    	message = new String(Base64Coder.encode(message)).getBytes();
+    	message = new String(Base64.encode(message)).getBytes();
+    	
 		int rest = message.length % MESSAGE_LENGTH;
 		int numMessages = message.length / MESSAGE_LENGTH + (rest == 0 ? 0 : 1);
         

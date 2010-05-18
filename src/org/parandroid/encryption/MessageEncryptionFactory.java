@@ -32,7 +32,7 @@ import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
-import org.parandroid.encoding.Base64Coder;
+import org.bouncycastle.util.encoders.Base64;
 import org.parandroid.sms.util.ContactInfoCache;
 import org.parandroid.sms.transaction.MultipartDataMessage;
 
@@ -298,7 +298,7 @@ public abstract class MessageEncryptionFactory {
     	    String n = c.getString(c.getColumnIndex("number"));
     	    if(PhoneNumberUtils.compare(number, n)){
     	        String publicKey = c.getString(c.getColumnIndex("publicKey"));
-    	        keyBytes = Base64Coder.decode(publicKey);
+    	        keyBytes = Base64.decode(publicKey);
     	        break;
     	    }
     	}
