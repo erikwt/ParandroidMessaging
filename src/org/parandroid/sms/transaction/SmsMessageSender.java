@@ -174,14 +174,9 @@ public class SmsMessageSender implements MessageSender {
                     throw new MmsException("SmsMessageSender.sendMessage: caught " + ex +
                             " from SmsManager.sendMultipartTextMessage()");
                 }
-        	} else {        		
-        		PendingIntent sentIntent = sentIntents.isEmpty() ? null : sentIntents.get(0);
-        		PendingIntent deliveryIntent = deliveryIntents.isEmpty() ? null : deliveryIntents.get(0);
-
-        		MultipartDataMessage m = new MultipartDataMessage(mDests[i], MessageEncryptionFactory.ENCRYPTED_MESSAGE_PORT, encryptedMessage, sentIntent, deliveryIntent);
-        		if(!m.send()){
-        			throw new MmsException("SmsMessageSender.sendMessage: Encrypted message not sent, got false from MultipartDataMessage.send()");
-        		}
+        	} else {
+        		MultipartDataMessage m = new MultipartDataMessage(MultipartDataMessage.TYPE_MESSAGE, mDests[i], encryptedMessage, sentIntents, deliveryIntents);
+        		m.send();
         	}
         }
 

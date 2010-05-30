@@ -3201,7 +3201,7 @@ public class ComposeMessageActivity extends Activity
 
             try {
                 byte[] encryptedMessage = MessageEncryption.encrypt(this, sendEncryptedDest, mMsgText.toString());
-    	        MultipartDataMessage m = new MultipartDataMessage(null, (short) 0, encryptedMessage, null, null);
+    	        MultipartDataMessage m = new MultipartDataMessage(MultipartDataMessage.TYPE_MESSAGE, null, encryptedMessage, null, null);
 	    	    int numEncryptedMessages = m.getPartCount();
 
                 int[] textLengthParams = SmsMessage.calculateLength(mMsgText.toString(), false);
