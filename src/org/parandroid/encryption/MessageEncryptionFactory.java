@@ -397,10 +397,10 @@ public abstract class MessageEncryptionFactory {
 	}
 	
 	
-	public static boolean sendPublicKey(Context context, String number) throws IOException{
+	public static void sendPublicKey(Context context, String number) throws IOException{
 		byte[] publicKey = getOwnPublicKey(context);
-		MultipartDataMessage m = new MultipartDataMessage(number, PUBLIC_KEY_PORT, publicKey, null, null);
-		return m.send();
+		MultipartDataMessage m = new MultipartDataMessage(MultipartDataMessage.TYPE_PUBLIC_KEY, number, publicKey, null, null);
+		m.send();
 	}
 	
     
