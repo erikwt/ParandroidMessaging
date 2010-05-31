@@ -123,8 +123,8 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
         
         Log.i(TAG, "Received message with protocol version: " + protocolVersion);
         
-		String notificationString = null;
-        String notificationTitle = context.getString(R.string.received_public_key);
+        String notificationString = null;
+        String notificationTitle = context.getString(R.string.received_encrypted_message);
         if(protocolVersion == -1){
         	notificationString = context.getString(R.string.corrupted_message);
 		}else if(protocolVersion > MultipartDataMessage.PROTOCOL_VERSION){
