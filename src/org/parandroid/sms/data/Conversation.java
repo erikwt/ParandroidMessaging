@@ -513,7 +513,7 @@ public class Conversation {
             }else if(snippet.startsWith(MultipartDataMessage.MESSAGE_HEADER)){
             	snippet = context.getString(R.string.parandroid_snippet);
             }else if(snippet.startsWith(MultipartDataMessage.PUBLIC_KEY_HEADER)){
-                snippet = context.getString(R.string.received_public_key);
+                snippet = context.getString(R.string.parandroid_public_key_snippet);
             }
             conv.mSnippet = snippet;
 

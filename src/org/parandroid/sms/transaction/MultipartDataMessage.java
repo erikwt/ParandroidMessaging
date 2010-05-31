@@ -32,6 +32,7 @@ public class MultipartDataMessage {
 	
 	private short type;
 	private ArrayList<String> messageParts;
+	private String extraMessage;
 	private SmsManager smsManager;
 	private String destination;
 	private ArrayList<PendingIntent> sentIntents;
@@ -39,7 +40,15 @@ public class MultipartDataMessage {
 	
 	private int compressionType = 0; // For future use.
     
-    public MultipartDataMessage(short type, String destination, byte[] message, ArrayList<PendingIntent> sentIntents, ArrayList<PendingIntent> deliveryIntents){
+	public MultipartDataMessage(short type, String destination, byte[] message, ArrayList<PendingIntent> sentIntents, ArrayList<PendingIntent> deliveryIntents){
+		init(type, destination, message, sentIntents, deliveryIntents, null);
+	}
+	
+	public MultipartDataMessage(short type, String destination, byte[] message, ArrayList<PendingIntent> sentIntents, ArrayList<PendingIntent> deliveryIntents, String extraMessage){
+		init(type, destination, message, sentIntents, deliveryIntents, extraMessage);
+	}
+	
+    private void init(short type, String destination, byte[] message, ArrayList<PendingIntent> sentIntents, ArrayList<PendingIntent> deliveryIntents, String extraMessage){
     	if(type != TYPE_MESSAGE && type != TYPE_PUBLIC_KEY)
     		throw new IllegalArgumentException("Unknown message-type");
     	
@@ -49,6 +58,7 @@ public class MultipartDataMessage {
     	this.destination = destination;
     	this.sentIntents = sentIntents;
     	this.deliveryIntents = deliveryIntents;
+    	this.extraMessage = extraMessage;
     	
     	setMessage(message);
     }
@@ -58,8 +68,12 @@ public class MultipartDataMessage {
     	
 		String header = type == TYPE_MESSAGE ? MESSAGE_HEADER : PUBLIC_KEY_HEADER;
 		String metadata = Integer.toString(PROTOCOL_VERSION);
+		
 		if(compressionType != 0)
 			metadata += PROTOCOL_SEPERATOR + Integer.toString(compressionType);
+		
+		if(extraMessage != null)
+			metadata += PROTOCOL_SEPERATOR + extraMessage;
 		
 		messageParts = smsManager.divideMessage(header + metadata + HEADER_SEPERATOR + message);
     }
