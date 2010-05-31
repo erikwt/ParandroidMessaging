@@ -493,4 +493,37 @@ public abstract class MessageEncryptionFactory {
     	
     	return keyRing;
     }
+    
+    public static String stripHeader(String message){
+    	if(!message.startsWith(MultipartDataMessage.MESSAGE_HEADER) && !message.startsWith(MultipartDataMessage.PUBLIC_KEY_HEADER))
+    		return message;
+    	
+    	String header = message.startsWith(MultipartDataMessage.MESSAGE_HEADER) ? MultipartDataMessage.MESSAGE_HEADER : MultipartDataMessage.PUBLIC_KEY_HEADER;
+    	int lastSeparator = message.indexOf(MultipartDataMessage.HEADER_SEPERATOR, header.length());
+    	
+    	if(lastSeparator == -1 || message.length() <= lastSeparator)
+    		return message.substring(header.length());
+    	
+    	return message.substring(lastSeparator + 1);
+    }
+    
+    public static int getProcolVersion(String message){
+    	if(!message.startsWith(MultipartDataMessage.MESSAGE_HEADER) && !message.startsWith(MultipartDataMessage.PUBLIC_KEY_HEADER))
+    		return -1;
+    	
+    	String header = message.startsWith(MultipartDataMessage.MESSAGE_HEADER) ? MultipartDataMessage.MESSAGE_HEADER : MultipartDataMessage.PUBLIC_KEY_HEADER;
+    	
+    	int metadataStart = header.length();
+		int metadataEnd = message.indexOf(MultipartDataMessage.HEADER_SEPERATOR, metadataStart);
+		if(metadataEnd == -1)
+    		return -1;
+		
+		try{
+			int protocolVersion = Integer.parseInt(message.substring(metadataStart, metadataEnd)) >> 8;
+	    	return protocolVersion;
+		}catch(Exception e){
+			Log.e(TAG, "Corrupted message, no protocol version: " + message);
+			return -1;
+		}
+    }
 }

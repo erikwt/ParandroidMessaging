@@ -28,6 +28,7 @@ import org.parandroid.sms.data.Contact;
 import org.parandroid.sms.model.SlideModel;
 import org.parandroid.sms.model.SlideshowModel;
 import org.parandroid.sms.model.TextModel;
+import org.parandroid.sms.transaction.MultipartDataMessage;
 import org.parandroid.sms.ui.MessageListAdapter.ColumnsMap;
 import org.parandroid.sms.util.AddressUtils;
 import com.google.android.mms.MmsException;
@@ -72,7 +73,8 @@ public class MessageItem {
     DeliveryStatus mDeliveryStatus;
     boolean mReadReport;
     boolean mLocked;            // locked to prevent auto-deletion
-    boolean publicKey = false;
+    boolean publickey = false;
+    boolean encrypted = false;
     String rawBody;
 
     String mTimestamp;
@@ -125,7 +127,7 @@ public class MessageItem {
             // Set contact and message body
             mBoxId = cursor.getInt(columnsMap.mColumnSmsType);
             mAddress = cursor.getString(columnsMap.mColumnSmsAddress);
-            if (Sms.isOutgoingFolder(mBoxId) || isEncryptedOutgoingMessage()) {
+            if (Sms.isOutgoingFolder(mBoxId)) {
                 String meString = context.getString(
                         R.string.messagelist_sender_self);
 
@@ -136,9 +138,11 @@ public class MessageItem {
             }
             mBody = cursor.getString(columnsMap.mColumnSmsBody);
             
-            if(isEncryptedIncomingMessage() || isEncryptedOutgoingMessage()){
+            if(isEncrypted()){
+                encrypted = true;
 	            if(MessageEncryptionFactory.isAuthenticated()){
 	            	try {
+	            		mBody = MessageEncryptionFactory.stripHeader(mBody);
 						mBody = MessageEncryption.decrypt(context, mAddress, Base64.decode(mBody));
 					} catch (Exception e) {
 						Log.e(TAG, "Error decrypting message");
@@ -146,11 +150,13 @@ public class MessageItem {
 					}
 	            }else if(ComposeMessageActivity.encryptIfNeeded && !MessageEncryptionFactory.isAuthenticating()){
 	            	ComposeMessageActivity.encryptIfNeeded = false;
-	            	Log.v(TAG, "erikw: starting");
 	            	MessageEncryptionFactory.setAuthenticating(true);
 	            	Intent intent = new Intent(context, AuthenticateActivity.class);
 	            	context.startActivity(intent);
 	            }
+            }else if(isPublicKey()){
+                publickey = true;
+            	mBody = context.getString(R.string.received_public_key);
             }
             
             if (!isOutgoingMessage()) {
@@ -296,15 +302,15 @@ public class MessageItem {
                                     && ((mBoxId == Sms.MESSAGE_TYPE_FAILED)
                                             || (mBoxId == Sms.MESSAGE_TYPE_OUTBOX)
                                             || (mBoxId == Sms.MESSAGE_TYPE_QUEUED));
-        return isOutgoingMms || isOutgoingSms || isEncryptedOutgoingMessage();
+        return isOutgoingMms || isOutgoingSms;
     }
     
-    public boolean isEncryptedIncomingMessage(){
-    	return isSms() && mBoxId == MESSAGE_TYPE_PARANDROID_INBOX;
+    public boolean isEncrypted(){
+    	return encrypted || mBody.startsWith(MultipartDataMessage.MESSAGE_HEADER);
     }
     
-    public boolean isEncryptedOutgoingMessage(){
-    	return isSms() && mBoxId == MESSAGE_TYPE_PARANDROID_OUTBOX;
+    public boolean isPublicKey(){
+    	return publickey || mBody.startsWith(MultipartDataMessage.PUBLIC_KEY_HEADER);
     }
 
     // Note: This is the only mutable field in this class.  Think of

@@ -197,7 +197,7 @@
         </receiver>
         
         <!-- Require sender permissions to prevent SMS spoofing -->
-        <receiver android:name=".transaction.PrivilegedSmsReceiver"
+        <receiver android:name=".transaction.EncryptedMessageReceiver"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
@@ -270,17 +270,6 @@
         
         <activity android:name=".ui.PublicKeyReceived">
         </activity>
-        
-        <receiver android:name=".transaction.PublicKeyReceiver"
-            android:permission="android.permission.BROADCAST_SMS">
-            
-            <intent-filter>
-                <action android:name="android.intent.action.DATA_SMS_RECEIVED" />
-                <data android:scheme="sms" />
-                <data android:host="localhost" />
-                <data android:port="31337" />
-            </intent-filter>
-        </receiver>
 
         <activity android:name=".ui.AuthenticateActivity">
         </activity>
@@ -301,17 +290,6 @@
         <activity android:name=".ui.EncryptedMessageNotificationActivity">
         </activity>
         
-        <receiver android:name=".transaction.EncryptedMessageReceiver"
-            android:permission="android.permission.BROADCAST_SMS">
-            
-            <intent-filter>
-                <action android:name="android.intent.action.DATA_SMS_RECEIVED" />
-                <data android:scheme="sms" />
-                <data android:host="localhost" />
-                <data android:port="31338" />
-            </intent-filter>
-        </receiver>
-
         <meta-data android:name="android.app.default_searchable"
             android:value=".ui.SearchActivity" />
 

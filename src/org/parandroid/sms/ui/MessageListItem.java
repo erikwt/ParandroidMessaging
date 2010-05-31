@@ -533,8 +533,11 @@ public class MessageListItem extends LinearLayout implements
     }
 
     private void drawRightStatusIndicator(MessageItem msgItem) {
-    	if(msgItem.isEncryptedIncomingMessage() || msgItem.isEncryptedOutgoingMessage()){
+    	if(msgItem.isEncrypted()){
     		mRightStatusIndicator.setImageResource(R.drawable.stat_notify_encrypted_msg);
+            mRightStatusIndicator.setVisibility(View.VISIBLE);
+        }else if(msgItem.isPublicKey()){
+    		mRightStatusIndicator.setImageResource(R.drawable.stat_notify_public_key_recieved);
             mRightStatusIndicator.setVisibility(View.VISIBLE);
     	}else if (msgItem.isOutgoingMessage()) {
             if (isFailedMessage(msgItem)) {
@@ -558,10 +561,6 @@ public class MessageListItem extends LinearLayout implements
             mRightStatusIndicator.setVisibility(View.VISIBLE);
         } else if (msgItem.mLocked) {
             mRightStatusIndicator.setImageResource(R.drawable.ic_lock_message_sms);
-            mRightStatusIndicator.setVisibility(View.VISIBLE);
-        } else if(msgItem.publicKey) {
-        	mRightStatusIndicator.setImageResource(R.drawable.ic_menu_move_down);
-        	setPublicKeyImportClickListener(msgItem);
             mRightStatusIndicator.setVisibility(View.VISIBLE);
         } else {
             mRightStatusIndicator.setVisibility(View.GONE);

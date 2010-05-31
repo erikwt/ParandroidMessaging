@@ -19,6 +19,7 @@ import android.util.Log;
 import org.parandroid.sms.R;
 import org.parandroid.sms.LogTag;
 import org.parandroid.sms.transaction.MessagingNotification;
+import org.parandroid.sms.transaction.MultipartDataMessage;
 import org.parandroid.sms.ui.MessageUtils;
 import org.parandroid.sms.util.DraftCache;
 
@@ -509,15 +510,10 @@ public class Conversation {
             String snippet = MessageUtils.extractEncStrFromCursor(c, SNIPPET, SNIPPET_CS);
             if (TextUtils.isEmpty(snippet)) {
                 snippet = context.getString(R.string.no_subject_view);
-            }else if(snippet.indexOf(" ") == -1){
-            	// No space, might be encrypted
-            	try{
-            		Base64.decode(snippet);
-            		// Encrypted message detected, show parandroid snippet
-            		snippet = context.getString(R.string.parandroid_snippet);
-            	}catch(Exception e){
-            		// Not base64, so not encrypted.
-            	}
+            }else if(snippet.startsWith(MultipartDataMessage.MESSAGE_HEADER)){
+            	snippet = context.getString(R.string.parandroid_snippet);
+            }else if(snippet.startsWith(MultipartDataMessage.PUBLIC_KEY_HEADER)){
+                snippet = context.getString(R.string.received_public_key);
             }
             conv.mSnippet = snippet;
 
