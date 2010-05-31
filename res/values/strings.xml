@@ -725,6 +725,8 @@
 
     <string name="received_public_key">Received Parandroid public key</string>
     <string name="received_encrypted_message">Received Parandroid encrypted message</string>
+    <string name="protocol_too_high">Please update Parandroid Messaging, protocol in received message is higher than yours.</string>
+    <string name="corrupted_message">Parandroid message corrupted!</string>
     <string name="public_keys_saved">Public keys</string>
     <string name="public_keys_pending">Pending</string>
     <string name="no_public_keys">No public keys</string>
@@ -736,7 +738,7 @@
     <string name="accept_public_key">Accept this public key</string>
     <string name="decline_public_key">Decline this public key</string>
     <string name="decline_public_key_dialog">Are you sure you want to decline this public key?</string>
-    
+        
     <string name="failed_changing_password">Failed changing password</string>
     <string name="successfully_changed_password">Successfully changed password</string>
     <string name="password_not_changed">Password not changed</string>

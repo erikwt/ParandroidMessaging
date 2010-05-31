@@ -196,6 +196,7 @@ public class SmsMessageSender implements MessageSender {
     
 
     private Uri addToParandroidOutbox(int destIndex, String outboxText){
+        outboxText += MultipartDataMessage.MESSAGE_HEADER;
     	ContentValues values = new ContentValues(7);
 
         values.put(Telephony.TextBasedSmsColumns.ADDRESS, mDests[destIndex]);

@@ -19,13 +19,15 @@ import android.telephony.gsm.SmsManager;
  */
 public class MultipartDataMessage {
 	
-	private static final String TAG = "Parandroid MultipartDataMessageSender";
-	private static final String MESSAGE_HEADER		= "$pdm$";
-	private static final String PUBLIC_KEY_HEADER	= "$pdpk$";
-    private static final int PROTOCOL_VERSION = 0;
+	public static final String TAG = "Parandroid MultipartDataMessageSender";
+    public static final int PROTOCOL_VERSION = 0;
 	
 	public static final short TYPE_MESSAGE		= 0;
 	public static final short TYPE_PUBLIC_KEY	= 1;
+	
+	public static final String HEADER_SEPERATOR		= "$";
+	public static final String MESSAGE_HEADER		= "$pdm$";
+	public static final String PUBLIC_KEY_HEADER	= "$pdpk$";
 	
 	private short type;
 	private ArrayList<String> messageParts;
@@ -56,7 +58,7 @@ public class MultipartDataMessage {
 		String header = type == TYPE_MESSAGE ? MESSAGE_HEADER : PUBLIC_KEY_HEADER;
 		String metadata = Integer.toString(PROTOCOL_VERSION << 8 | compressionType);
 		
-		messageParts = smsManager.divideMessage(header + metadata + message);
+		messageParts = smsManager.divideMessage(header + metadata + HEADER_SEPERATOR + message);
     }
     
     public int getPartCount(){
