@@ -521,8 +521,12 @@ public abstract class MessageEncryptionFactory {
 		if(metadataEnd == -1)
     		return -1;
 		
+		int protocolVersionEnd = message.substring(metadataStart, metadataEnd).indexOf(MultipartDataMessage.PROTOCOL_SEPERATOR);
+		if(protocolVersionEnd == -1)
+			protocolVersionEnd = metadataEnd;
+		
 		try{
-			int protocolVersion = Integer.parseInt(message.substring(metadataStart, metadataEnd)) >> 8;
+			int protocolVersion = Integer.parseInt(message.substring(metadataStart, protocolVersionEnd));
 	    	return protocolVersion;
 		}catch(Exception e){
 			Log.e(TAG, "Corrupted message, no protocol version: " + message);
