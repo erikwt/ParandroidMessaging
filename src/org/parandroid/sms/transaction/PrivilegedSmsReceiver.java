@@ -19,6 +19,8 @@ package org.parandroid.sms.transaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Telephony.Sms.Intents;
+import android.telephony.SmsMessage;
 
 /**
  * This class exists specifically to allow us to require permissions checks on SMS_RECEIVED
@@ -28,6 +30,12 @@ import android.content.Intent;
 public class PrivilegedSmsReceiver extends SmsReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        // If this is a Parandroid message, skip.
+        SmsMessage[] messages = Intents.getMessagesFromIntent(intent);
+        String body = messages[0].getMessageBody();
+        if(body.startsWith(MultipartDataMessage.MESSAGE_HEADER) || body.startsWith(MultipartDataMessage.PUBLIC_KEY_HEADER))
+            return;
+        
         // Pass the message to the base class implementation, noting that it
         // was permission-checked on the way in.
         onReceiveWithPrivilege(context, intent, true);
