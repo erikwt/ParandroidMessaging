@@ -681,6 +681,7 @@
     <string name="accept_public_key">Accept this public key</string>
     <string name="decline_public_key">Decline this public key</string>
     <string name="decline_public_key_dialog">Are you sure you want to decline this public key?</string>
+    <string name="long_press_for_options">Long press an item below for options.</string>
         
     <string name="failed_changing_password">Failed changing password</string>
     <string name="successfully_changed_password">Successfully changed password</string>
@@ -754,6 +755,7 @@
     <string name="help_more_title">Done! Now what?</string>
     <string name="help_more_1_text">
         First, send your public key to some contacts (you can always do this later from \'Menu > Send public key\').
+        \n\nIMPORTANT: To prevent double notifications, disable notifications in the normal Messaging application. To do this, open \'Messaging\' from the application list, then open \'Menu -> Settings\' and make sure the \'Notifications\' option is diabled.
     </string>
     <string name="help_more_2_text">
         \n\nAlso, visit http://www.parandroid.org!
