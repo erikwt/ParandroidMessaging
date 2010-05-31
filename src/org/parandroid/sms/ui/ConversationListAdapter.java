@@ -19,6 +19,7 @@ package org.parandroid.sms.ui;
 
 import org.bouncycastle.util.encoders.Base64;
 import org.parandroid.sms.R;
+import org.parandroid.sms.transaction.MultipartDataMessage;
 import org.parandroid.sms.util.ContactInfoCache;
 import org.parandroid.sms.util.DraftCache;
 
@@ -280,15 +281,10 @@ public class ConversationListAdapter extends CursorAdapter {
 
             if (TextUtils.isEmpty(subject)) {
                 subject = mContext.getString(R.string.no_subject_view);
-            }else if(subject.indexOf(" ") == -1){
-				// No space, might be encrypted
-				try{
-					Base64.decode(subject);
-					// Encrypted message detected, show parandroid snippet
-					subject = context.getString(R.string.parandroid_snippet);
-				}catch(Exception e){
-				// 	Not base64, so not encrypted.
-				}
+            }else if(subject.startsWith(MultipartDataMessage.MESSAGE_HEADER)){
+            	subject = context.getString(R.string.parandroid_snippet);
+            }else if(subject.startsWith(MultipartDataMessage.PUBLIC_KEY_HEADER)){
+            	subject = context.getString(R.string.received_public_key);
             }
 
             if (LOCAL_LOGV) Log.v(TAG, "pre-create ConversationHeader");

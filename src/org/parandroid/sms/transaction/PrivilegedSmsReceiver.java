@@ -20,7 +20,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Telephony.Sms.Intents;
-import android.telephony.SmsMessage;
+import android.telephony.gsm.SmsMessage;
 
 /**
  * This class exists specifically to allow us to require permissions checks on SMS_RECEIVED

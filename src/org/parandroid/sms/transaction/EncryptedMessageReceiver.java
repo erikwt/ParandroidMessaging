@@ -123,10 +123,10 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
         
         Log.i(TAG, "Received message with protocol version: " + protocolVersion);
         
-// Jeffrey: TODO: cupcake backporting: it looks like 1.5 does not delete old 
-// messages when they are received, so I commented these lines. @see SmsReceiverService::insertMessage()
-//        threadId = values.getAsLong(Sms.THREAD_ID);
-//        Recycler.getSmsRecycler().deleteOldMessagesByThreadId(context, threadId);
+        String notificationString = null;
+        String notificationTitle = context.getString(R.string.received_encrypted_message);
+        if(protocolVersion == -1){
+        	notificationString = context.getString(R.string.corrupted_message);
 		}else if(protocolVersion > MultipartDataMessage.PROTOCOL_VERSION){
         	// Protocol version too high, user might need to update
         	notificationString = context.getString(R.string.protocol_too_high);
