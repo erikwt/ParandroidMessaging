@@ -152,7 +152,7 @@ public class MessageItem {
 	            }
             }else if(isPublicKey()){
                 publickey = true;
-            	mBody = context.getString(R.string.received_public_key);
+            	mBody = context.getString(R.string.parandroid_public_key_snippet);
             }
             
             // Set time stamp
