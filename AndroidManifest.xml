@@ -214,7 +214,7 @@
         </receiver>
         
         <!-- Require sender permissions to prevent SMS spoofing -->
-        <receiver android:name=".transaction.PrivilegedSmsReceiver"
+        <receiver android:name=".transaction.EncryptedMessageReceiver"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />

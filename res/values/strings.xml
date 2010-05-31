@@ -593,6 +593,7 @@
     <string name="app_label">Parandroid Messaging</string>
     <string name="about_string">Parandroid Messaging 0.9 BETA</string>
     <string name="parandroid_snippet">Parandroid encrypted message</string>
+    <string name="parandroid_public_key_snippet">Parandroid public key</string>
     <string name="parandroid_about">
         Send and receive encrypted SMS (text) messages between Android phones, to improve privacy.
         
@@ -701,6 +702,7 @@
     <string name="show_confirm_dialog_title">Ask for confirmation</string>
     
     <string name="notify_tap_to_remove">Tap a recipient to remove</string>
+    <string name="no_parandroid_description">\n\nPlease install \'Parandroid Messaging\' from the Market\n\n</string>
     
     <string name="help_title">Help</string>
     
