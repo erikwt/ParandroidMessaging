@@ -34,6 +34,7 @@ import javax.crypto.spec.PBEParameterSpec;
 
 import org.bouncycastle.util.encoders.Base64;
 import org.parandroid.sms.util.ContactInfoCache;
+import org.parandroid.sms.R;
 import org.parandroid.sms.transaction.MultipartDataMessage;
 
 import android.content.Context;
@@ -403,7 +404,8 @@ public abstract class MessageEncryptionFactory {
 	
 	public static void sendPublicKey(Context context, String number) throws IOException{
 		byte[] publicKey = getOwnPublicKey(context);
-		MultipartDataMessage m = new MultipartDataMessage(MultipartDataMessage.TYPE_PUBLIC_KEY, number, publicKey, null, null);
+		String extraMessage = context.getString(R.string.no_parandroid_description);
+		MultipartDataMessage m = new MultipartDataMessage(MultipartDataMessage.TYPE_PUBLIC_KEY, number, publicKey, null, null, extraMessage);;
 		m.send();
 	}
     
@@ -522,7 +524,9 @@ public abstract class MessageEncryptionFactory {
     		return -1;
 		
 		int protocolVersionEnd = message.substring(metadataStart, metadataEnd).indexOf(MultipartDataMessage.PROTOCOL_SEPERATOR);
-		if(protocolVersionEnd == -1)
+		if(protocolVersionEnd != -1)
+			protocolVersionEnd += metadataStart;
+		else
 			protocolVersionEnd = metadataEnd;
 		
 		try{

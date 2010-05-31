@@ -284,7 +284,7 @@ public class ConversationListAdapter extends CursorAdapter {
             }else if(subject.startsWith(MultipartDataMessage.MESSAGE_HEADER)){
             	subject = context.getString(R.string.parandroid_snippet);
             }else if(subject.startsWith(MultipartDataMessage.PUBLIC_KEY_HEADER)){
-            	subject = context.getString(R.string.received_public_key);
+            	subject = context.getString(R.string.parandroid_public_key_snippet);
             }
 
             if (LOCAL_LOGV) Log.v(TAG, "pre-create ConversationHeader");
