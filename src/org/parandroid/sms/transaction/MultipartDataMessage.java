@@ -14,8 +14,8 @@ import android.telephony.SmsManager;
  * length of a text message minus the header length for the first message.
  * 
  * The header consists of a identifier string, as defined in this class with some metadata:
- * 8 bits: Parandroid Messaging protocol version (for backward compatibility)
- * 8 bits: Compression type (0 is none): For future use (different compression tables etc)
+ * - Parandroid Messaging protocol version (for backward compatibility)
+ * - Compression type (0 is none): For future use (different compression tables etc)
  */
 public class MultipartDataMessage {
 	
@@ -24,8 +24,9 @@ public class MultipartDataMessage {
 	
 	public static final short TYPE_MESSAGE		= 0;
 	public static final short TYPE_PUBLIC_KEY	= 1;
-	
+
 	public static final String HEADER_SEPERATOR		= "$";
+	public static final String PROTOCOL_SEPERATOR	= ",";
 	public static final String MESSAGE_HEADER		= "$pdm$";
 	public static final String PUBLIC_KEY_HEADER	= "$pdpk$";
 	
@@ -56,7 +57,9 @@ public class MultipartDataMessage {
     	String message = new String(Base64.encode(m));
     	
 		String header = type == TYPE_MESSAGE ? MESSAGE_HEADER : PUBLIC_KEY_HEADER;
-		String metadata = Integer.toString(PROTOCOL_VERSION << 8 | compressionType);
+		String metadata = Integer.toString(PROTOCOL_VERSION);
+		if(compressionType != 0)
+			metadata += PROTOCOL_SEPERATOR + Integer.toString(compressionType);
 		
 		messageParts = smsManager.divideMessage(header + metadata + HEADER_SEPERATOR + message);
     }
