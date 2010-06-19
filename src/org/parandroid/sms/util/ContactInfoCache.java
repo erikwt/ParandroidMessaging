@@ -341,16 +341,20 @@ public class ContactInfoCache {
                     mContext.getContentResolver(),
                     contactUri);
         if (avatarDataStream != null) {
-            Bitmap b = BitmapFactory.decodeStream(avatarDataStream);
-
-            BitmapDrawable bd =
-                new BitmapDrawable(mContext.getResources(), b);
-
-            entry.mAvatar = bd;
             try {
+	            Bitmap b = BitmapFactory.decodeStream(avatarDataStream);
+	
+	            BitmapDrawable bd =
+	                new BitmapDrawable(mContext.getResources(), b);
+	
+	            entry.mAvatar = bd;
+	            
                 avatarDataStream.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 entry.mAvatar = null;
+            } catch(OutOfMemoryError e){
+            	entry.mAvatar = null;
+            	System.gc();
             }
         }
     }
