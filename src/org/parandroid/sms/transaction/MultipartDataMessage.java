@@ -31,6 +31,7 @@ public class MultipartDataMessage {
 	public static final String PUBLIC_KEY_HEADER	= "$pdpk$";
 	
 	private short type;
+	private String message;
 	private ArrayList<String> messageParts;
 	private String extraMessage;
 	private SmsManager smsManager;
@@ -75,14 +76,17 @@ public class MultipartDataMessage {
 		if(extraMessage != null)
 			metadata += PROTOCOL_SEPERATOR + extraMessage;
 		
-		messageParts = smsManager.divideMessage(header + metadata + HEADER_SEPERATOR + message);
+		message = header + metadata + HEADER_SEPERATOR + message;
     }
     
     public int getPartCount(){
+    	if(messageParts == null)
+    		messageParts = smsManager.divideMessage(message);
+    	
     	return messageParts.size();
     }
         
 	public void send(){
-		smsManager.sendMultipartTextMessage(destination, null, messageParts, sentIntents, deliveryIntents);
+		smsManager.sendTextMessage(destination, null, message, sentIntents.get(0), deliveryIntents.get(0));
 	}
 }
