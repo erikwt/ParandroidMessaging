@@ -321,23 +321,20 @@ public class ConversationList extends ListActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
 
-//        menu.add(0, MENU_COMPOSE_NEW, 0, R.string.menu_compose_new).setIcon(
-//                com.android.internal.R.drawable.ic_menu_compose);
-        
-        if(MessageEncryptionFactory.hasKeypair(this))
+        if(MessageEncryptionFactory.hasKeypair(this)){
         	menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_new_keypair).setIcon(R.drawable.ic_generate_keypair);
-        else
-        	menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_keypair).setIcon(R.drawable.ic_generate_keypair);
 
-        menu.add(0, MENU_SEND_PUBLIC_KEY, 0, R.string.menu_send_public_key).setIcon(
+            menu.add(0, MENU_SEND_PUBLIC_KEY, 0, R.string.menu_send_public_key).setIcon(
         		R.drawable.ic_send_public_key);
         
+            menu.add(0, MENU_CHANGE_PASSWORD, 0, R.string.menu_change_password).setIcon(
+        		R.drawable.ic_change_password);
+        }else
+        	menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_keypair).setIcon(R.drawable.ic_generate_keypair);
+
         menu.add(0, MENU_MANAGE_PUBLIC_KEYS, 0, R.string.menu_manage_public_keys).setIcon(
         		R.drawable.ic_manage_public_keys);
-        
-        menu.add(0, MENU_CHANGE_PASSWORD, 0, R.string.menu_change_password).setIcon(
-        		R.drawable.ic_change_password);
-        
+
         menu.add(0, MENU_HELP, 0, R.string.menu_help).setIcon(
                 R.drawable.ic_gallery_video_overlay);
 
