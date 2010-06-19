@@ -1,13 +1,11 @@
 package org.parandroid.sms.transaction;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.parandroid.encryption.MessageEncryptionFactory;
 import org.parandroid.sms.R;
 import org.parandroid.sms.ui.EncryptedMessageNotificationActivity;
 import org.parandroid.sms.ui.ManagePublicKeysActivity;
-import org.parandroid.sms.ui.MessageItem;
 
 import org.parandroid.sms.ui.MessageUtils;
 import org.parandroid.sms.ui.MessagingPreferenceActivity;
@@ -18,7 +16,6 @@ import com.google.android.mms.util.SqliteWrapper;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -26,15 +23,11 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.provider.Telephony.Sms;
 import android.provider.Telephony.Threads;
-import android.provider.Telephony.Sms.Inbox;
 import android.provider.Telephony.Sms.Intents;
 import android.telephony.gsm.SmsMessage;
 import android.text.TextUtils;
 import android.util.Log;
-
-import com.google.android.mms.util.SqliteWrapper;
 
 public class EncryptedMessageReceiver extends BroadcastReceiver {
 
