@@ -306,11 +306,11 @@ public class MessageItem {
     }
     
     public boolean isEncrypted(){
-    	return encrypted || mBody.startsWith(MultipartDataMessage.MESSAGE_HEADER);
+    	return encrypted || (mBody != null && mBody.startsWith(MultipartDataMessage.MESSAGE_HEADER));
     }
     
     public boolean isPublicKey(){
-    	return publickey || mBody.startsWith(MultipartDataMessage.PUBLIC_KEY_HEADER);
+    	return publickey || (mBody != null && mBody.startsWith(MultipartDataMessage.PUBLIC_KEY_HEADER));
     }
 
     // Note: This is the only mutable field in this class.  Think of
