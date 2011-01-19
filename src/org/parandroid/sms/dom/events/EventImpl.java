@@ -17,8 +17,8 @@
 
 package org.parandroid.sms.dom.events;
 
-import org.parandroid.external.w3c.dom.events.Event;
-import org.parandroid.external.w3c.dom.events.EventTarget;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.events.EventTarget;
 
 public class EventImpl implements Event {
 

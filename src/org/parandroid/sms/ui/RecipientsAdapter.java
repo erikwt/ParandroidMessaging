@@ -17,7 +17,7 @@
 
 package org.parandroid.sms.ui;
 
-import com.android.internal.database.ArrayListCursor;
+import com.android.common.ArrayListCursor;
 import org.parandroid.sms.R;
 import org.parandroid.sms.data.Contact;
 

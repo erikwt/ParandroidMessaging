@@ -22,7 +22,7 @@ import android.util.Log;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
-import org.parandroid.external.w3c.dom.smil.SMILDocument;
+import org.w3c.dom.smil.SMILDocument;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 

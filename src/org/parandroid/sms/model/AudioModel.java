@@ -18,12 +18,13 @@
 package org.parandroid.sms.model;
 
 import org.parandroid.sms.ContentRestrictionException;
+import org.parandroid.sms.dom.events.EventImpl;
 import org.parandroid.sms.dom.smil.SmilMediaElementImpl;
 import org.parandroid.sms.drm.DrmWrapper;
 import com.google.android.mms.MmsException;
 import com.google.android.mms.util.SqliteWrapper;
 
-import org.parandroid.external.w3c.dom.events.Event;
+import org.w3c.dom.events.Event;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -144,7 +145,7 @@ public class AudioModel extends MediaModel {
             action = MediaAction.PAUSE;
         } else if (evtType.equals(SmilMediaElementImpl.SMIL_MEDIA_SEEK_EVENT)) {
             action = MediaAction.SEEK;
-            mSeekTo = evt.getSeekTo();
+            mSeekTo = ((EventImpl) evt).getSeekTo();
         }
 
         appendAction(action);

@@ -33,14 +33,14 @@ import com.google.android.mms.pdu.PduPart;
 import com.google.android.mms.pdu.PduPersister;
 
 import org.w3c.dom.NodeList;
-import org.parandroid.external.w3c.dom.events.EventTarget;
-import org.parandroid.external.w3c.dom.smil.SMILDocument;
-import org.parandroid.external.w3c.dom.smil.SMILElement;
-import org.parandroid.external.w3c.dom.smil.SMILLayoutElement;
-import org.parandroid.external.w3c.dom.smil.SMILMediaElement;
-import org.parandroid.external.w3c.dom.smil.SMILParElement;
-import org.parandroid.external.w3c.dom.smil.SMILRegionElement;
-import org.parandroid.external.w3c.dom.smil.SMILRootLayoutElement;
+import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.smil.SMILDocument;
+import org.w3c.dom.smil.SMILElement;
+import org.w3c.dom.smil.SMILLayoutElement;
+import org.w3c.dom.smil.SMILMediaElement;
+import org.w3c.dom.smil.SMILParElement;
+import org.w3c.dom.smil.SMILRegionElement;
+import org.w3c.dom.smil.SMILRootLayoutElement;
 
 import android.content.ContentResolver;
 import android.content.Context;

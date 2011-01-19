@@ -17,6 +17,7 @@
 
 package org.parandroid.sms.transaction;
 
+import com.android.common.NetworkConnectivityListener;
 import com.android.internal.telephony.Phone;
 import org.parandroid.sms.R;
 import org.parandroid.sms.LogTag;
@@ -26,6 +27,9 @@ import com.google.android.mms.pdu.NotificationInd;
 import com.google.android.mms.pdu.PduHeaders;
 import com.google.android.mms.pdu.PduParser;
 import com.google.android.mms.pdu.PduPersister;
+import android.provider.Telephony.Mms;
+import android.provider.Telephony.MmsSms;
+import android.provider.Telephony.MmsSms.PendingMessages;
 
 import android.app.Service;
 import android.content.ContentUris;
@@ -33,7 +37,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
-import android.net.NetworkConnectivityListener;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Handler;
@@ -42,9 +45,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
-import android.provider.Telephony.Mms;
-import android.provider.Telephony.MmsSms;
-import android.provider.Telephony.MmsSms.PendingMessages;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;

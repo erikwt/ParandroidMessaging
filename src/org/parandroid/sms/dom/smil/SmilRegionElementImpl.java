@@ -18,8 +18,8 @@
 package org.parandroid.sms.dom.smil;
 
 import org.w3c.dom.DOMException;
-import org.parandroid.external.w3c.dom.smil.SMILDocument;
-import org.parandroid.external.w3c.dom.smil.SMILRegionElement;
+import org.w3c.dom.smil.SMILDocument;
+import org.w3c.dom.smil.SMILRegionElement;
 
 import android.util.Config;
 import android.util.Log;

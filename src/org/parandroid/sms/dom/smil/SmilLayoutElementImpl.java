@@ -20,8 +20,8 @@ package org.parandroid.sms.dom.smil;
 import org.parandroid.sms.layout.LayoutManager;
 
 import org.w3c.dom.NodeList;
-import org.parandroid.external.w3c.dom.smil.SMILLayoutElement;
-import org.parandroid.external.w3c.dom.smil.SMILRootLayoutElement;
+import org.w3c.dom.smil.SMILLayoutElement;
+import org.w3c.dom.smil.SMILRootLayoutElement;
 
 public class SmilLayoutElementImpl extends SmilElementImpl implements
         SMILLayoutElement {

@@ -17,7 +17,7 @@
 
 package org.parandroid.sms.dom.smil;
 
-import org.parandroid.external.w3c.dom.smil.SMILRefElement;
+import org.w3c.dom.smil.SMILRefElement;
 
 public class SmilRefElementImpl extends SmilRegionMediaElementImpl implements
         SMILRefElement {

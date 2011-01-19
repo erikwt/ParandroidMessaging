@@ -19,7 +19,7 @@ package org.parandroid.sms.dom.smil;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
-import org.parandroid.external.w3c.dom.smil.Time;
+import org.w3c.dom.smil.Time;
 
 public class TimeImpl implements Time {
     static final int ALLOW_INDEFINITE_VALUE = (1 << 0);

@@ -50,6 +50,8 @@ import android.provider.Telephony.Threads;
 import android.provider.Telephony.Sms.Inbox;
 import android.provider.Telephony.Sms.Intents;
 import android.provider.Telephony.Sms.Outbox;
+import android.provider.Telephony;
+
 import android.telephony.ServiceState;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
@@ -249,7 +251,7 @@ public class SmsReceiverService extends Service {
         Uri uri = intent.getData();
 
         if (mResultCode == Activity.RESULT_OK) {
-            if (!Sms.moveMessageToFolder(this, uri, Sms.MESSAGE_TYPE_SENT)) {
+            if (!Sms.moveMessageToFolder(this, uri, Sms.MESSAGE_TYPE_SENT, 0)) {
                 Log.e(TAG, "handleSmsSent: failed to move message " + uri + " to sent folder");
             }
             sendFirstQueuedMessage();
@@ -266,13 +268,13 @@ public class SmsReceiverService extends Service {
             // queued up messages.
             registerForServiceStateChanges();
             // We couldn't send the message, put in the queue to retry later.
-            Sms.moveMessageToFolder(this, uri, Sms.MESSAGE_TYPE_QUEUED);
+            Sms.moveMessageToFolder(this, uri, Sms.MESSAGE_TYPE_QUEUED, 0);
             mToastHandler.sendEmptyMessage(1);
         } else {
             if (Log.isLoggable(LogTag.TRANSACTION, Log.VERBOSE)) {
                 Log.v(TAG, "handleSmsSent msg failed uri: " + uri);
             }
-            Sms.moveMessageToFolder(this, uri, Sms.MESSAGE_TYPE_FAILED);
+            Sms.moveMessageToFolder(this, uri, Sms.MESSAGE_TYPE_FAILED, 0);
             MessagingNotification.notifySendFailed(getApplicationContext(), true);
             sendFirstQueuedMessage();
         }

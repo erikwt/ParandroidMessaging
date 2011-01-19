@@ -24,7 +24,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
-import org.parandroid.external.w3c.dom.smil.SMILDocument;
+import org.w3c.dom.smil.SMILDocument;
 
 import com.google.android.mms.MmsException;
 import org.parandroid.sms.dom.smil.parser.SmilContentHandler;

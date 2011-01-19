@@ -17,21 +17,19 @@
 
 package org.parandroid.sms.transaction;
 
-import org.bouncycastle.util.encoders.Base64;
-import org.parandroid.encryption.MessageEncryption;
-import org.parandroid.encryption.MessageEncryptionFactory;
-import org.parandroid.sms.MmsConfig;
-import org.parandroid.sms.LogTag;
-import org.parandroid.sms.ParandroidSmsApp;
-import org.parandroid.sms.R;
-import org.parandroid.sms.ui.MessageItem;
-import org.parandroid.sms.ui.MessagingPreferenceActivity;
-import org.parandroid.sms.ui.MessageUtils;
 import com.google.android.mms.MmsException;
 import com.google.android.mms.util.SqliteWrapper;
 
+import org.bouncycastle.util.encoders.Base64;
+import org.parandroid.encryption.MessageEncryption;
+import org.parandroid.encryption.MessageEncryptionFactory;
+import org.parandroid.sms.LogTag;
+import org.parandroid.sms.MmsConfig;
+import org.parandroid.sms.ui.MessageItem;
+import org.parandroid.sms.ui.MessageUtils;
+import org.parandroid.sms.ui.MessagingPreferenceActivity;
+
 import android.app.PendingIntent;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -43,15 +41,10 @@ import android.preference.PreferenceManager;
 import android.provider.Telephony;
 import android.provider.Telephony.Mms;
 import android.provider.Telephony.Sms;
-import android.provider.Telephony.Mms.Outbox;
 import android.provider.Telephony.Sms.Inbox;
 import android.telephony.SmsManager;
 import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 
 public class SmsMessageSender implements MessageSender {

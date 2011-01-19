@@ -18,9 +18,9 @@
 package org.parandroid.sms.dom.smil;
 
 import org.w3c.dom.NodeList;
-import org.parandroid.external.w3c.dom.smil.SMILDocument;
-import org.parandroid.external.w3c.dom.smil.SMILRegionElement;
-import org.parandroid.external.w3c.dom.smil.SMILRegionMediaElement;
+import org.w3c.dom.smil.SMILDocument;
+import org.w3c.dom.smil.SMILRegionElement;
+import org.w3c.dom.smil.SMILRegionMediaElement;
 
 public class SmilRegionMediaElementImpl extends SmilMediaElementImpl implements
         SMILRegionMediaElement {

@@ -33,15 +33,15 @@ import com.google.android.mms.MmsException;
 import com.google.android.mms.pdu.PduBody;
 import com.google.android.mms.pdu.PduPart;
 
-import org.parandroid.external.w3c.dom.events.EventTarget;
-import org.parandroid.external.w3c.dom.smil.SMILDocument;
-import org.parandroid.external.w3c.dom.smil.SMILElement;
-import org.parandroid.external.w3c.dom.smil.SMILLayoutElement;
-import org.parandroid.external.w3c.dom.smil.SMILMediaElement;
-import org.parandroid.external.w3c.dom.smil.SMILParElement;
-import org.parandroid.external.w3c.dom.smil.SMILRegionElement;
-import org.parandroid.external.w3c.dom.smil.SMILRegionMediaElement;
-import org.parandroid.external.w3c.dom.smil.SMILRootLayoutElement;
+import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.smil.SMILDocument;
+import org.w3c.dom.smil.SMILElement;
+import org.w3c.dom.smil.SMILLayoutElement;
+import org.w3c.dom.smil.SMILMediaElement;
+import org.w3c.dom.smil.SMILParElement;
+import org.w3c.dom.smil.SMILRegionElement;
+import org.w3c.dom.smil.SMILRegionMediaElement;
+import org.w3c.dom.smil.SMILRootLayoutElement;
 import org.xml.sax.SAXException;
 
 import android.drm.mobile1.DrmException;

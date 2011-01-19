@@ -17,12 +17,13 @@
 
 package org.parandroid.sms.dom.smil;
 
+import com.android.mms.dom.events.EventImpl;
 import org.w3c.dom.DOMException;
-import org.parandroid.external.w3c.dom.events.DocumentEvent;
-import org.parandroid.external.w3c.dom.events.Event;
-import org.parandroid.external.w3c.dom.smil.ElementTime;
-import org.parandroid.external.w3c.dom.smil.SMILMediaElement;
-import org.parandroid.external.w3c.dom.smil.TimeList;
+import org.w3c.dom.events.DocumentEvent;
+import org.w3c.dom.events.Event;
+import org.w3c.dom.smil.ElementTime;
+import org.w3c.dom.smil.SMILMediaElement;
+import org.w3c.dom.smil.TimeList;
 
 import android.util.Config;
 import android.util.Log;
@@ -55,7 +56,7 @@ public class SmilMediaElementImpl extends SmilElementImpl implements
             private Event createEvent(String eventType, int seekTo) {
                 DocumentEvent doc =
                     (DocumentEvent)SmilMediaElementImpl.this.getOwnerDocument();
-                Event event = doc.createEvent("Event");
+                EventImpl event = (EventImpl) doc.createEvent("Event");
                 event.initEvent(eventType, false, false, seekTo);
                 if (LOCAL_LOGV) {
                     Log.v(TAG, "Dispatching 'begin' event to "

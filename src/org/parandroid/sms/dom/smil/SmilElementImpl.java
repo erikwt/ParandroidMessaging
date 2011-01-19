@@ -18,7 +18,7 @@
 package org.parandroid.sms.dom.smil;
 
 import org.w3c.dom.DOMException;
-import org.parandroid.external.w3c.dom.smil.SMILElement;
+import org.w3c.dom.smil.SMILElement;
 
 import org.parandroid.sms.dom.ElementImpl;
 

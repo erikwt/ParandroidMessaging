@@ -26,11 +26,11 @@ import com.google.android.mms.MmsException;
 import com.google.android.mms.pdu.PduBody;
 import com.google.android.mms.pdu.PduPart;
 
-import org.parandroid.external.w3c.dom.smil.SMILMediaElement;
-import org.parandroid.external.w3c.dom.smil.SMILRegionElement;
-import org.parandroid.external.w3c.dom.smil.SMILRegionMediaElement;
-import org.parandroid.external.w3c.dom.smil.Time;
-import org.parandroid.external.w3c.dom.smil.TimeList;
+import org.w3c.dom.smil.SMILMediaElement;
+import org.w3c.dom.smil.SMILRegionElement;
+import org.w3c.dom.smil.SMILRegionMediaElement;
+import org.w3c.dom.smil.Time;
+import org.w3c.dom.smil.TimeList;
 
 import android.content.Context;
 import android.drm.mobile1.DrmException;
