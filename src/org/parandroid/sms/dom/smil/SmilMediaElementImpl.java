@@ -17,7 +17,7 @@
 
 package org.parandroid.sms.dom.smil;
 
-import com.android.mms.dom.events.EventImpl;
+import org.parandroid.sms.dom.events.EventImpl;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.events.DocumentEvent;
 import org.w3c.dom.events.Event;
