@@ -40,8 +40,16 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
         }else if(message.getMessageBody().startsWith(MultipartDataMessage.PUBLIC_KEY_HEADER)){
         	handlePublicKey(context, messages);
         }else{
-        	Log.i(TAG, "Got message, but not with a Parandroid header. Skipping.");
-        	return;
+        	// unecrypted message
+        	String sender = message.getOriginatingAddress();
+        	String notificationTitle = context.getString(R.string.new_message);
+        	String notificationString = notificationTitle;
+        	int iconResource = R.drawable.stat_notify_sms;
+        	
+        	notifyUserOfMessage(context, sender, notificationString, notificationTitle, iconResource);
+        	
+//        	Log.i(TAG, "Got message, but not with a Parandroid header. Skipping.");
+//        	return;
         }
 	}
 	
@@ -71,6 +79,11 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
         
         
         Log.v(TAG, "Received encrypted message");
+        int iconResource = R.drawable.stat_notify_encrypted_msg;
+		notifyUserOfMessage(context, sender, notificationString, notificationTitle, iconResource);
+	}
+	
+	public void notifyUserOfMessage(Context context, String sender, String notificationString, String notificationTitle, int iconResource){
 		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		
 		long threadId = Threads.getOrCreateThreadId(context, sender);
@@ -81,7 +94,7 @@ public class EncryptedMessageReceiver extends BroadcastReceiver {
 		targetIntent.putExtra("notificationId", notificationId);
 		targetIntent.putExtra("threadId", threadId);
 		
-		Notification n = new Notification(context, R.drawable.stat_notify_encrypted_msg, notificationString, System.currentTimeMillis(), notificationTitle, notificationString, targetIntent);
+		Notification n = new Notification(context, iconResource, notificationString, System.currentTimeMillis(), notificationTitle, notificationString, targetIntent);
 		
 		SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 		if (sp.getBoolean(MessagingPreferenceActivity.NOTIFICATION_ENABLED, true)) {

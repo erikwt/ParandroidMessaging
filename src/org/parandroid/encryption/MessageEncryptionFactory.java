@@ -401,7 +401,7 @@ public abstract class MessageEncryptionFactory {
 	public static void sendPublicKey(Context context, String number) throws IOException{
 		byte[] publicKey = getOwnPublicKey(context);
 		String extraMessage = context.getString(R.string.no_parandroid_description);
-		MultipartDataMessage m = new MultipartDataMessage(MultipartDataMessage.TYPE_PUBLIC_KEY, number, publicKey, null, null, extraMessage);;
+		MultipartDataMessage m = new MultipartDataMessage(MultipartDataMessage.TYPE_PUBLIC_KEY, number, publicKey, null, null, extraMessage);
 		m.send();
 	}
 	

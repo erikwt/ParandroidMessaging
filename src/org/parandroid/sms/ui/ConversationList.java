@@ -100,6 +100,8 @@ public class ConversationList extends ListActivity
     public static final int MENU_CHANGE_PASSWORD	  = 8;
     public static final int MENU_ABOUT				  = 9;
     public static final int MENU_HELP				  = 10;
+    public static final int MENU_SCAN_PUBLIC_KEY	  = 11;
+    public static final int MENU_PRINT_PUBLIC_KEY	  = 12;
 
     // IDs of the context menu items for the list of conversations.
     public static final int MENU_DELETE               = 0;
@@ -335,19 +337,24 @@ public class ConversationList extends ListActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
 
-        if(MessageEncryptionFactory.hasKeypair(this)){
-        	menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_new_keypair).setIcon(R.drawable.ic_generate_keypair);
-
-            menu.add(0, MENU_SEND_PUBLIC_KEY, 0, R.string.menu_send_public_key).setIcon(
-        		R.drawable.ic_send_public_key);
-        
-            menu.add(0, MENU_CHANGE_PASSWORD, 0, R.string.menu_change_password).setIcon(
-        		R.drawable.ic_change_password);
-        }else
-        	menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_keypair).setIcon(R.drawable.ic_generate_keypair);
-
         menu.add(0, MENU_MANAGE_PUBLIC_KEYS, 0, R.string.menu_manage_public_keys).setIcon(
         		R.drawable.ic_manage_public_keys);
+        
+        if(MessageEncryptionFactory.hasKeypair(this)){
+        	menu.add(0, MENU_PRINT_PUBLIC_KEY, 0, R.string.menu_print_public_key);
+        	
+        	menu.add(0, MENU_SCAN_PUBLIC_KEY, 0, R.string.menu_scan_public_key);
+
+        	menu.add(0, MENU_CHANGE_PASSWORD, 0, R.string.menu_change_password).setIcon(
+        			R.drawable.ic_change_password);
+        	
+        	menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_new_keypair).setIcon(R.drawable.ic_generate_keypair);
+        
+        	menu.add(0, MENU_SEND_PUBLIC_KEY, 0, R.string.menu_scan_public_key).setIcon(
+        			R.drawable.ic_send_public_key);
+        }else {
+        	menu.add(0, MENU_GENERATE_KEYPAIR, 0, R.string.menu_generate_keypair).setIcon(R.drawable.ic_generate_keypair);
+        }
 
         menu.add(0, MENU_HELP, 0, R.string.menu_help).setIcon(
                 R.drawable.ic_gallery_video_overlay);
@@ -387,6 +394,12 @@ public class ConversationList extends ListActivity
 	            break;
 	        case MENU_SEND_PUBLIC_KEY:
 	        	sendPublicKey();
+	            break;
+	        case MENU_SCAN_PUBLIC_KEY:
+	        	scanPublicKey();
+	            break;
+	        case MENU_PRINT_PUBLIC_KEY:
+	        	printPublicKey();
 	            break;
 	        case MENU_MANAGE_PUBLIC_KEYS:
 	        	managePublicKeys();
@@ -471,6 +484,16 @@ public class ConversationList extends ListActivity
     private void sendPublicKey(){
     	Intent intent = new Intent(this, SendPublicKeyActivity.class);
         startActivity(intent);
+    }
+    
+    private void scanPublicKey(){
+    	Intent intent = new Intent(this, ScanPublicKeyActivity.class);
+    	startActivity(intent);
+    }
+    
+    private void printPublicKey(){
+    	Intent intent = new Intent(this, InsertPhoneNumberActivity.class);
+    	startActivity(intent);
     }
     
     private void managePublicKeys(){

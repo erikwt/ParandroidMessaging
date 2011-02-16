@@ -712,6 +712,8 @@
     </string>
     
     <string name="menu_send_public_key">Send public key</string>
+    <string name="menu_scan_public_key">Scan public key</string>
+    <string name="menu_print_public_key">Print public key</string>
     <string name="menu_generate_keypair">Generate keypair</string>
     <string name="menu_generate_new_keypair">Generate new keypair</string>
     <string name="menu_manage_public_keys">Manage public keys</string>
@@ -753,6 +755,9 @@
         Don\'t accept this public key if you were not expecting to receive one from this sender.
         Are you sure you want to accept this public key?
     </string>
+    <string name="import_scanned_public_key_dialog">
+        Are you sure you want to accept this public key?
+    </string>
     <string name="import_public_key_overwrite">Overwrite public key</string>
     <string name="import_public_key_dialog_overwrite">
         You already have a public key from this sender. Don\'t accept this public key if you were not expecting to receive one from this sender.
@@ -780,6 +785,7 @@
     <string name="decline_public_key">Decline this public key</string>
     <string name="decline_public_key_dialog">Are you sure you want to decline this public key?</string>
     <string name="long_press_for_options">Long press an item below for options.</string>
+    <string name="declined_public_key">Public key declined</string>
         
     <string name="failed_changing_password">Failed changing password</string>
     <string name="successfully_changed_password">Successfully changed password</string>
@@ -863,5 +869,8 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="skip">Skip</string>
+    
+    <string name="missing_phone_number">Missing phone number. Unable to generate QR code. Please try again.</string>
+    <string name="insert_phone_number">Insert your phone number:</string>
 </resources>
 

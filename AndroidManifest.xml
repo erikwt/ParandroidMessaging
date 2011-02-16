@@ -39,6 +39,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INSTALL_DRM" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-sdk android:minSdkVersion="5" />
 
@@ -191,9 +192,10 @@
         <!-- Require sender permissions to prevent SMS spoofing -->
         <receiver android:name=".transaction.PrivilegedSmsReceiver"
             android:permission="android.permission.BROADCAST_SMS">
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
+<!-- Jeffrey@30-01-2001: removed intent filter because of randomly missing notifications -->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.provider.Telephony.SMS_RECEIVED" />-->
+<!--            </intent-filter>-->
         </receiver>
         
         <!-- Require sender permissions to prevent SMS spoofing -->
@@ -254,6 +256,15 @@
         </activity>
 
         <activity android:name=".ui.SendPublicKeyActivity">
+        </activity>
+        
+        <activity android:name=".ui.ScanPublicKeyActivity">
+        </activity>
+        
+        <activity android:name=".ui.InsertPhoneNumberActivity" android:theme="@android:style/Theme.Dialog">
+        </activity>
+        
+        <activity android:name=".ui.PrintPublicKeyActivity" android:theme="@android:style/Theme.Dialog">
         </activity>
         
         <activity android:name=".ui.ManagePublicKeysActivity">
