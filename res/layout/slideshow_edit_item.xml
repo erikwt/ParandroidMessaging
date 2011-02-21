@@ -18,7 +18,7 @@
  */
 -->
 
-<com.android.mms.ui.SlideListItemView
+<org.parandroid.msg.ui.SlideListItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
@@ -89,4 +89,4 @@
                 android:layout_weight="0" />
         </LinearLayout>
     </LinearLayout>
-</com.android.mms.ui.SlideListItemView>
+</org.parandroid.msg.ui.SlideListItemView>

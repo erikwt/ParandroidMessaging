@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.mms.util;
+package org.parandroid.msg.util;
 
 import java.nio.IntBuffer;
 

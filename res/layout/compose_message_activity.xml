@@ -58,7 +58,7 @@
         android:orientation="vertical"
         android:gravity="bottom">
 
-        <view class="com.android.mms.ui.MessageListView"
+        <view class="org.parandroid.msg.ui.MessageListView"
             style="?android:attr/listViewWhiteStyle"
             android:id="@+id/history"
             android:layout_width="match_parent"
@@ -86,7 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dip">
 
-              <view class="com.android.mms.ui.AttachmentEditor"
+              <view class="org.parandroid.msg.ui.AttachmentEditor"
                   android:id="@+id/attachment_editor"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"

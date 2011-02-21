@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.android.mms.ui;
+package org.parandroid.msg.ui;
 
-import static com.android.mms.ui.MessageListAdapter.COLUMN_ID;
-import static com.android.mms.ui.MessageListAdapter.COLUMN_MSG_TYPE;
+import static org.parandroid.msg.ui.MessageListAdapter.COLUMN_ID;
+import static org.parandroid.msg.ui.MessageListAdapter.COLUMN_MSG_TYPE;
 
-import com.android.mms.R;
-import com.android.mms.ui.ComposeMessageActivity;
+import org.parandroid.msg.R;
+import org.parandroid.msg.ui.ComposeMessageActivity;
 
 import android.database.Cursor;
 import android.test.ActivityInstrumentationTestCase2;
@@ -33,7 +33,7 @@ import android.widget.Button;
 /**
  * Test threads with thousands of messages
  * To run just this test:
- *       runtest --test-class=com.android.mms.ui.MultiPartSmsTests mms
+ *       runtest --test-class=org.parandroid.msg.ui.MultiPartSmsTests mms
  */
 public class MultiPartSmsTests
 extends ActivityInstrumentationTestCase2<ComposeMessageActivity> {
@@ -82,7 +82,7 @@ extends ActivityInstrumentationTestCase2<ComposeMessageActivity> {
     private String mMyNumber;
 
     public MultiPartSmsTests() {
-        super("com.android.mms", ComposeMessageActivity.class);
+        super("org.parandroid.msg", ComposeMessageActivity.class);
     }
 
     @Override

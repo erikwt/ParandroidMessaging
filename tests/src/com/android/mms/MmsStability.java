@@ -15,10 +15,10 @@
  */
 
 
-package com.android.mms;
+package org.parandroid.msg;
 
-import com.android.mms.R;
-import com.android.mms.ui.ComposeMessageActivity;
+import org.parandroid.msg.R;
+import org.parandroid.msg.ui.ComposeMessageActivity;
 
 import android.app.Instrumentation;
 
@@ -45,7 +45,7 @@ public class MmsStability extends ActivityInstrumentationTestCase2 <ComposeMessa
     private static String RECIPIENT_NUMBER = "46645";
 
     public MmsStability() {
-        super("com.android.mms", ComposeMessageActivity.class);
+        super("org.parandroid.msg", ComposeMessageActivity.class);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.android.mms;
+package org.parandroid.msg;
 
 import android.app.Activity;
 import android.content.Intent;

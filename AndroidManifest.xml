@@ -18,9 +18,9 @@
  */
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.android.mms">
+        package="org.parandroid.msg">
 
-    <original-package android:name="com.android.mms" />
+    <original-package android:name="org.parandroid.msg" />
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
@@ -40,7 +40,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INSTALL_DRM" />
 
-    <application android:name="MmsApp"
+    <application android:name="ParandroidMsgApp"
             android:label="@string/app_label"
             android:icon="@drawable/ic_launcher_smsmms"
             android:taskAffinity="android.task.mms"
@@ -202,7 +202,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.android.mms.transaction.MESSAGE_SENT" />
+                <action android:name="org.parandroid.msg.transaction.MESSAGE_SENT" />
                 <!-- TODO Do a better data match here. -->
                 <data android:scheme="content" />
             </intent-filter>
@@ -213,7 +213,7 @@
 
         <receiver android:name=".transaction.MessageStatusReceiver">
             <intent-filter>
-                <action android:name="com.android.mms.transaction.MessageStatusReceiver.MESSAGE_STATUS_RECEIVED" />
+                <action android:name="org.parandroid.msg.transaction.MessageStatusReceiver.MESSAGE_STATUS_RECEIVED" />
             </intent-filter>
         </receiver>
 
@@ -232,7 +232,7 @@
         <activity android:name=".ui.ConfirmRateLimitActivity"
                   android:theme="@android:style/Theme.Dialog">
             <intent-filter>
-                <action android:name="com.android.mms.RATE_LIMIT_SURPASSED" />
+                <action android:name="org.parandroid.msg.RATE_LIMIT_SURPASSED" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -254,7 +254,7 @@
         <!-- Search Suggestions Provider -->
         <provider android:name="SuggestionsProvider"
             android:readPermission="android.permission.READ_SMS"
-            android:authorities="com.android.mms.SuggestionsProvider" >
+            android:authorities="org.parandroid.msg.SuggestionsProvider" >
             <path-permission
                     android:pathPrefix="/search_suggest_query"
                     android:readPermission="android.permission.GLOBAL_SEARCH" />

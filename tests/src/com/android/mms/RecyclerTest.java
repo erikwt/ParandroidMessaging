@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.android.mms;
+package org.parandroid.msg;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.android.mms.data.Contact;
-import com.android.mms.util.Recycler;
+import org.parandroid.msg.data.Contact;
+import org.parandroid.msg.util.Recycler;
 import android.provider.Telephony.Sms;
 import android.provider.Telephony.Threads;
 import android.provider.Telephony.Sms.Inbox;
@@ -42,20 +42,20 @@ import android.util.Log;
 /**
  * Bang on the recycler and test it getting called simultaneously from two different threads
  * NOTE: you first have to put the unix words file on the device:
- *    example: adb push ~/words /data/data/com.android.mms/files
+ *    example: adb push ~/words /data/data/org.parandroid.msg/files
  * and then push a file that contains a comma separated list of numbers to send to.
- *    example: adb push ~/recipients /data/data/com.android.mms/files
+ *    example: adb push ~/recipients /data/data/org.parandroid.msg/files
  *
  */
 /**
  * Bang on the recycler and test it getting called simultaneously from two different threads
  * NOTE: you first have to put the unix words file on the device:
- *    example: adb push ~/words /data/data/com.android.mms/files
+ *    example: adb push ~/words /data/data/org.parandroid.msg/files
  * and then push a file that contains a comma separated list of numbers to send to.
- *    example: adb push ~/recipients /data/data/com.android.mms/files
+ *    example: adb push ~/recipients /data/data/org.parandroid.msg/files
  *
  * To run just this test:
- *    runtest --test-class=com.android.mms.RecyclerTest mms
+ *    runtest --test-class=org.parandroid.msg.RecyclerTest mms
  */
 public class RecyclerTest extends AndroidTestCase {
     static final String TAG = "RecyclerTest";
@@ -99,7 +99,7 @@ public class RecyclerTest extends AndroidTestCase {
             mWordCount = mWords.size();
             Log.v(TAG, "Loaded dictionary word count: " + mWordCount);
         } catch (Exception e) {
-            Log.e(TAG, "can't open words file at /data/data/com.android.mms/files/words");
+            Log.e(TAG, "can't open words file at /data/data/org.parandroid.msg/files/words");
             return;
         }
 
@@ -123,7 +123,7 @@ public class RecyclerTest extends AndroidTestCase {
             recipients.close();
             Log.v(TAG, "Loaded recipients: " + mRecipients.size());
         } catch (Exception e) {
-            Log.e(TAG, "can't open recipients file at /data/data/com.android.mms/files/recipients");
+            Log.e(TAG, "can't open recipients file at /data/data/org.parandroid.msg/files/recipients");
             return;
         }
         mRecipientCnt = mRecipients.size();

@@ -15,9 +15,9 @@
  */
 
 
-package com.android.mms.ui;
+package org.parandroid.msg.ui;
 
-import com.android.mms.R;
+import org.parandroid.msg.R;
 import android.content.Context;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.MediumTest;
@@ -32,7 +32,7 @@ public class ConversationListTests
     private Context mContext;
 
     public ConversationListTests() {
-        super("com.android.mms", ConversationList.class);
+        super("org.parandroid.msg", ConversationList.class);
     }
 
     @Override

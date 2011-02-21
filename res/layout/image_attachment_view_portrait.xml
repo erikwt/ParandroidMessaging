@@ -18,7 +18,7 @@
  */
 -->
 
-<com.android.mms.ui.ImageAttachmentView xmlns:android="http://schemas.android.com/apk/res/android"
+<org.parandroid.msg.ui.ImageAttachmentView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/image_attachment_view_portrait"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -60,4 +60,4 @@
             android:text="@string/remove" />
 
     </LinearLayout>
-</com.android.mms.ui.ImageAttachmentView>
+</org.parandroid.msg.ui.ImageAttachmentView>

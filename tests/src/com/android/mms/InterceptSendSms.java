@@ -15,12 +15,12 @@
  */
 
 
-package src.com.android.mms;
+package src.org.parandroid.msg;
 
-import com.android.mms.LogTag;
-import com.android.mms.R;
-import com.android.mms.data.WorkingMessage;
-import com.android.mms.ui.ComposeMessageActivity;
+import org.parandroid.msg.LogTag;
+import org.parandroid.msg.R;
+import org.parandroid.msg.data.WorkingMessage;
+import org.parandroid.msg.ui.ComposeMessageActivity;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -57,7 +57,7 @@ public class InterceptSendSms extends ActivityInstrumentationTestCase2 <ComposeM
     private boolean mInterceptedSend;
 
     public InterceptSendSms() {
-        super("com.android.mms", ComposeMessageActivity.class);
+        super("org.parandroid.msg", ComposeMessageActivity.class);
     }
 
     @Override

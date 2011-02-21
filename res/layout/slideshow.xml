@@ -20,7 +20,7 @@
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.android.mms.ui.SlideView android:id="@+id/slide_view"
+    <org.parandroid.msg.ui.SlideView android:id="@+id/slide_view"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

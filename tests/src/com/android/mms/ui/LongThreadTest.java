@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.android.mms.ui;
+package org.parandroid.msg.ui;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.android.mms.R;
-import com.android.mms.ui.ComposeMessageActivity;
-import com.android.mms.ui.MessageListView;
+import org.parandroid.msg.R;
+import org.parandroid.msg.ui.ComposeMessageActivity;
+import org.parandroid.msg.ui.MessageListView;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -40,9 +40,9 @@ import android.widget.Button;
 /**
  * Test threads with thousands of messages
  * NOTE: you first have to put the unix words file on the device:
- *    example: adb push ~/words /data/data/com.android.mms/files
+ *    example: adb push ~/words /data/data/org.parandroid.msg/files
  * and then push a file that contains a comma separated list of numbers to send to.
- *    example: adb push ~/recipients /data/data/com.android.mms/files
+ *    example: adb push ~/recipients /data/data/org.parandroid.msg/files
  *
  */
 public class LongThreadTest
@@ -58,7 +58,7 @@ extends ActivityInstrumentationTestCase2<ComposeMessageActivity> {
     private Random mRandom = new Random();
 
     public LongThreadTest() {
-        super("com.android.mms", ComposeMessageActivity.class);
+        super("org.parandroid.msg", ComposeMessageActivity.class);
     }
 
     @Override
@@ -92,7 +92,7 @@ extends ActivityInstrumentationTestCase2<ComposeMessageActivity> {
             mWordCount = mWords.size();
             Log.v(TAG, "Loaded dictionary word count: " + mWordCount);
         } catch (Exception e) {
-            Log.e(TAG, "can't open words file at /data/data/com.android.mms/files/words");
+            Log.e(TAG, "can't open words file at /data/data/org.parandroid.msg/files/words");
             return;
         }
 
@@ -116,7 +116,7 @@ extends ActivityInstrumentationTestCase2<ComposeMessageActivity> {
             recipients.close();
             Log.v(TAG, "Loaded recipients: " + mRecipients.size());
         } catch (Exception e) {
-            Log.e(TAG, "can't open recipients file at /data/data/com.android.mms/files/recipients");
+            Log.e(TAG, "can't open recipients file at /data/data/org.parandroid.msg/files/recipients");
             return;
         }
     }

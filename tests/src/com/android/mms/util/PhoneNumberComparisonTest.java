@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.android.mms.util;
+package org.parandroid.msg.util;
 
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Log;
 import android.telephony.PhoneNumberUtils;
-import com.android.mms.LogTag;
+import org.parandroid.msg.LogTag;
 
 public class PhoneNumberComparisonTest extends AndroidTestCase {
 

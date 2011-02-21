@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.android.mms.ui;
+package org.parandroid.msg.ui;
 
-import com.android.mms.R;
-import com.android.mms.ui.MessageListAdapter.ColumnsMap;
+import org.parandroid.msg.R;
+import org.parandroid.msg.ui.MessageListAdapter.ColumnsMap;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -45,7 +45,7 @@ extends ActivityInstrumentationTestCase2<ComposeMessageActivity> {
     private ColumnsMap mColumnsMap;
 
     public ComposeMessageActivityTests() {
-        super("com.android.mms", ComposeMessageActivity.class);
+        super("org.parandroid.msg", ComposeMessageActivity.class);
     }
 
     @Override
